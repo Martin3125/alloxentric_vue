@@ -225,9 +225,14 @@
 
 </template> 
 <script>
+import {initializeFilter} from './js/filtro.js';
+
 export default {
-  name: 'Reporte_ultima_carga',
-  // Definición del componente
+  name: 'Reporte_ultima_carga',// Definición del componente
+  mounted() {
+    initializeFilter();
+  }
+  
 }
 </script>
   

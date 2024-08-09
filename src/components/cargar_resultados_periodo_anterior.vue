@@ -1,6 +1,7 @@
 <template>
     <link rel="stylesheet" href="src\assets\cargar_resultados_periodo_anterior.css">
-    <body>
+
+<body>
     <header>
         <div id="logo_header">
             <img src="C:\Users\Equipo PC\Desktop\Alloxentric\2.png" alt="logo">
@@ -136,7 +137,7 @@
                         </div>
                         <!-- <div class="input-container">
                             <input type="text" id="filePathInput" placeholder="Ingrese la ruta del archivo">
-                            <button onclick="showFileContent()">Ver Contenido</button>
+                            <button @click="openModal()">Ver Contenido</button>
                         </div> -->
                     </div>
 
@@ -163,15 +164,22 @@
 
                             <div class="carpetas">
                                 <h3 style="text-align: center;">Directorios</h3>
-                                <div style="text-align: center;" id="directories">
-                                    <!-- Aquí se cargarán los directorios -->
+                                <div style="text-align: center;"
+                                    v-for="directory in directories"
+                                    :key="directory"
+                                    :class="{ selected: directory === selectedDirectory }"
+                                    class="directory"
+                                    id="directories"
+                                    @click="selectDirectory(directory)"
+                                >
+                                    {{ directory }}
                                 </div>
                             </div>
 
                             <div class="archivos">
                                 <h4 style="text-align: center;" >Archivos</h4>
-                                <div style="text-align: center;" id="files">
-                                    <!-- Aquí se cargarán los archivos -->
+                                <div style="text-align: center;" id="files"  v-for="file in currentFiles" :key="file" class="file">
+                                    {{ file }}
                                 </div>
                             </div>
                             
@@ -188,15 +196,31 @@
         </div>
     </div>
             
-            
+          
 </template>
 <script>
+import { directories, getFiles } from './js/directorios.js';
+
 export default {
-  name: 'cargar_resultados',
-  // Definición del componente
-}
+  name: 'cargar_resultados', // Definición del componente
+  data() {
+    return {
+      directories: directories,
+      selectedDirectory: null,
+      currentFiles: []
+    };
+  },
+  methods: {
+    selectDirectory(directory) {
+      this.selectedDirectory = directory;
+      this.currentFiles = getFiles(directory);
+    }
+  }
+};
 </script>
-  
+
 <style>
 
 </style>
+
+

@@ -185,10 +185,10 @@
                 </div>
 
                 <div class="b_procesar">
-                    <button class="btn btn-primary" style="width: 100%;" onclick="openModal()">Iniciar Ahora</button>
+                    <button class="btn btn-primary" style="width: 100%;" @click="openModal()">Iniciar Ahora</button>
                 </div>
                 <div class="b_procesar">
-                    <button class="btn btn-primary" style="width: 100%;" onclick="openModal2()">Iniciar Despues</button>
+                    <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Despues</button>
                 </div>
             </div>  
         </div>
@@ -205,7 +205,7 @@
             </div>
             <div class="modal-footer">
                 <a class="btn btn-secondary" href="C:\Users\Equipo PC\Desktop\Alloxentric\Cobranza.html">SI</a>
-                <a class="btn btn-primary"  type="submit" onclick="iniciarDespues()">NO</a>
+                <a class="btn btn-primary"  type="submit" @click="iniciarDespues()">NO</a>
            </div>
         </div>
     </div>
@@ -235,7 +235,7 @@
                     <br>
     
                     <div class="btn_despues" style="margin: auto; display: flex; justify-content: center;">
-                        <button class="btn btn-success"  style="width: 40%;" onclick="cerrarModalProgramar()">Confirmar</button>
+                        <button class="btn btn-success"  style="width: 40%;" @click="cerrarModalProgramar()">Confirmar</button>
                     </div>
                 </form>
                 
@@ -266,10 +266,19 @@
 </template>
 
 <script>
+import { openModal, openModal2, cerrarModal,  cerrarModal2 , cerrarModalProgramar, iniciarDespues} from './js/generar_resultados.js';
+
 export default {
   name: 'generar_resultados',
-  // Definición del componente
-}
+  methods: {
+    openModal,
+    cerrarModal,
+    openModal2,
+    cerrarModal2,
+    iniciarDespues,
+    cerrarModalProgramar,
+  }
+};
 </script>
   
 <style>

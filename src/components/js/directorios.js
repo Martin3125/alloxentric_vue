@@ -1,22 +1,26 @@
-const directories = [
+export const directories = [
     "Directorio 1/",
     "Directorio 2/",
     "Directorio 3/",
     "Directorio 4/"
 ];
 
-const files = {
+export const files = {
     "Directorio 1/": ["Documento 1", "Documento 2"],
     "Directorio 2/": ["Documento 3"],
     "Directorio 3/": ["Documento 4", "Documento 5"],
     "Directorio 4/": ["Documento 6", "Documento 7"]
 };
 
+export function getFiles(directory) {
+    return files[directory] || [];
+}
+
 const directoryContainer = document.getElementById('directories');
 const fileContainer = document.getElementById('files');
 // let selectedDirectory = null;
 
-function loadDirectories() {
+export function loadDirectories() {
     directoryContainer.innerHTML = '';
     directories.forEach(directory => {
         const div = document.createElement('div');
@@ -27,7 +31,7 @@ function loadDirectories() {
     });
 }
 
-function loadFiles(directory) {
+export function loadFiles(directory) {
     fileContainer.innerHTML = '';
     if (files[directory]) {
         files[directory].forEach(file => {
@@ -39,7 +43,7 @@ function loadFiles(directory) {
     }
 }
 
-function selectDirectory(directory) {
+export function selectDirectory(directory) {
     const previousSelection = document.querySelector('.directory.selected');
     if (previousSelection) {
         previousSelection.classList.remove('selected');
@@ -64,4 +68,6 @@ function selectDirectory(directory) {
 // }
 
 // Cargar directorios al cargar la página
-loadDirectories();
+// loadDirectories();
+
+

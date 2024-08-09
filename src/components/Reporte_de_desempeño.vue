@@ -189,9 +189,13 @@
 </div>
 </template>
 <script>
+import {initializeFilter} from './js/filtro.js';
+
 export default {
-  name: 'Reporte_de_desempeño',
-  // Definición del componente
+  name: 'Reporte_de_desempeño',// Definición del componente
+  mounted() {
+    initializeFilter();
+  }
 }
 </script>
   

@@ -1,29 +1,29 @@
-function openModal() {
+export function openModal() {
     var myModal = new bootstrap.Modal(document.getElementById('modal_pesos'));
     myModal.show();
 }
 
-function cerrarModal() {
+export function cerrarModal() {
     var myModal = new bootstrap.Modal(document.getElementById('modal_pesos'));
     myModal.hide();
     
 }
-function openModal2() {
+export function openModal2() {
     var myModal = new bootstrap.Modal(document.getElementById('modal_pesos2'));
     myModal.show();
 }
 
-function cerrarModal2(){
+export function cerrarModal2(){
     var myModal = new bootstrap.Modal(document.getElementById('modal_pesos2'));
     myModal.hide();
     
 }
-function iniciarDespues(){
+export function iniciarDespues(){
     var iniciar = new bootstrap.Modal(document.getElementById('modal_programar'))
     iniciar.show()
 }
 
-function cerrarModalProgramar() {
+export function cerrarModalProgramar() {
     var iniciar = new bootstrap.Modal(document.getElementById('modal_programar'))
     iniciar.hide()
 }
