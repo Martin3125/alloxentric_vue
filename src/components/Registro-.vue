@@ -30,8 +30,8 @@
                                 <input name="password" type="password" class="form-control" id="inputContraseña" placeholder="Repita su contraseña">
                             </div>
                             <!-- <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button> -->
-                            <a  class="btn btn-primary w-100 mb-2" id="btnRegistrarse" href="C:\Users\Equipo PC\Desktop\Alloxentric\Login.html">Registrar</a>
-                            <a  class="btn btn-secondary w-100" id="btnRegistrarse" href="C:\Users\Equipo PC\Desktop\Alloxentric\Login.html">Volver</a>
+                            <a  class="btn btn-primary w-100 mb-2" id="btnRegistrarse" href="/Login">Registrar</a>
+                            <a  class="btn btn-secondary w-100" id="btnRegistrarse" href="/Login">Volver</a>
                             <label for="" style="text-align: center; color: red;"></label>
                         </form>
                     </div>

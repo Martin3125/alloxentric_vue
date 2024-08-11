@@ -22,8 +22,8 @@
                                 <input name="password" type="password" class="form-control" id="inputContraseña" placeholder="Ingrese su contraseña">
                             </div>
                             <!-- <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button> -->
-                            <a class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" href="index.html">Iniciar sesión</a>
-                            <a class="btn btn-secondary w-100" id="btnRegistrarse" href="C:\Users\Equipo PC\Desktop\Alloxentric\Registro.html">Registrarse</a>
+                            <a class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" href="/Inicio">Iniciar sesión</a>
+                            <a class="btn btn-secondary w-100" id="btnRegistrarse" href="/Registro">Registrarse</a>
                             <label for="" style="text-align: center; color: red;"></label>
                         </form>
                     </div>
