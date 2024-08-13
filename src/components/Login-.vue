@@ -22,7 +22,7 @@
                                 <input v-model="pwd" name="pwd" type="password" class="form-control" id="inputContraseña" placeholder="Ingrese su contraseña">
                             </div>
                             <!-- <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button> -->
-                            <a type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" href="/Inicio">Iniciar sesión</a>
+                            <a type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</a>
                             <a class="btn btn-secondary w-100" id="btnRegistrarse" href="/Registro">Registrarse</a>
                             <label for="" style="text-align: center; color: red;"></label>
                         </form>

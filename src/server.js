@@ -8,6 +8,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+
 // Conexión a MongoDB
 mongoose.connect('mongodb://localhost:27017/alloxentric', { 
   useNewUrlParser: true,

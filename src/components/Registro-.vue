@@ -8,7 +8,7 @@
             <div class="col-md-4 d-flex align-items-center p-0">
                 <div class="card w-100">
                     <div class="card-body">
-                        <form method="post" id="formLogin2" @submit.prevent="registerUser">
+                        <form method="post" id="formLogin2" @submit.prevent="registrarUsuario">
                             <div id="logo_header" class="text-center mb-4">
                                 <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\2.png" alt="logo">
                                 <h2>Alloxentric</h2>
@@ -42,47 +42,38 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
-  name: 'Registro-',
+  name: 'Registro-',// Definición del componente
   data() {
     return {
       nombre: '',
       email: '',
-      pwd: '',
-      passwordConfirm: '',
-      errorMessage: ''
+      pwd: ''
     };
   },
   methods: {
-    async registerUser() {
-      // Verificar que las contraseñas coincidan
-      if (this.pwd !== this.passwordConfirm) {
-        this.errorMessage = 'Las contraseñas no coinciden';
-        return;
-      }
-
+    async registrarUsuario() {
       try {
-        const response = await axios.post('http://localhost:3000/api/register', {
-          nombre: this.nombre,
-          email: this.email,
-          pwd: this.pwd
+        const respuesta = await fetch('http://127.0.0.1:8000/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nombre: this.nombre,
+            email: this.email,
+            pwd: this.password
+          })
         });
-
-        // Redirigir al usuario a la página de Login después del registro exitoso
-        if (response.data.success) {
-          this.$router.push('/');
-        } else {
-          this.errorMessage = response.data.message;
-        }
+        const data = await respuesta.json();
+        console.log(data);
       } catch (error) {
-        this.errorMessage = 'Hubo un error en el registro. Por favor, inténtelo nuevamente.';
-        console.error('Error en el registro:', error);
+        console.error('Error:', error);
       }
     }
   }
-}
+};
+
 </script>
   
 <style>
