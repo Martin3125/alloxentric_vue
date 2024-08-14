@@ -22,7 +22,7 @@
                                 <input v-model="pwd" name="pwd" type="password" class="form-control" id="inputContraseña" placeholder="Ingrese su contraseña">
                             </div>
                             <!-- <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button> -->
-                            <a type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</a>
+                            <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button>
                             <a class="btn btn-secondary w-100" id="btnRegistrarse" href="/Registro">Registrarse</a>
                             <label for="" style="text-align: center; color: red;"></label>
                         </form>
@@ -33,36 +33,54 @@
     </div>
 </template>
 <script>
-import axios from 'axios';
-
 export default {
-  name: 'Login-',// Definición del componente
+  name: 'Login-', // Definición del componente
   data() {
     return {
       email: '',
-      password: ''
+      pwd: ''
     };
   },
   methods: {
     async login() {
       try {
-        const response = await axios.post('http://localhost:5000/api/login', {
+        const userData = {
           email: this.email,
-          password: this.password
+          pwd: this.pwd
+        };
+
+        // Enviar la solicitud POST
+        const response = await fetch('http://127.0.0.1:8000/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
         });
-        // Manejar la respuesta según lo necesario, por ejemplo, redirigir al usuario
-        if (response.data.success) {
+
+        // Verificar si la respuesta es exitosa
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Convertir la respuesta a JSON
+        const responseData = await response.json();
+
+        // Manejar la respuesta según sea necesario
+        if (responseData.success) {
           this.$router.push('/Inicio');
         } else {
-          alert('Inicio de sesión fallido');
+          alert('Inicio de sesión fallido: ' + responseData.message);
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
+        alert('Error al iniciar sesión: ' + error.message);
       }
     }
   }
 }
 </script>
+
   
 <style>
 

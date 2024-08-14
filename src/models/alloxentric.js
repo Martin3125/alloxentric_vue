@@ -9,5 +9,12 @@ const userSchema = new Schema({
     nombre: String,
   });
 
-const alloxentric=  mongoose.mmodel('alloxentric', userSchema);
+  // Esquema de usuario
+const loginSchema = new Schema({
+  email: { type: String, unique: true },
+  password: String,
+});
+
+
+const alloxentric=  mongoose.model('alloxentric', userSchema, loginSchema);
 export default alloxentric;

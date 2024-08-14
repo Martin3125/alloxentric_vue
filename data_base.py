@@ -3,14 +3,12 @@ from pydantic import BaseModel, EmailStr, constr
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 app = FastAPI()
-
-# # Configura los orígenes permitidos
-# origins = [
-#     "http://localhost:8080",  # Reemplaza con la URL del frontend si es diferente
-#     "http://127.0.0.1:8080",
-# ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,10 +23,13 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client["alloxentric"]
 users_collection = db["usuarios"]
 
-
 # Definición del modelo de usuario
 class User(BaseModel):
     nombre: constr(max_length=16)
+    email: EmailStr
+    pwd: constr(min_length=6, max_length=12)
+
+class LoginUser(BaseModel):
     email: EmailStr
     pwd: constr(min_length=6, max_length=12)
 
@@ -36,14 +37,29 @@ class User(BaseModel):
 async def register_user(user: User):
     if users_collection.find_one({"email": user.email}):
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
-
+    # Hash de la contraseña
+    hashed_pwd = pwd_context.hash(user.pwd)
     new_user = {
         "nombre": user.nombre,
         "email": user.email,
-        "pwd": user.pwd,
+        "pwd": hashed_pwd,
         "tipo_usuario": False  # Asumiendo que es un usuario normal por defecto
     }
 
     users_collection.insert_one(new_user)
     return {"success": True, "message": "Usuario registrado exitosamente"}
+
+
+@app.post("/api/login")
+async def login_user(user: LoginUser):
+    # Verificar si el usuario existe
+    user_record = users_collection.find_one({"email": user.email})
+    if not user_record:
+        raise HTTPException(status_code=400, detail="Correo o contraseña incorrectos")
+
+    # Verificar la contraseña
+    if not pwd_context.verify(user.pwd, user_record["pwd"]):
+        raise HTTPException(status_code=400, detail="Correo o contraseña incorrectos")
+
+    return {"success": True, "message": "Inicio de sesión exitoso"}
 

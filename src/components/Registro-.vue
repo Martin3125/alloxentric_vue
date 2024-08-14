@@ -43,6 +43,7 @@
 
 <script>
 export default {
+
   name: 'Registro-',// Definición del componente
   data() {
     return {
@@ -54,21 +55,30 @@ export default {
   methods: {
     async registrarUsuario() {
       try {
+        const userData = {
+          nombre: this.nombre,
+          email: this.email,
+          pwd: this.pwd
+        };
         const respuesta = await fetch('http://127.0.0.1:8000/api/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            nombre: this.nombre,
-            email: this.email,
-            pwd: this.password
-          })
+          body: JSON.stringify(userData)
         });
-        const data = await respuesta.json();
-        console.log(data);
+        
+        if (!respuesta.ok) {
+          const errorData = await respuesta.json();
+          console.error('Error en la respuesta:', errorData);
+          this.errorMessage = errorData.detail || 'Error en el registro';
+        } else {
+          const data = await respuesta.json();
+          console.log(data);
+          this.$router.push('/');// Aquí puedes redirigir al usuario o limpiar el formulario
+        }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error en la solicitud:', error);
       }
     }
   }
