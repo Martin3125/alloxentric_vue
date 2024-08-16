@@ -15,6 +15,14 @@ const loginSchema = new Schema({
   password: String,
 });
 
+const cobranzaSchema = new Schema({
+  id: Number,
+  accion_cobranza: String,
+  fecha_cobranza: Date,
+  intervalo: Number,
+  valor: Number
 
-const alloxentric=  mongoose.model('alloxentric', userSchema, loginSchema);
+})
+
+const alloxentric=  mongoose.model('alloxentric', userSchema, loginSchema, cobranzaSchema);
 export default alloxentric;
