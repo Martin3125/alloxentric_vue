@@ -16,7 +16,7 @@ const loginSchema = new Schema({
 });
 
 const cobranzaSchema = new Schema({
-  id: Number,
+  id: { type: String, unique: true },
   accion_cobranza: String,
   fecha_cobranza: Date,
   intervalo: Number,
@@ -24,5 +24,5 @@ const cobranzaSchema = new Schema({
 
 })
 
-const alloxentric=  mongoose.model('alloxentric', userSchema, loginSchema, cobranzaSchema);
+const alloxentric=  mongoose.model('alloxentric', userSchema, loginSchema, cobranzaSchema, );
 export default alloxentric;

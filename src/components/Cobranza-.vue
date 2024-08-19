@@ -24,63 +24,17 @@
         <div  id="card"  class="card">
             <div class="card-body" >
                 <h5 class="card-title3">Acciones de Cobranza</h5>
-                <form @submit.prevent="submitForm">
-                <div  class="card-body2">
-                  
-                    <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item">Sin acciones</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[0].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[0].intervalo" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[0].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                    
-                  </ul>
-                  <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item">Correo electrónico</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[1].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[1].intervalo" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[1].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                    
-                  </ul>
-                  <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item">SMS</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[2].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[2].intervalo"  type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[2].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                    
-                  </ul>
-                  <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item">Whatsapp</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[3].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[3].intervalo" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[3].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                    
-                  </ul>
-                  <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item">Llamada por bot</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[4].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[4].intervalo" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[4].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                    
-                  </ul>
-                  <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item">Llamada directa</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[5].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[5].intervalo" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[5].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                    
-                  </ul>
-                  <ul class="list-group list-group-horizontal-sm">
-                    <li class="list-group-item" >Acciones judiciales</li>
-                    <li class="list-group-item">Fecha:<input v-model="actions[6].fecha_cobranza" type="date" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"></li>
-                    <li class="list-group-item">Intervalo de Tiempo de éxito: (Días)<input v-model="actions[6].intervalo" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" min="0"></li>
-                    <li class="list-group-item">Valor: $<input v-model="actions[6].valor" type="number" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" step="0.01" min="0" placeholder="0.00"></li>
-                  </ul>
-                
-                </div>
+                <form @submit.prevent="registrarCobranza">
+                  <div class="card-body2">
+                    <ul v-for="(action, index) in actions" :key="index" class="list-group list-group-horizontal-sm">
+                      <li class="list-group-item">{{ action.accion_cobranza }}</li>
+                      <li class="list-group-item">Fecha: <input v-model="action.fecha_cobranza" type="date" class="form-control"></li>
+                      <li class="list-group-item">Intervalo de Tiempo de éxito: (Días) <input v-model="action.intervalo" type="number" class="form-control" min="0"></li>
+                      <li class="list-group-item">Valor: $ <input v-model="action.valor" type="number" class="form-control" step="0.01" min="0" placeholder="0.00"></li>
+                    </ul>
+                  </div>
                   <button id="guardar" type="submit" class="btn btn-primary">Guardar</button>
                 </form>
-                  
-
             </div>
         </div>
     </main>
@@ -90,31 +44,27 @@
 <script>
 import Menu_P from './Menu-.vue';
 export default {
-  name: 'Cobranza-',
-  // Definición del componente
+  name: 'Cobranza-', // Definición del componente
   components: {
     Menu_P,
-    
   },
-
   data() {
     return {
       actions: [
-        { accion_cobranza: 'Sin acciones', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { accion_cobranza: 'Correo electrónico', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { accion_cobranza: 'SMS', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { accion_cobranza: 'Whatsapp', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { accion_cobranza: 'Llamada por bot', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { accion_cobranza: 'Llamada directa', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { accion_cobranza: 'Acciones judiciales', fecha_cobranza: '', intervalo: 0, valor: 0.00 }
+        { Id_accion: null, accion_cobranza: 'Sin acciones', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'Correo electrónico', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'SMS', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'Whatsapp', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'Llamada por bot', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'Llamada directa', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'Acciones judiciales', fecha_cobranza: '', intervalo: 0, valor: 0.00 }
       ]
     };
   },
-
   methods: {
-    async submitForm() {
+    async registrarCobranza() {
       try {
-        const response = await fetch('http://localhost:8000/api/cobranza', {
+        const respuesta = await fetch('http://127.0.0.1:8000/api/acciones', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -122,22 +72,26 @@ export default {
           body: JSON.stringify(this.actions)
         });
 
-        const data = await response.json();
-        if (response.ok) {
-          alert('Cobranza actualizada exitosamente');
+        if (!respuesta.ok) {
+          const errorData = await respuesta.json();
+          console.error('Error en la respuesta:', errorData);
+          this.errorMessage = errorData.detail || 'Error en el registro';
         } else {
-          alert('Error al actualizar cobranza: ' + data.detail);
+          const data = await respuesta.json();
+          console.log(data);
+          this.$router.push('/Inicio'); // Aquí puedes redirigir al usuario o limpiar el formulario
         }
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error al enviar datos');
+        console.error('Error en la solicitud:', error);
       }
     }
   }
-}
-
+};
 </script>
-  
+
+
+
+
 <style>
 
 </style>
