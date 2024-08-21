@@ -1,7 +1,7 @@
 * {
     padding: 0;
     margin: 0;
-    font-family: 'Chakra Petch', sans-serif;
+    font-family: 'Nunito', sans-serif;  
     box-sizing: border-box;
 }
 
@@ -12,6 +12,11 @@ html, body {
 
 body {
     background-color: #ffffff;
+    font-weight: 200; /* Peso del cuerpo */
+}
+
+h2 {
+    font-weight: 600; /* Peso del título */
 }
 
 .container-fluid {
@@ -61,5 +66,18 @@ body {
     justify-content: center;
     height: 20%;
     width: 50%;
+    
+}
+@media (max-width: 768px) {
+    .card {
+        min-height: 80vh;
+    }
 
+    .card-body {
+        margin-top: 10%;
+    }
+
+    .card1 {
+        display: none; /* Ocultar la imagen a la derecha en pantallas pequeñas */
+    }
 }

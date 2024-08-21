@@ -1,5 +1,6 @@
 <template>
    <link rel="stylesheet" href="src\assets\Inicio.css">
+   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
     <header>
         <div id="logo_header">
           <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\2.png" alt="logo" />
@@ -9,7 +10,7 @@
     </header>
     <div class="my-component">
       <div id="general">
-        <Menu_P  />
+        <Menu_P/>
             <!-- Paginas -->
             <main id="cards">
                 <div id="arriba">

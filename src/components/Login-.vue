@@ -1,5 +1,6 @@
 <template>
     <link rel="stylesheet" href="src/assets/Login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600&display=swap" rel="stylesheet">
     <div class="container-fluid h-100">
         <div class="row h-100 justify-content-end">
             <div class="card1">
