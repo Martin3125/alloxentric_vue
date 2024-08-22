@@ -1,5 +1,6 @@
 <template>
     <link rel="stylesheet" href="src/assets/res_periodo_anterior.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
     <body>
     <header>
         <div id="logo_header">
@@ -21,11 +22,11 @@
             <div class="general-resultados">
 
                 <div class="pag-resultados">
-                    <p style="color: white; text-align: center;">Resultados del período anterior</p>
+                    <h5 style="margin-top: 3%;">Resultados del período anterior</h5>
                 </div>
     
                 <div class="user">
-                    <h6 style="color: white; text-align: center; font-style: italic;">Usuario</h6>
+                    <h5 style="margin-top: 3%;;">Usuario</h5>
                     <!-- <p style="color: white; text-align: center; font-size: 13px;">Trabajador</p> -->
                 </div>
     

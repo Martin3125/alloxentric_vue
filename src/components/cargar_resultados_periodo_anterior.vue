@@ -1,6 +1,6 @@
 <template>
     <link rel="stylesheet" href="src\assets\cargar_resultados_periodo_anterior.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600&display=swap" rel="stylesheet">
 <body>
     <header>
         <div id="logo_header">
@@ -21,7 +21,7 @@
             <div class="general">
 
                 <div id="arriba">
-                    <div class="card-body"  id="Titulo" >
+                    <div class="card-body"  id="Titulo1" >
                         <h5 class="card-title1">Cargar resultados</h5>
                     </div>
                     <div class="card-body" id="usuario">
@@ -91,7 +91,7 @@
                 </form>
 
                 <div class="b_confirmar">
-                    <a class="btn btn-primary" style="width: 50%; align-self: center; background-color: rgb(22, 201, 22); border: 1px solid rgb(22, 201, 22)" href="/res_periodo_anterior">Confirmar</a>
+                    <a id="guardar" type="submit" class="btn btn-primary" href="/res_periodo_anterior">Confirmar</a>
                 </div>   
             </div>  
 

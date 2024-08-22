@@ -1,5 +1,6 @@
 <template>
     <link rel="stylesheet" href="src/assets/Reporte_de_la_ultima_carga.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
     <header>
         <div id="logo_header">
             <img src="C:\Users\Equipo PC\Desktop\Alloxentric\2.png" alt="logo">

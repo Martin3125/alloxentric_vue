@@ -82,43 +82,6 @@ body {
     background-color: #ffffff;
     background-image: url("");}
 
-#hist_masterbikes>img {
-    width: 700px;
-    margin-right: 15px;
-}
-
-#parrafo_hist>h1 {
-    color: rgb(212, 175, 55);
-}
-
-footer {
-    font-family: 'Chakra Petch', sans-serif;
-    background-color: black;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-}
-
-#redes_sociales {
-    display: flex;
-    align-items: center;
-}
-
-#redes_sociales>a>img {
-    width: 60px;
-    height: 60px;
-}
-
-#logo_footer {
-    display: flex;
-    align-items: center;
-    padding-right: 20px;
-}
-
-#logo_footer>img {
-    width: 200px;
-    height: 200px;
-}
 
 #general{
     display: flex;
