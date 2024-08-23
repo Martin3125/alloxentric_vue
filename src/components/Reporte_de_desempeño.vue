@@ -61,7 +61,7 @@
                             <th>Lo que debe pagar</th>
                             <th>Valor real a pagar</th>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                           <th>254</th>
                           <th>Bruno Díaz</th>
                           <th>Correo electronico</th>
@@ -72,10 +72,22 @@
                           <th>07/07/2024</th>
                           <th>$500000</th>
                           <th>$300000</th>
-                      </tr>
+                      </tr> -->
                     </thead>
+                    
                     <tbody>
-                        <!-- Filas de datos irán aquí -->
+                      <tr v-for="reporte in reportes" :key="reporte.ID_deudor">
+                        <td>{{ reporte.ID_deudor }}</td>
+                        <td>{{ reporte.nombre_deudor }}</td>
+                        <td>{{ reporte.accion }}</td>
+                        <td>{{ reporte.fecha_envio }}</td>
+                        <td>{{ reporte.intervalo }}</td>
+                        <td>{{ reporte.fecha_estimada }}</td>
+                        <td>{{ reporte.demora }}</td>
+                        <td>{{ reporte.fecha_real }}</td>
+                        <td>{{ reporte.debe_pagar }}</td>
+                        <td>{{ reporte.valor_pagar }}</td>
+                      </tr>
                     </tbody>
                 </table>
 
@@ -85,22 +97,48 @@
     </main>
 </div>
 </template>
+
+
 <script>
-import {initializeFilter} from './js/filtro.js';
+import { initializeFilter } from './js/filtro.js';
 import Menu_P from './Menu-.vue';
+import axios from 'axios';
 
 export default {
-  name: 'Reporte_de_d',// Definición del componente
-  mounted() {
-    initializeFilter();
-  },
+  name: 'Reporte_de_d',
   components: {
     Menu_P,
-
-    
-  }
+  },
+  data() {
+    return {
+      reportes: [],  // Inicializa la lista de reportes como un array vacío
+    };
+  },
+  mounted() {
+    initializeFilter();
+    this.getReporteDesempeno(22);  // Ejemplo con ID deudor 254, puedes modificarlo para ser dinámico
+  },
+  methods: {
+    async getReporteDesempeno(deudor_id) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/reportes/${deudor_id}`);
+        console.log(response.data);  // Verifica el formato de los datos en la consola
+        // Agrega el reporte a la lista, en caso de que sea un solo objeto
+        if (Array.isArray(response.data)) {
+          this.reportes = response.data;
+        } else {
+          this.reportes = [response.data];  // Convierte el objeto en un array
+        }
+      } catch (error) {
+        console.error("Error al obtener el reporte de desempeño:", error);
+      }
+    }
+  },
+  
 }
 </script>
+
+
 <style>
 
 </style>

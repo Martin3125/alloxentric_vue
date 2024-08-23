@@ -33,6 +33,7 @@ users_collection = db["usuarios"]
 cobranza_collection = db["Cobranza"]
 Sin_acciones_collection = db["Sin_acciones"] 
 acciones_collection = db["AccionCobranza"]
+reporte_collection = db["Reporte"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -87,7 +88,7 @@ class Resultados(BaseModel):
     gente_contactar: float
 
 class Reporte(BaseModel):
-    ID_deudor: int
+    ID_deudor: Optional[str]
     nombre_deudor: str 
     accion: str  
     fecha_envio: date
@@ -256,10 +257,36 @@ def visualizar_reporte_ultima_carga(reporte_id: str):
     return f"Visualización de los reportes de la última carga: {reporte_id}"
 
 # Informes (Reportes de desempeño) - GET
-@app.get("/informes/desempeno/{deudor_id}", response_model=str)
-def visualizar_reporte_desempeno(deudor_id: str):
-    if deudor_id not in resultados_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deudor no encontrado.")
+# @app.get("/informes/desempeno/{deudor_id}", response_model=str)
+# def visualizar_reporte_desempeno(deudor_id: str):
+#     if deudor_id not in resultados_db:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deudor no encontrado.")
     
-    # Simulación de visualización de reporte de desempeño
-    return f"Visualización del desempeño del deudor con ID: {deudor_id}"
+#     # Simulación de visualización de reporte de desempeño
+#     return f"Visualización del desempeño del deudor con ID: {deudor_id}"
+@app.get("/api/reportes/{deudor_id}", response_model=List[Reporte])
+async def get_reporte_deudor(deudor_id: str):
+    # Buscar todos los reportes para el deudor específico
+    reportes = list(reporte_collection.find({"ID_deudor": deudor_id}))
+    
+    if not reportes:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reportes no encontrados para el deudor especificado.")
+
+    # Convertir ObjectId a string y ajustar los datos para la respuesta
+    reportes_modificados = []
+    for reporte in reportes:
+        reporte_modificado = {
+            "ID_deudor": reporte["ID_deudor"],
+            "nombre_deudor": reporte["nombre_deudor"],
+            "accion": reporte["accion"],
+            "fecha_envio": reporte["fecha_envio"],
+            "intervalo": reporte["intervalo"],
+            "fecha_estimada": reporte["fecha_estimada"],
+            "demora": reporte["demora"],
+            "fecha_real": reporte["fecha_real"],
+            "debe_pagar": reporte["debe_pagar"],
+            "valor_pagar": reporte["valor_pagar"]
+        }
+        reportes_modificados.append(reporte_modificado)
+    
+    return reportes_modificados
