@@ -34,6 +34,7 @@ cobranza_collection = db["Cobranza"]
 Sin_acciones_collection = db["Sin_acciones"] 
 acciones_collection = db["AccionCobranza"]
 reporte_collection = db["Reporte"]
+archivos_collection = db["Archivos"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -69,9 +70,9 @@ class Deudor(BaseModel):
     email: EmailStr
     Deuda: float
 
-class Historial(BaseModel):
-    Id_documento: int
-    Nnombre: str
+class Archivos(BaseModel):
+    Id_archivo: Optional[str] 
+    nombre: str
     fecha: date
 
 class ProcesamientoP(BaseModel):
@@ -79,6 +80,7 @@ class ProcesamientoP(BaseModel):
     nombre: str
     fecha: date
     hora: time
+
 class Resultados(BaseModel):
     ID: int
     nombre_documento: str
@@ -142,6 +144,29 @@ async def login_user(user: LoginUser):
         raise HTTPException(status_code=400, detail="Correo o contraseña incorrectos")
 
     return {"success": True, "message": "Inicio de sesión exitoso"}
+
+
+#Endpoint de inicio
+@app.get("/api/inicio/{archivo_id}", response_model=List[Archivos])
+async def get_archivos(archivo_id: str):
+    archivos = list(archivos_collection.find({"Id_archivo": archivo_id}))
+
+    if not archivos:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron archivos.")
+    # Transformar _id de ObjectId a string para que sea compatible con el modelo
+    # for archivo in archivos:
+    #     archivo["Id_archivo"] = str(archivo["_id"])
+    #     del archivo["_id"]
+    archivo_modificados = []
+    for archivo in archivos:
+        archivo_modificado = {
+            "Id_archivo": archivo["Id_archivo"],
+            "nombre": archivo["nombre"],
+            "fecha": archivo["fecha"]  
+        }
+        archivo_modificados.append(archivo_modificado)    
+    # Devolver los documentos junto con un mensaje de éxito
+    return archivo_modificados
 
 
 #Endpoint de cobranza
@@ -290,3 +315,5 @@ async def get_reporte_deudor(deudor_id: str):
         reportes_modificados.append(reporte_modificado)
     
     return reportes_modificados
+
+

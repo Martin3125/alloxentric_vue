@@ -24,14 +24,14 @@
                 <div id="bodycard">
                     <div  id="card"  class="card">
                         <div class="card-body" >
-                            <h5 class="card-title3">Últimos documentos subidos</h5>
+                            <h5 class="card-title3">Últimos archivos subidos</h5>
                             <table id="documentTable">
                                 <thead>
                                     <tr>
-                                        <th>Documentos</th>
+                                        <th>Archivos</th>
                                         <th>Fechas</th>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                     <th>Documento 1 .csv</th>
                                     <th>24/06/2024</th>
                                     </tr>
@@ -42,11 +42,22 @@
                                     <tr>
                                     <th>Documento 3 .csv</th>
                                     <th>24/06/2024</th>
-                                    </tr>
+                                    </tr> -->
                                 </thead>
+                                <!-- <tbody>
+                                    <tr v-for="archivo in archivos" :key="archivo.Id_archivo">
+                                        <td>{{ archivo.nombre }}</td>
+                                        <td>{{ archivo.fecha }}</td>
+                                    </tr>
+                                </tbody> -->
                                 <tbody>
-                                    <!-- Filas de datos irán aquí -->
+                                  <tr v-for="archivo in archivos" :key="archivo.Id_archivo">
+                                    <!-- <td>{{ archivo.Id_archivo }}</td> -->
+                                    <td>{{ archivo.nombre }}</td>
+                                    <td>{{ archivo.fecha }}</td>
+                                  </tr>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -89,17 +100,40 @@
 
 <script>
 import Menu_P from './Menu-.vue';
+import axios from 'axios';
 
 export default {
   name: 'Inicio-', // Definición del componente
 
   components: {
     Menu_P,
+  },
 
-    
-  }
-  
- 
+  data() {
+    return {
+      archivos: [],  // Lista de documentos
+    //   message: '',     // Mensaje de éxito
+    };
+  },
+  mounted() {
+    this.getArchivos(22);  // Llamar al método cuando el componente se monte
+  },
+  methods: {
+    async getArchivos(archivo_id) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/inicio/${archivo_id}`);
+        console.log(response.data);  // Verifica el formato de los datos en la consola
+        // Agrega el reporte a la lista, en caso de que sea un solo objeto
+        if (Array.isArray(response.data)) {
+          this.archivos = response.data;
+        } else {
+          this.archivos = [response.data];  // Convierte el objeto en un array
+        }
+      } catch (error) {
+        console.error("Error al obtener el reporte de desempeño:", error);
+      }
+    }
+  }, 
 }
 
 </script>
