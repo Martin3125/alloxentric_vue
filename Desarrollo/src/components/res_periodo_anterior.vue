@@ -1,10 +1,10 @@
 <template>
-    <link rel="stylesheet" href="src/assets/resultados.css">
+    <link rel="stylesheet" href="src/assets/res_periodo_anterior.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
-<body>
+    <body>
     <header>
         <div id="logo_header">
-            <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\2.png" alt="logo">
+            <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\2.png" alt="logo">
             <h2>Alloxentric</h2>
         </div>
 
@@ -22,11 +22,11 @@
             <div class="general-resultados">
 
                 <div class="pag-resultados">
-                    <h5 style="margin-top: 3%;">Resultados del procesamiento</h5>
+                    <h5 style="margin-top: 3%;">Resultados del período anterior</h5>
                 </div>
     
                 <div class="user">
-                    <h5 style="margin-top: 3%;">Usuario</h5>
+                    <h5 style="margin-top: 3%;;">Usuario</h5>
                     <!-- <p style="color: white; text-align: center; font-size: 13px;">Trabajador</p> -->
                 </div>
     
@@ -35,11 +35,11 @@
             <div class="ver-resultados">
                 <div class="titulos">
                     <div class="btn_volver">
-                        <a class="btn btn-primary" href="/generar_resultados" style="width: 100%;">VOLVER</a>
+                        <a class="btn btn-primary" href="/cargar_resultados" style="width: 100%;">VOLVER</a>
                     </div>
 
                     <div class="text_resultados">
-                        <h1 style="text-align: left;">Resultados</h1>
+                        <h1 style="text-align: left;">Resultados del período anterior </h1>
                     </div>
                     
                     
@@ -62,29 +62,29 @@
                           <tr>
                             <th></th>
                             <td style="border: 1px solid black;">Documento 1</td>
-                            <td style="border: 1px solid black;">28/07/2024</td>
+                            <td style="border: 1px solid black;">01/07/2024</td>
                             <td style="text-align: center;">300</td>
                             <td style="border: 1px solid black;">Correo electrónico</td>
                             <td style="text-align: center;">100</td>
-                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\btn_descargar.png" alt="" width="20px">Descargar</button></td>
+                            <td style="border: 1px solid black;"><a type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Descargar</a></td>
                           </tr>
                           <tr>
                             <th scope="row">A001</th>
                             <td style="border: 1px solid black;">Documento 2</td>
-                            <td style="border: 1px solid black;">28/07/2024</td>
+                            <td style="border: 1px solid black;">01/07/2024</td>
                             <td style="text-align: center; border: 1px solid black;">300</td>
                             <td style="border: 1px solid black;">Whatsapp</td>
                             <td style="text-align: center; border: 1px solid black;">50</td>
-                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\btn_descargar.png" alt="" width="20px">Descargar</button></td>
+                            <td style="border: 1px solid black;"><a type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Descargar</a></td>
                           </tr>
                           <tr>
                             <th scope="row"></th>
                             <td style="border: 1px solid black;">Documento 3</td>
-                            <td style="border: 1px solid black;">28/07/2024</td>
+                            <td style="border: 1px solid black;">01/07/2024</td>
                             <td style="text-align: center; border: 1px solid black;">300</td>
                             <td style="border: 1px solid black;">Llamada por bot</td>
                             <td style="text-align: center; border: 1px solid black;">150</td>
-                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\btn_descargar.png" alt="" width="20px">Descargar</button></td>
+                            <td style="border: 1px solid black;"><a type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Descargar</a></td>
                           </tr>
                         </tbody>
                       </table>
@@ -131,12 +131,12 @@
         </div>
     </div>
 </div>
-
 </template>
 <script>
 import Menu_P from './Menu-.vue';
+
 export default {
-  name: 'resultados-',// Definición del componente
+  name: 'Inicio-',// Definición del componente
   components: {
     Menu_P,
 

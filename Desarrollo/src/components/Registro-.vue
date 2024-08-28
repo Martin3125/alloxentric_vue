@@ -4,14 +4,14 @@
      <div class="container-fluid h-100">
         <div class="row h-100 justify-content-end">
             <div class="card1">
-                <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\alloxentric_logo-3x.png" class="card-img" alt="...">   
+                <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\alloxentric_logo-3x.png" class="card-img" alt="...">   
             </div>
             <div class="col-md-4 d-flex align-items-center p-0">
                 <div class="card w-100">
                     <div class="card-body">
                         <form method="post" id="formLogin2" @submit.prevent="registrarUsuario">
                             <div id="logo_header" class="text-center mb-4">
-                                <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\2.png" alt="logo">
+                                <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\2.png" alt="logo">
                                 <h2>Alloxentric</h2>
                             </div>
                             <div class="form-group mb-3" id="formCorreo">

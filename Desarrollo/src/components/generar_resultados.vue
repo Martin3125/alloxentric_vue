@@ -4,7 +4,7 @@
     <body>
     <header>
         <div id="logo_header">
-            <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\2.png" alt="logo">
+            <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\2.png" alt="logo">
             <h2>Alloxentric</h2>
         </div>
 
@@ -50,32 +50,32 @@
                         <br>
                         <div class="clear-doc">
                             <p>Documento 1</p>
-                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\clear.png" alt=""></a>
+                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\clear.png" alt=""></a>
                         </div>
 
                         <div class="clear-doc">
                             <p>Documento 2</p>
-                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\clear.png" alt=""></a>
+                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\clear.png" alt=""></a>
                         </div>
 
                         <div class="clear-doc">
                             <p>Documento 3</p>
-                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\clear.png" alt=""></a>
+                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\clear.png" alt=""></a>
                         </div>
 
                         <div class="clear-doc">
                             <p>Documento 4</p>
-                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\clear.png" alt=""></a>
+                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\clear.png" alt=""></a>
                         </div>
 
                         <div class="clear-doc">
                             <p>Documento 5</p>
-                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\clear.png" alt=""></a>
+                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\clear.png" alt=""></a>
                         </div>
 
                         <div class="clear-doc">
                             <p>Documento 6</p>
-                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\clear.png" alt=""></a>
+                            <a href="#"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\clear.png" alt=""></a>
                         </div>
                     
                     </div>

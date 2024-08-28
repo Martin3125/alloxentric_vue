@@ -3,7 +3,7 @@
    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600&display=swap" rel="stylesheet">
     <header>
         <div id="logo_header">
-          <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\src\assets\2.png" alt="logo" />
+          <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\2.png" alt="logo" />
           <h2>Alloxentric</h2>
         </div>
         <div id="menu"></div>
