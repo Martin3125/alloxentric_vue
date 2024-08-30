@@ -71,24 +71,33 @@
                                     <th>Fechas</th>
                                     <th>Hora</th>
                                     <th>Cancelar</th>
-
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <th>Proceso 1 </th>
                                     <th>24/06/2024</th>
                                     <th>12:50</th>
                                     <th><button type="download" class="btn btn-danger" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Cancelar</button></th>
-                                </tr>
-                                <tr>
+                                </tr> -->
+                                <!-- <tr>
                                     <th>Proceso 2 </th>
                                     <th>24/06/2024</th>
                                     <th>14:30</th>
                                     <th><button type="download" class="btn btn-danger" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Cancelar</button></th>
-                                </tr>
+                                </tr> -->
                             </thead>
-                            <tbody>
-                                <!-- Filas de datos irán aquí -->
-                            </tbody>
+                                <tbody>
+                                  <tr v-for="procesamiento in procesamientos" :key="procesamiento.Id_procesamiento">
+                                    <!-- <td>{{ procesamiento.Id_procesamiento }}</td> -->
+                                    <td>{{ procesamiento.nombre }}</td>
+                                    <td>{{ procesamiento.fecha }}</td>
+                                    <td>{{ procesamiento.hora }}</td>
+                                    <td>
+                                      <button @click="deleteProcesamiento(procesamiento.Id_procesamiento)" class="btn btn-danger" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">
+                                        Cancelar
+                                      </button>
+                                    </td>
+                                  </tr>
+                                </tbody>   
                         </table>
                     </div>
                     </div>
@@ -111,12 +120,15 @@ export default {
 
   data() {
     return {
-      archivos: [],  // Lista de documentos
+      archivos: [], 
+      procesamientos: [], // Lista de documentos
     //   message: '',     // Mensaje de éxito
     };
   },
   mounted() {
-    this.getArchivos(22);  // Llamar al método cuando el componente se monte
+    this.getArchivos(22); 
+    this.getProcesamiento(22); 
+     // Llamar al método cuando el componente se monte
   },
   methods: {
     async getArchivos(archivo_id) {
@@ -130,12 +142,36 @@ export default {
           this.archivos = [response.data];  // Convierte el objeto en un array
         }
       } catch (error) {
-        console.error("Error al obtener el reporte de desempeño:", error);
+        console.error("Error al obtener los archivos:", error);
+      }
+    },
+
+    async getProcesamiento(procesamiento_id) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/procesamiento_P/${procesamiento_id}`);
+        console.log(response.data);  // Verifica el formato de los datos en la consola
+        // Agrega el reporte a la lista, en caso de que sea un solo objeto
+        if (Array.isArray(response.data)) {
+          this.procesamientos = response.data;
+        } else {
+          this.procesamientos = [response.data];  // Convierte el objeto en un array
+        }
+      } catch (error) {
+        console.error("Error al obtener el procesamiento:", error);
+      }
+    },
+    async deleteProcesamiento(procesamiento_id) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/procesamiento_P/${procesamiento_id}`);
+        // Eliminar el procesamiento localmente después de que se haya eliminado del backend
+        this.procesamientos = this.procesamientos.filter(p => p.Id_procesamiento !== procesamiento_id);
+        console.log("Procesamiento eliminado exitosamente.");
+      } catch (error) {
+        console.error("Error al eliminar el procesamiento:", error);
       }
     }
-  }, 
+  }
 }
-
 </script>
 <style>
 

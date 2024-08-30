@@ -35,6 +35,7 @@ Sin_acciones_collection = db["Sin_acciones"]
 acciones_collection = db["AccionCobranza"]
 reporte_collection = db["Reporte"]
 archivos_collection = db["Archivos"]
+procesamiento_collection = db["Procesamiento"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -75,8 +76,8 @@ class Archivos(BaseModel):
     nombre: str
     fecha: date
 
-class ProcesamientoP(BaseModel):
-    Id_procesamiento: int
+class Procesamiento(BaseModel):
+    Id_procesamiento: Optional[str] 
     nombre: str
     fecha: date
     hora: time
@@ -168,6 +169,35 @@ async def get_archivos(archivo_id: str):
     # Devolver los documentos junto con un mensaje de éxito
     return archivo_modificados
 
+#Endpoint de Procesamientos programados
+@app.get("/api/procesamiento_P/{procesamiento_id}", response_model=List[Procesamiento])
+async def get_Procesamientos(procesamiento_id: str):
+    procesamientos = list(procesamiento_collection.find({"Id_procesamiento": procesamiento_id}))
+
+    if not procesamientos:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron Procesamientos.")
+    
+    procesamiento_modificados = []
+    for procesamiento in procesamientos:
+        procesamiento_modificado = {
+            "Id_procesamiento": procesamiento["Id_procesamiento"],
+            "nombre": procesamiento["nombre"],
+            "fecha": procesamiento["fecha"],
+            "hora": procesamiento["hora"]  
+        }
+        procesamiento_modificados.append(procesamiento_modificado)    
+    # Devolver los documentos junto con un mensaje de éxito
+    return procesamiento_modificados
+
+# Nuevo Endpoint para eliminar un procesamiento por ID
+@app.delete("/api/procesamiento_P/{procesamiento_id}")
+async def delete_Procesamiento(procesamiento_id: str):
+    result = procesamiento_collection.delete_one({"Id_procesamiento": procesamiento_id})
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Procesamiento no encontrado.")
+    
+    return {"message": "Procesamiento eliminado exitosamente"}
 
 #Endpoint de cobranza
 @app.post("/api/acciones")
