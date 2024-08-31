@@ -105,6 +105,7 @@
             <div class="modal-footer">
                 <a class="btn btn-secondary" href="/cobranza">SI</a>
                 <a class="btn btn-primary"  type="submit" @click="iniciarDespues()">NO</a>
+                <!-- <button  type="submit" class="btn btn-success" style="width: 40%;">NO</button> -->
            </div>
         </div>
     </div>
@@ -119,22 +120,23 @@
             </div>
             <div class="modal-body" style="padding: 10%;">
 
-                <form action="" method="post">
+                <form action="" method="post" @submit.prevent="g_resultados">
                     <div class="btn_ahora" style="margin: auto; display: flex; justify-content: center;">
-                        <input class="form-control" type="text" name="nombre_procesamiento" id="nombre_procesamiento" placeholder="Nombre del procesamiento">
+                        <input  v-model="nombre" class="form-control" type="text" name="nombre_procesamiento" id="nombre_procesamiento" placeholder="Nombre del procesamiento">
                     </div>
                     <br>
                     <div class="btn_ahora" style="margin: auto; display: flex; justify-content: center;">
-                        <input class="form-control" type="date" name="fecha_procesamiento" id="fecha_procesamiento">
+                        <input  v-model="fecha" class="form-control" type="date" name="fecha_procesamiento" id="fecha_procesamiento">
                     </div>
                     <br>
                     <div class="btn_ahora" style="margin: auto; display: flex; justify-content: center;">
-                        <input class="form-control" type="time" name="fecha_procesamiento" id="fecha_procesamiento">
+                        <input  v-model="hora" class="form-control" type="time" name="fecha_procesamiento" id="fecha_procesamiento">
                     </div>
                     <br>
     
                     <div class="btn_despues" style="margin: auto; display: flex; justify-content: center;">
-                        <a class="btn btn-success"  href="/generar_resultados"  style="width: 40%;" @click="cerrarModalProgramar()">Confirmar</a>
+                        <!-- <a type="submit" class="btn btn-success"  href="/generar_resultados"  @click="cerrarModalProgramar">Confirmar</a> -->
+                        <button  type="submit" class="btn btn-success" style="width: 40%;">Confirmar</button>
                     </div>
                 </form>
                 
@@ -176,8 +178,8 @@ export default {
   data() {
     return {
       nombre: '',
-      email: '',
-      pwd: ''
+      fecha: '',
+      hora: ''
     };
   },
   methods: {
@@ -191,10 +193,10 @@ export default {
       try {
         const userData = {
           nombre: this.nombre,
-          email: this.email,
-          pwd: this.pwd
+          fecha: this.fecha,
+          hora: this.hora
         };
-        const respuesta = await fetch('http://127.0.0.1:8000/api/procesamiento', {
+        const respuesta = await fetch('http://127.0.0.1:8000/api/procesamiento_P', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -209,7 +211,9 @@ export default {
         } else {
           const data = await respuesta.json();
           console.log(data);
-          this.$router.push('/');// Aquí puedes redirigir al usuario o limpiar el formulario
+        //   this.iniciarDespues(); // Realizar de otra forma  
+          this.cerrarModalProgramar();
+          this.$router.push('/generar_resultados');// Aquí puedes redirigir al usuario o limpiar el formulario
         }
       } catch (error) {
         console.error('Error en la solicitud:', error);
@@ -221,3 +225,5 @@ export default {
 <style>
 
 </style>
+
+

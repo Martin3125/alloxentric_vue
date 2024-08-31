@@ -17,6 +17,7 @@ export function cerrarModal2(){
     var myModal = new bootstrap.Modal(document.getElementById('modal_pesos2'));
     myModal.hide();
     
+    
 }
 export function iniciarDespues(){
     var iniciar = new bootstrap.Modal(document.getElementById('modal_programar'))
@@ -24,6 +25,14 @@ export function iniciarDespues(){
 }
 
 export function cerrarModalProgramar() {
-    var iniciar = new bootstrap.Modal(document.getElementById('modal_programar'))
-    iniciar.hide()
-}
+        const modal = document.getElementById('modal_programar');
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
+      
+    // Código para cerrar el modal
+    //
+
+

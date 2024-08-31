@@ -127,7 +127,7 @@ export default {
   },
   mounted() {
     this.getArchivos(22); 
-    this.getProcesamiento(22); 
+    this.getProcesamiento('66d294aaf0a12588663fde03'); 
      // Llamar al método cuando el componente se monte
   },
   methods: {

@@ -199,6 +199,42 @@ async def delete_Procesamiento(procesamiento_id: str):
     
     return {"message": "Procesamiento eliminado exitosamente"}
 
+#Endpoint de crear un procesamiento
+@app.post("/api/procesamiento_P")
+async def register_procesamiento(procesamiento: Procesamiento):
+    try:
+        # Generar un nuevo ObjectId y usarlo para Id_procesamiento
+        new_id = str(ObjectId())
+
+        # Verificar si el procesamiento ya está registrado (por Id_procesamiento)
+        if procesamiento_collection.find_one({"Id_procesamiento": new_id}):
+            raise HTTPException(status_code=400, detail="El procesamiento ya está registrado")
+        # # Verificar si el procesamiento ya está registrado
+        # if procesamiento_collection.find_one({"Id_procesamiento": procesamiento.Id_procesamiento}):
+        #     raise HTTPException(status_code=400, detail="El procesamiento ya está registrado")
+
+        # Convertir la hora en segundos desde el inicio del día
+        time_field_seconds = procesamiento.hora.hour * 3600 + procesamiento.hora.minute * 60 + procesamiento.hora.second
+
+        # Crear el nuevo documento para la base de datos
+        new_proces = {
+            "Id_procesamiento" : new_id,
+            "nombre": procesamiento.nombre,
+            "fecha": procesamiento.fecha.isoformat(),  # Convertir la fecha a cadena en formato ISO
+            "hora": procesamiento.hora.isoformat(),    # Convertir la hora a cadena en formato ISO
+            "time_field": time_field_seconds  # Hora en segundos
+        }
+
+        # Insertar el documento en la base de datos
+        procesamiento_collection.insert_one(new_proces)
+
+        return {"success": True, "message": "Procesamiento registrado exitosamente"}
+    except Exception as e:
+            # Manejo de excepciones y depuración
+            print(f"Error al registrar el procesamiento: {e}")
+            raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
 #Endpoint de cobranza
 @app.post("/api/acciones")
 async def register_or_update_accion(acciones: List[AccionCobranza]):
