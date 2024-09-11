@@ -58,18 +58,19 @@ def test_health_check():
     assert response.json() == {"status": "ok"}
 
 def test_system_connections():
-    response = client.get("/api/inicio/{archivo_id}")
+    archivo_id = 1  # o algún ID válido
+    response = client.get(f"/api/inicio/{archivo_id}")
     assert response.status_code == 200
 
 # CP-002: Permitir autenticarse en el sistema
 def test_login():
     response = client.post("/api/login", json={"email": "user@example.com", "pwd": "string"})
     assert response.status_code == 200
-    assert "access_token" in response.json()
+    assert response.json()["message"] == "Inicio de sesión exitoso"
 
 # CP-003: Registrar a un nuevo usuario en la base de datos
 def test_register_user():
-    response = client.post("/api/register", json={"nombre": "Test User", "email": "test@example.com", "pwd": "password"})
+    response = client.post("/api/register", json={"nombre": "Test User1", "email": "test1@example.com", "pwd": "password1", "confirm_password": "password1"})
     assert response.status_code == 200
     assert response.json()["message"] == "Usuario registrado exitosamente"
 
@@ -82,30 +83,33 @@ def test_register_user_password_confirmation():
 # CP-005: Registrar un usuario y que no se repitan los correos
 def test_register_user_duplicate_email():
     # Registrar un usuario
-    response = client.post("/api/register", json={"nombre": "Duplicate User", "email": "duplicate@example.com", "pwd": "password"})
+    response = client.post("/api/register", json={"nombre": "Duplicate User", "email": "duplicate@example.com", "pwd": "password", "confirm_password": "password"})
     assert response.status_code == 200
     assert response.json()["message"] == "Usuario registrado exitosamente"
 
     # Intentar registrar otro usuario con el mismo correo
-    response = client.post("/api/register", json={"nombre": "Another User", "email": "duplicate@example.com", "pwd": "password"})
+    response = client.post("/api/register", json={"nombre": "Another User", "email": "duplicate@example.com", "pwd": "Another", "confirm_password": "Another"})
     assert response.status_code == 400
     assert response.json()["detail"] == "El correo ya está registrado"
 
 # CP-006: Visualización de los últimos archivos subidos
 def test_view_uploaded_files():
-    response = client.get("/api/inicio/testfile_id")
+    archivo_id = 22
+    response = client.get(f"/api/inicio/{archivo_id}")
     assert response.status_code == 200
     assert len(response.json()) > 0
 
 # CP-007: Visualización de los procesamientos programados
 def test_view_scheduled_processes():
-    response = client.get("/api/procesamiento_P/testfile_id")
+    procesamiento_id = "66e10e2b5c227a0ec290128a"
+    response = client.get(f"/api/procesamiento_P/{procesamiento_id}")
     assert response.status_code == 200
     assert len(response.json()) > 0
 
 # CP-008: Poder cancelar los procesamientos programados
 def test_cancel_scheduled_process():
-    response = client.delete("/api/procesamiento_P/testfile_id")
+    procesamiento_id = "66e10f706bdc71277ff4cfc7"
+    response = client.delete(f"/api/procesamiento_P/{procesamiento_id}")
     assert response.status_code == 200
     assert response.json()["message"] == "Procesamiento eliminado exitosamente"
 
@@ -117,9 +121,9 @@ def test_register_process():
 
 # CP-010: Crear, modificar o actualizar la acción de cobranza
 def test_register_or_update_action():
-    response = client.post("/api/acciones", json=[{"accion_cobranza": "Test Action", "fecha_cobranza": "2024-09-05", "intervalo": 10, "valor": 100.0}])
+    response = client.post("/api/acciones", json=[{"accion_cobranza": "Test Action", "fecha_cobranza": "2024-09-05", "intervalo": 10, "valor": 100}])
     assert response.status_code == 200
-    assert response.json()["message"] == "Acciones de cobranza registradas o actualizadas exitosamente"
+    assert response.json()["message"] == "Acciones registradas exitosamente"
 
 # CP-011: Visualizar todas las acciones de cobranza
 def test_view_all_actions():

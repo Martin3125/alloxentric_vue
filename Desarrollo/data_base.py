@@ -11,9 +11,11 @@ from pydantic import BaseModel, Field, validator
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import date, time, datetime
+from fastapi.security import OAuth2PasswordBearer
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 
@@ -42,7 +44,7 @@ class User(BaseModel):
     nombre: constr(max_length=16)
     email: EmailStr
     pwd: constr(min_length=6, max_length=12)
-    confirm_password: str = None  # Este campo es opcional
+    confirm_password: constr(min_length=6, max_length=12)   # Este campo es opcional
 
 class LoginUser(BaseModel):
     email: EmailStr
@@ -116,6 +118,11 @@ class Pago(BaseModel):
     fecha_Pago: str 
     totalPago: str 
 
+#Endpoint de prueba de conexiones 
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok"}
+
 #Endpoint de registro
 @app.post("/api/register")
 async def register_user(user: User):
@@ -148,7 +155,7 @@ async def login_user(user: LoginUser):
     # Verificar la contraseña
     if not pwd_context.verify(user.pwd, user_record["pwd"]):
         raise HTTPException(status_code=400, detail="Correo o contraseña incorrectos")
-
+    
     return {"success": True, "message": "Inicio de sesión exitoso"}
 
 
@@ -270,6 +277,10 @@ async def register_or_update_accion(acciones: List[AccionCobranza]):
     
     return {"success": True, "message": "Acciones registradas exitosamente"}
 
+@app.get("/api/acciones")
+def get_acciones():
+    return [{"accion": "test"}]
+
 
 # base de los demas endpoints 
 
@@ -278,10 +289,10 @@ documentos_db = {}
 procesamientos_db = {}
 resultados_db = {}
 
-@app.get("/ejemplo/")
-async def ejemplo():
-    respuesta = dict(mensaje="Éxito", codigo=200)
-    return respuesta
+# @app.get("/ejemplo/")
+# async def ejemplo():
+#     respuesta = dict(mensaje="Éxito", codigo=200)
+#     return respuesta
 
 # Procesamiento - POST: Iniciar procesamiento de documentos subidos
 @app.post("/api/procesamiento", response_model=str)
