@@ -42,6 +42,7 @@ class User(BaseModel):
     nombre: constr(max_length=16)
     email: EmailStr
     pwd: constr(min_length=6, max_length=12)
+    confirm_password: str = None  # Este campo es opcional
 
 class LoginUser(BaseModel):
     email: EmailStr
@@ -120,6 +121,10 @@ class Pago(BaseModel):
 async def register_user(user: User):
     if users_collection.find_one({"email": user.email}):
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
+    
+    if user.confirm_password and user.pwd != user.confirm_password:
+        raise HTTPException(status_code=400, detail="Las contraseñas no coinciden")
+    
     # Hash de la contraseña
     hashed_pwd = pwd_context.hash(user.pwd)
     new_user = {
