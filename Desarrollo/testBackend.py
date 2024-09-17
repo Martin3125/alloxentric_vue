@@ -3,41 +3,6 @@ from data_base import app
 
 client = TestClient(app)
 
-# def test_system_connections():
-#     response = client.get("/api/inicio/")
-#     assert response.status_code == 200
-
-# def test_login():
-#     response = client.post("/api/login", json={"email": "email@example.com", "pwd": "password"})
-#     assert response.status_code == 200
-#     assert "access_token" in response.json()
-
-# def test_register_user():
-#     response = client.post("/api/register", json={"nombre": "Test User", "email": "test@test.com", "pwd": "password"})
-#     assert response.status_code == 201
-#     assert response.json()["message"] == "Usuario registrado exitosamente"
-
-# def test_password_confirmation():
-#     response = client.post("/api/register", json={"nombre": "Test User", "email": "test@test.com", "pwd": "password", "confirm_pwd": "mismatch"})
-#     assert response.status_code == 400
-#     assert response.json() == {"detail": "Passwords do not match"}
-
-# def test_unique_email():
-#     client.post("/api/register", json={"nombre": "Test User", "email": "test@test.com", "pwd": "password"})
-#     response = client.post("/api/register", json={"nombre": "Another User", "email": "test@test.com", "pwd": "password"})
-#     assert response.status_code == 400
-#     assert response.json() == {"detail": "El correo ya está registrado"}
-
-# def test_register_cobranza():
-#     response = client.post("/api/acciones", json={"accion_cobranza": "Cobranza Test", "fecha_cobranza": "2024-09-01", "intervalo": 1, "valor": 100})
-#     assert response.status_code == 201
-#     assert response.json()["message"] == "Acciones registradas exitosamente"
-
-# def test_verify_cobranza():
-#     response = client.get("/api/acciones")
-#     assert response.status_code == 200
-#     assert len(response.json()) > 0
-
 # def test_file_upload():
 #     with open("testfile.txt", "wb") as f:
 #         f.write(b"Sample content")
