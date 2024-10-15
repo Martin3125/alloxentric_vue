@@ -12,6 +12,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import date, time, datetime
 from fastapi.security import OAuth2PasswordBearer
+from fastapi import Query
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -159,17 +160,55 @@ async def login_user(user: LoginUser):
     return {"success": True, "message": "Inicio de sesión exitoso"}
 
 
-#Endpoint de inicio
-@app.get("/api/inicio/{archivo_id}", response_model=List[Archivos])
-async def get_archivos(archivo_id: str):
-    archivos = list(archivos_collection.find({"Id_archivo": archivo_id}))
+# #Endpoint de inicio
+# @app.get("/api/inicio/{archivo_id}", response_model=List[Archivos])
+# async def get_archivos(archivo_id: str):
+#     archivos = list(archivos_collection.find({"Id_archivo": archivo_id}))
+
+#     if not archivos:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron archivos.")
+#     # Transformar _id de ObjectId a string para que sea compatible con el modelo
+#     # for archivo in archivos:
+#     #     archivo["Id_archivo"] = str(archivo["_id"])
+#     #     del archivo["_id"]
+#     archivo_modificados = []
+#     for archivo in archivos:
+#         archivo_modificado = {
+#             "Id_archivo": archivo["Id_archivo"],
+#             "nombre": archivo["nombre"],
+#             "fecha": archivo["fecha"]  
+#         }
+#         archivo_modificados.append(archivo_modificado)    
+#     # Devolver los documentos junto con un mensaje de éxito
+#     return archivo_modificados
+
+# #Endpoint de Procesamientos programados
+# @app.get("/api/procesamiento_P/{procesamiento_id}", response_model=List[Procesamiento])
+# async def get_Procesamientos(procesamiento_id: str):
+#     procesamientos = list(procesamiento_collection.find({"Id_procesamiento": procesamiento_id}))
+
+#     if not procesamientos:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron Procesamientos.")
+    
+#     procesamiento_modificados = []
+#     for procesamiento in procesamientos:
+#         procesamiento_modificado = {
+#             "Id_procesamiento": procesamiento["Id_procesamiento"],
+#             "nombre": procesamiento["nombre"],
+#             "fecha": procesamiento["fecha"],
+#             "hora": procesamiento["hora"]  
+#         }
+#         procesamiento_modificados.append(procesamiento_modificado)    
+#     # Devolver los documentos junto con un mensaje de éxito
+#     return procesamiento_modificados
+# Endpoint para obtener todos los archivos
+@app.get("/api/inicio", response_model=List[Archivos])
+async def get_all_archivos():
+    archivos = list(archivos_collection.find())
 
     if not archivos:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron archivos.")
-    # Transformar _id de ObjectId a string para que sea compatible con el modelo
-    # for archivo in archivos:
-    #     archivo["Id_archivo"] = str(archivo["_id"])
-    #     del archivo["_id"]
+    
     archivo_modificados = []
     for archivo in archivos:
         archivo_modificado = {
@@ -177,17 +216,17 @@ async def get_archivos(archivo_id: str):
             "nombre": archivo["nombre"],
             "fecha": archivo["fecha"]  
         }
-        archivo_modificados.append(archivo_modificado)    
-    # Devolver los documentos junto con un mensaje de éxito
+        archivo_modificados.append(archivo_modificado)
+        
     return archivo_modificados
 
-#Endpoint de Procesamientos programados
-@app.get("/api/procesamiento_P/{procesamiento_id}", response_model=List[Procesamiento])
-async def get_Procesamientos(procesamiento_id: str):
-    procesamientos = list(procesamiento_collection.find({"Id_procesamiento": procesamiento_id}))
+# Endpoint para obtener todos los procesamientos programados
+@app.get("/api/procesamiento_P", response_model=List[Procesamiento])
+async def get_all_procesamientos():
+    procesamientos = list(procesamiento_collection.find())
 
     if not procesamientos:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron Procesamientos.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron procesamientos.")
     
     procesamiento_modificados = []
     for procesamiento in procesamientos:
@@ -195,10 +234,10 @@ async def get_Procesamientos(procesamiento_id: str):
             "Id_procesamiento": procesamiento["Id_procesamiento"],
             "nombre": procesamiento["nombre"],
             "fecha": procesamiento["fecha"],
-            "hora": procesamiento["hora"]  
+            "hora": procesamiento["hora"]
         }
-        procesamiento_modificados.append(procesamiento_modificado)    
-    # Devolver los documentos junto con un mensaje de éxito
+        procesamiento_modificados.append(procesamiento_modificado)
+        
     return procesamiento_modificados
 
 # Nuevo Endpoint para eliminar un procesamiento por ID
@@ -398,4 +437,13 @@ async def get_reporte_deudor(deudor_id: str):
     
     return reportes_modificados
 
-
+@app.get("/api/deudores_ids", response_model=List[str])
+async def get_all_deudores_ids():
+    # Obtener todos los IDs de los deudores de la base de datos
+    deudores = list(reporte_collection.find({}, {"ID_deudor": 1, "_id": 0}))  # Solo obtener los IDs
+    deudor_ids = [deudor["ID_deudor"] for deudor in deudores]
+    
+    if not deudor_ids:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
+    
+    return deudor_ids
