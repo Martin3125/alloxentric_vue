@@ -31,6 +31,13 @@
                       <button id="toggleFilterButton">Mostrar Filtro</button>
                     </div>
                   </div>
+                  <!-- <div id="buscar-filtro">
+                    <input type="text" v-model="deudor_ids" class="form-control" placeholder="Buscar IDs de deudores separados por coma">
+                    <div class="filter-toggle-container">
+                      <button @click="getReporteDesempeno">Buscar</button>
+                    </div>
+                  </div> -->
+
                   <div class="filter-container" id="filterContainer">
                       <h2>Filtrar por tipo de acción</h2>
                       <form id="filterForm">
@@ -99,7 +106,7 @@
 </template>
 
 
-<script>
+<!-- <script>
 import { initializeFilter } from './js/filtro.js';
 import Menu_P from './Menu-.vue';
 import axios from 'axios';
@@ -116,7 +123,7 @@ export default {
   },
   mounted() {
     initializeFilter();
-    this.getReporteDesempeno(22);  // Ejemplo con ID deudor 254, puedes modificarlo para ser dinámico
+    this.getReporteDesempeno();  // Ejemplo con ID deudor 254, puedes modificarlo para ser dinámico
   },
   methods: {
     async getReporteDesempeno(deudor_id) {
@@ -135,6 +142,64 @@ export default {
     }
   },
   
+}
+
+
+</script> -->
+<script>
+import { initializeFilter } from './js/filtro.js';
+import Menu_P from './Menu-.vue';
+import axios from 'axios';
+
+export default {
+  name: 'Reporte_de_d',
+  components: {
+    Menu_P,
+  },
+  data() {
+    return {
+      reportes: [],  // Inicializa la lista de reportes como un array vacío
+      deudor_ids: [],  // Aquí se almacenarán los IDs de los deudores
+    };
+  },
+  mounted() {
+    initializeFilter();
+    this.getAllDeudores();  // Cargar todos los IDs de los deudores al montar el componente
+  },
+  methods: {
+    async getAllDeudores() {
+      try {
+        // Solicitar todos los IDs de los deudores
+        const response = await axios.get('http://127.0.0.1:8000/api/deudores_ids');
+        this.deudor_ids = response.data;
+        // Ahora obtener los reportes para cada deudor
+        this.getReportesParaTodosLosDeudores();
+      } catch (error) {
+        console.error("Error al obtener los IDs de los deudores:", error);
+      }
+    },
+    
+    async getReportesParaTodosLosDeudores() {
+      for (const deudor_id of this.deudor_ids) {
+        await this.getReporteDesempeno(deudor_id);  // Llama a la función para cada deudor
+      }
+    },
+
+    async getReporteDesempeno(deudor_id) {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/reportes/${deudor_id}`);
+        console.log(response.data);  // Verifica el formato de los datos en la consola
+        // Si la respuesta es un array, agrega los reportes
+        if (Array.isArray(response.data)) {
+          this.reportes.push(...response.data);  // Agrega todos los reportes al array
+        } else {
+          this.reportes.push(response.data);  // Si es un objeto, agrégalo directamente
+        }
+      } catch (error) {
+        console.error("Error al obtener el reporte de desempeño para el deudor:", deudor_id, error);
+      }
+    }
+  },
 }
 </script>
 

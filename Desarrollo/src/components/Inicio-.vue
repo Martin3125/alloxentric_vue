@@ -57,6 +57,10 @@
                                     <td>{{ archivo.fecha }}</td>
                                   </tr>
                                 </tbody>
+                                
+                              
+
+
 
                             </table>
                         </div>
@@ -107,7 +111,7 @@
 </div>
 </template>
 
-<script>
+<!-- <script>
 import Menu_P from './Menu-.vue';
 import axios from 'axios';
 
@@ -172,7 +176,67 @@ export default {
     }
   }
 }
+</script> -->
+<script>
+import Menu_P from './Menu-.vue';
+import axios from 'axios';
+
+export default {
+  name: 'Inicio-', // Definición del componente
+
+  components: {
+    Menu_P,
+  },
+
+  data() {
+    return {
+      archivos: [], 
+      procesamientos: [],
+    };
+  },
+
+  mounted() {
+    this.getArchivos();  // Ahora obtendremos todos los archivos
+    this.getProcesamientos();  // Ahora obtendremos todos los procesamientos
+  },
+
+  methods: {
+    // Obtener todos los archivos
+    async getArchivos() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/inicio');
+        console.log(response.data);  // Verifica el formato de los datos en la consola
+        this.archivos = response.data; // Asigna todos los archivos a la variable archivos
+      } catch (error) {
+        console.error("Error al obtener los archivos:", error);
+      }
+    },
+
+    // Obtener todos los procesamientos programados
+    async getProcesamientos() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/procesamiento_P');
+        console.log(response.data);  // Verifica el formato de los datos en la consola
+        this.procesamientos = response.data; // Asigna todos los procesamientos a la variable procesamientos
+      } catch (error) {
+        console.error("Error al obtener los procesamientos:", error);
+      }
+    },
+
+    // Eliminar procesamiento
+    async deleteProcesamiento(procesamiento_id) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000/api/procesamiento_P/${procesamiento_id}`);
+        this.procesamientos = this.procesamientos.filter(p => p.Id_procesamiento !== procesamiento_id);
+        console.log("Procesamiento eliminado exitosamente.");
+      } catch (error) {
+        console.error("Error al eliminar el procesamiento:", error);
+      }
+    }
+  }
+}
 </script>
+
 <style>
 
 </style>

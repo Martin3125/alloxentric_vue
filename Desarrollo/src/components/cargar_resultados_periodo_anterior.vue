@@ -35,7 +35,7 @@
                 <form action="" method="post">
                     <div class="main-resultados">
                         <div class="mb-3" id="select_resultados">
-                            <input class="form-control" type="file" id="formFile" style="width: 100%;">
+                            <input class="form-control"  id="formFile" style="width: 100%;">
                         </div>
                         <!-- <div class="input-container">
                             <input type="text" id="filePathInput" placeholder="Ingrese la ruta del archivo">
