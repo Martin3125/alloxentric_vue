@@ -4,7 +4,7 @@
 <body>
     <header>
         <div id="logo_header">
-            <img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\2.png" alt="logo">
+            <img src="@/assets/2.png" alt="logo">
             <h2>Alloxentric</h2>
         </div>
 
