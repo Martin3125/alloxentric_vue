@@ -66,7 +66,7 @@
                             <td style="text-align: center;">300</td>
                             <td style="border: 1px solid black;">Correo electrónico</td>
                             <td style="text-align: center;">100</td>
-                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\btn_descargar.png" alt="" width="20px">Descargar</button></td>
+                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="@/assets/btn_descargar.png" alt="" width="20px">Descargar</button></td>
                           </tr>
                           <tr>
                             <th scope="row">A001</th>
@@ -75,7 +75,7 @@
                             <td style="text-align: center; border: 1px solid black;">300</td>
                             <td style="border: 1px solid black;">Whatsapp</td>
                             <td style="text-align: center; border: 1px solid black;">50</td>
-                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="C:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\btn_descargar.png" alt="" width="20px">Descargar</button></td>
+                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="@/assets/btn_descargar.png" alt="" width="20px">Descargar</button></td>
                           </tr>
                           <tr>
                             <th scope="row"></th>
@@ -84,7 +84,7 @@
                             <td style="text-align: center; border: 1px solid black;">300</td>
                             <td style="border: 1px solid black;">Llamada por bot</td>
                             <td style="text-align: center; border: 1px solid black;">150</td>
-                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="CC:\Users\Equipo PC\Desktop\Proyecto Vue\alloxentric\Desarrollo\src\assets\btn_descargar.png" alt="" width="20px">Descargar</button></td>
+                            <td style="border: 1px solid black;"><button type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="@/assets/btn_descargar.png" alt="" width="20px">Descargar</button></td>
                           </tr>
                         </tbody>
                       </table>
