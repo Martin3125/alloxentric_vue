@@ -13,6 +13,20 @@ from typing import Optional
 from datetime import date, time, datetime
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Query
+from flask import Flask, request, jsonify
+from tensorflow.keras.models import load_model
+import joblib
+import pandas as pd
+import numpy as np
+from werkzeug.utils import secure_filename
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+import os
+
+# Inicializar la aplicación FastAPI
+app = FastAPI()
+import os
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -159,48 +173,6 @@ async def login_user(user: LoginUser):
     
     return {"success": True, "message": "Inicio de sesión exitoso"}
 
-
-# #Endpoint de inicio
-# @app.get("/api/inicio/{archivo_id}", response_model=List[Archivos])
-# async def get_archivos(archivo_id: str):
-#     archivos = list(archivos_collection.find({"Id_archivo": archivo_id}))
-
-#     if not archivos:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron archivos.")
-#     # Transformar _id de ObjectId a string para que sea compatible con el modelo
-#     # for archivo in archivos:
-#     #     archivo["Id_archivo"] = str(archivo["_id"])
-#     #     del archivo["_id"]
-#     archivo_modificados = []
-#     for archivo in archivos:
-#         archivo_modificado = {
-#             "Id_archivo": archivo["Id_archivo"],
-#             "nombre": archivo["nombre"],
-#             "fecha": archivo["fecha"]  
-#         }
-#         archivo_modificados.append(archivo_modificado)    
-#     # Devolver los documentos junto con un mensaje de éxito
-#     return archivo_modificados
-
-# #Endpoint de Procesamientos programados
-# @app.get("/api/procesamiento_P/{procesamiento_id}", response_model=List[Procesamiento])
-# async def get_Procesamientos(procesamiento_id: str):
-#     procesamientos = list(procesamiento_collection.find({"Id_procesamiento": procesamiento_id}))
-
-#     if not procesamientos:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron Procesamientos.")
-    
-#     procesamiento_modificados = []
-#     for procesamiento in procesamientos:
-#         procesamiento_modificado = {
-#             "Id_procesamiento": procesamiento["Id_procesamiento"],
-#             "nombre": procesamiento["nombre"],
-#             "fecha": procesamiento["fecha"],
-#             "hora": procesamiento["hora"]  
-#         }
-#         procesamiento_modificados.append(procesamiento_modificado)    
-#     # Devolver los documentos junto con un mensaje de éxito
-#     return procesamiento_modificados
 # Endpoint para obtener todos los archivos
 @app.get("/api/inicio", response_model=List[Archivos])
 async def get_all_archivos():
@@ -447,3 +419,85 @@ async def get_all_deudores_ids():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
     
     return deudor_ids
+
+
+
+#--------------------------------Models---------------------------------------------------------------
+
+
+# Cargar los modelos guardados
+lstm_model = load_model('lstm_model.keras')
+kmeans_model = joblib.load('kmeans_model.pkl')
+
+UPLOAD_FOLDER = 'uploads/'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Configurar CORS si es necesario
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Ajusta esto según tus necesidades
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post('/api/upload')
+async def upload_file(file: UploadFile = File(...)):
+    # Verificar si se subió un archivo
+    if not file:
+        raise HTTPException(status_code=400, detail="No se envió ningún archivo")
+
+    if file.filename == '':
+        raise HTTPException(status_code=400, detail="El archivo no tiene nombre")
+
+    # Guardar el archivo subido
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    # Intentar leer el archivo como CSV
+    try:
+        data = pd.read_csv(file_path)
+        if data.empty:
+            raise ValueError("El archivo CSV está vacío.")
+    except pd.errors.EmptyDataError:
+        raise HTTPException(status_code=400, detail="El archivo CSV está vacío o mal formateado.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo CSV: {str(e)}")
+
+    # Asegurarse de que todas las columnas son numéricas
+    try:
+        data = data.select_dtypes(include=[np.number])
+        if data.empty:
+            raise ValueError("No se encontraron columnas numéricas en el archivo CSV.")
+
+        # Convertir a tipo float32 (comúnmente utilizado en TensorFlow)
+        features = np.array(data, dtype=np.float32)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Error en el preprocesamiento de datos: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al extraer características del archivo CSV: {str(e)}")
+
+    # Predicción con K-Means (primero se hace la agrupación)
+    try:
+        kmeans_pred = kmeans_model.predict(features)
+        # Añadir las predicciones de K-Means a las características si es necesario
+        # Suponemos que el modelo LSTM espera estas agrupaciones como una característica adicional
+        features_with_clusters = np.hstack([features, kmeans_pred.reshape(-1, 1)])  # Añadir las etiquetas de cluster como columna extra
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al predecir con el modelo K-Means: {str(e)}")
+
+    # Predicción con LSTM usando las características agrupadas
+    try:
+        lstm_pred = lstm_model.predict(features_with_clusters)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al predecir con el modelo LSTM: {str(e)}")
+
+    return JSONResponse(content={
+        'kmeans_prediction': kmeans_pred.tolist(),
+        'lstm_prediction': lstm_pred.tolist()
+    })
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
