@@ -1,80 +1,25 @@
-from fastapi import FastAPI, HTTPException
-from sklearn.cluster import KMeans
-import tensorflow as tf
-import numpy as np
+from flask import Flask, request, jsonify
+from tensorflow.keras.models import load_model
+from sklearn.externals import joblib
 
-app = FastAPI()
+app = Flask(__name__)
 
-# Ejemplo de un modelo K-Means preentrenado
-kmeans_model = KMeans(n_clusters=5)
-# Carga o entrena tu modelo aquí
+# Cargar los modelos guardados
+lstm_model = load_model('lstm_model.keras')
+kmeans_model = joblib.load('kmeans_model.pkl')
 
-# Ejemplo de un modelo LSTM preentrenado
-lstm_model = tf.keras.models.load_model('path_to_lstm_model.h5')
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.json  # Recibir datos en formato JSON
+    features = data['features']  # Extraer características
 
-@app.post("/segment/")
-def segment_customer(data: dict):
-    # Preprocesa los datos de entrada según sea necesario
-    features = np.array([data['feature1'], data['feature2'], data['feature3']])
-    cluster = kmeans_model.predict([features])
-    return {"cluster": int(cluster[0])}
+    # Predicción con LSTM
+    lstm_pred = lstm_model.predict(features)
 
-@app.post("/predict/")
-def predict_action(data: dict):
-    # Preprocesa los datos secuenciales
-    sequence = np.array([data['sequence']])  # Debe ser una secuencia compatible con LSTM
-    prediction = lstm_model.predict(sequence)
-    return {"predicted_action": prediction.tolist()}
+    # Predicción con K-Means
+    kmeans_pred = kmeans_model.predict(features)
 
-# <template>
-#   <div>
-#     <button @click="getCluster">Segmentar Cliente</button>
-#     <button @click="predictAction">Predecir Acción</button>
-#   </div>
-# </template>
+    return jsonify({'lstm_prediction': lstm_pred.tolist(), 'kmeans_prediction': kmeans_pred.tolist()})
 
-# <script>
-# import axios from 'axios';
-
-# export default {
-#   data() {
-#     return {
-#       customerData: {
-#         feature1: 0,
-#         feature2: 0,
-#         feature3: 0,
-#         sequence: [0.1, 0.2, 0.3, 0.4]
-#       },
-#       cluster: null,
-#       predictedAction: null
-#     };
-#   },
-#   methods: {
-#     async getCluster() {
-#       try {
-#         const response = await axios.post('http://localhost:8000/segment/', this.customerData);
-#         this.cluster = response.data.cluster;
-#         console.log('Cluster:', this.cluster);
-#       } catch (error) {
-#         console.error(error);
-#       }
-#     },
-#     async predictAction() {
-#       try {
-#         const response = await axios.post('http://localhost:8000/predict/', this.customerData);
-#         this.predictedAction = response.data.predicted_action;
-#         console.log('Predicted Action:', this.predictedAction);
-#       } catch (error) {
-#         console.error(error);
-#       }
-#     }
-#   }
-# };
-# </script>
-
-# <div v-if="cluster !== null">
-#   <p>El cliente pertenece al clúster: {{ cluster }}</p>
-# </div>
-# <div v-if="predictedAction !== null">
-#   <p>La acción de cobranza recomendada es: {{ predictedAction }}</p>
-# </div>
+if __name__ == '__main__':
+    app.run(debug=True)
