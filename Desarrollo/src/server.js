@@ -68,6 +68,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

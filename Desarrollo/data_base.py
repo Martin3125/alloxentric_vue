@@ -17,12 +17,14 @@ from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
 import joblib
 import pandas as pd
-import numpy as np
 from werkzeug.utils import secure_filename
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
+from fastapi import FastAPI, Request
+
+
 
 # Inicializar la aplicación FastAPI
 app = FastAPI()
@@ -423,81 +425,128 @@ async def get_all_deudores_ids():
 
 
 #--------------------------------Models---------------------------------------------------------------
+from flask import Flask, request, jsonify
+import pandas as pd
+import numpy as np
+from src.data_preparation import prepare_data
+from src.modeling import run_kmeans, run_lstm
+from src.evaluation import evaluate_models
+
+import numpy as np
+import pandas as pd
+from fastapi import FastAPI, Request
+from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.models import load_model
+from joblib import load as joblib_load
+from fastapi.responses import JSONResponse
 
 
-# Cargar los modelos guardados
-lstm_model = load_model('lstm_model.keras')
-kmeans_model = joblib.load('kmeans_model.pkl')
 
-UPLOAD_FOLDER = 'uploads/'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# Configurar CORS si es necesario
+# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Ajusta esto según tus necesidades
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+UPLOAD_FOLDER = 'uploads/'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+#  FastAPI - Cargar modelos
+def load_models():
+    try:
+        lstm_model = load_model('lstm_model.keras')
+        kmeans_model = joblib.load('kmeans_model.pkl')
+        return lstm_model, kmeans_model
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al cargar los modelos: {str(e)}")
+
+# Procesar archivo CSV
+def process_file(file_path):
+    data = pd.read_csv(file_path, sep=';')
+
+    if data.empty:
+        raise ValueError("El archivo CSV está vacío.")
+    
+    # Verificar si la columna 'homologada' existe
+    if 'homologada' not in data.columns:
+        raise KeyError("La columna 'homologada' no existe en el archivo CSV.")
+    
+    return data
+
+# FastAPI - Subida de archivo
 @app.post('/api/upload')
 async def upload_file(file: UploadFile = File(...)):
-    # Verificar si se subió un archivo
     if not file:
         raise HTTPException(status_code=400, detail="No se envió ningún archivo")
 
-    if file.filename == '':
-        raise HTTPException(status_code=400, detail="El archivo no tiene nombre")
-
-    # Guardar el archivo subido
+    # Guardar archivo temporalmente
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     with open(file_path, "wb") as buffer:
         buffer.write(await file.read())
 
-    # Intentar leer el archivo como CSV
+    # Procesar el archivo
     try:
-        data = pd.read_csv(file_path)
-        if data.empty:
-            raise ValueError("El archivo CSV está vacío.")
-    except pd.errors.EmptyDataError:
-        raise HTTPException(status_code=400, detail="El archivo CSV está vacío o mal formateado.")
+        data = process_file(file_path)
+        features = prepare_data(data)
+    except KeyError as e:
+        raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo CSV: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
-    # Asegurarse de que todas las columnas son numéricas
+    # Cargar modelos y hacer predicciones
     try:
-        data = data.select_dtypes(include=[np.number])
-        if data.empty:
-            raise ValueError("No se encontraron columnas numéricas en el archivo CSV.")
-
-        # Convertir a tipo float32 (comúnmente utilizado en TensorFlow)
-        features = np.array(data, dtype=np.float32)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Error en el preprocesamiento de datos: {str(e)}")
+        lstm_model, kmeans_model = load_models()
+        kmeans_pred, lstm_pred = predict(features, kmeans_model, lstm_model)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al extraer características del archivo CSV: {str(e)}")
-
-    # Predicción con K-Means (primero se hace la agrupación)
-    try:
-        kmeans_pred = kmeans_model.predict(features)
-        # Añadir las predicciones de K-Means a las características si es necesario
-        # Suponemos que el modelo LSTM espera estas agrupaciones como una característica adicional
-        features_with_clusters = np.hstack([features, kmeans_pred.reshape(-1, 1)])  # Añadir las etiquetas de cluster como columna extra
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al predecir con el modelo K-Means: {str(e)}")
-
-    # Predicción con LSTM usando las características agrupadas
-    try:
-        lstm_pred = lstm_model.predict(features_with_clusters)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al predecir con el modelo LSTM: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
 
     return JSONResponse(content={
+        'status': 'success',
         'kmeans_prediction': kmeans_pred.tolist(),
         'lstm_prediction': lstm_pred.tolist()
     })
 
+# # FastAPI - Predicción
+@app.post('/api/predict')
+async def predict(request: Request):
+    # Obtener datos del cuerpo de la solicitud
+    data = await request.json()
+
+    # Verificar si los datos están vacíos
+    if not data:
+        return JSONResponse(content={"error": "No se recibieron datos."}, status_code=400)
+
+    # Fase 3: Preparación de datos
+    df_final = prepare_data(pd.DataFrame(data))  # Asegúrate de que esta función esté correctamente definida
+
+    # Cargar el modelo LSTM
+    lstm_model = load_model('lstm_model.keras')
+
+    # Preparar datos para la predicción con LSTM
+    df_deudores = df_final.copy()  # Crear una copia del DataFrame original
+    X_deudores = df_deudores.drop(columns=['etiqueta_accion', 'fecha', 'Descripcion', 'fecha_pago', 'id_cliente'])
+
+    # Reshape para que coincida con el formato de entrada del modelo LSTM
+    # X_deudores_reshaped = X_deudores.values.reshape((X_deudores.shape[0], 1, X_deudores.shape[1]))
+
+    # Realizar predicciones con el modelo LSTM
+    y_pred = np.argmax(lstm_model.predict(X_deudores_reshaped), axis=1)
+
+    # Agregar las predicciones al DataFrame original
+    df_deudores['accion_predicha'] = y_pred
+
+    # Agrupar deudores por acción predicha
+    df_group = df_deudores.groupby('accion_predicha').agg(
+        deudores=('deudor', lambda x: ','.join(x.astype(str))),
+        total_deudores=('deudor', 'count')
+    ).reset_index()
+
+    # Retornar el resultado agrupado como respuesta en formato JSON
+    return JSONResponse(content=df_group.to_dict(orient="records"))
+
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")
+    uvicorn.run(app, host='0.0.0.0', port=8000, log_level="info")

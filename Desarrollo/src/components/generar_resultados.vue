@@ -46,7 +46,17 @@
                 <a href="#" @click.prevent="removeDocument(index)"><img src="@/assets/clear.png" alt=""></a>
               </div>
             </div>
-            
+            <div class="b_procesar">
+                <button class="btn btn-primary" style="width: 100%;" @click="uploadFile">Iniciar Procesamiento</button>
+            </div>
+
+            <!-- Sección para mostrar los resultados de la predicción -->
+            <div v-if="predictions.lstm_prediction && predictions.kmeans_prediction" class="predictions">
+                <h3>Resultados de la Predicción</h3>
+                <p><strong>Predicción LSTM:</strong> {{ predictions.lstm_prediction }}</p>
+                <p><strong>Predicción K-Means:</strong> {{ predictions.kmeans_prediction }}</p>
+            </div>
+                
           </div>
 
           <div class="b_procesar">
@@ -55,16 +65,7 @@
           <div class="b_procesar">
             <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
           </div>
-          <div class="b_procesar">
-            <button class="btn btn-primary" style="width: 100%;" @click="uploadFile">Iniciar Procesamiento</button>
-        </div>
-
-        <!-- Sección para mostrar los resultados de la predicción -->
-        <div v-if="predictions.lstm_prediction && predictions.kmeans_prediction" class="predictions">
-            <h3>Resultados de la Predicción</h3>
-            <p><strong>Predicción LSTM:</strong> {{ predictions.lstm_prediction }}</p>
-            <p><strong>Predicción K-Means:</strong> {{ predictions.kmeans_prediction }}</p>
-        </div>
+          
         </div>
       </div>
     </div>
@@ -133,6 +134,34 @@
         </div>
       </div>
     </div>
+    <div>
+    <h1>Predicción de Acciones de Deudores</h1>
+
+    <form @submit.prevent="getPredictions">
+      <!-- Puedes añadir campos para cargar datos si es necesario -->
+      <button type="submit">Obtener Predicciones</button>
+    </form>
+
+    <div v-if="predictions.length">
+      <h2>Resultados de Predicción</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Acción Predicha</th>
+            <th>Deudores</th>
+            <th>Total Deudores</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in predictions" :key="index">
+            <td>{{ item.accion_predicha }}</td>
+            <td>{{ item.deudores }}</td>
+            <td>{{ item.total_deudores }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
     
 
@@ -141,6 +170,7 @@
   <script>
   import { openModal, openModal2, cerrarModal, cerrarModal2, cerrarModalProgramar, iniciarDespues } from './js/generar_resultados.js';
   import Menu_P from './Menu-.vue';
+  import axios from 'axios';
   
   export default {
     name: 'generar_resultados',
@@ -230,8 +260,28 @@
         } catch (error) {
           console.error('Error en la solicitud:', error);
         }
+      },
+      async predict(data) {
+        try {
+          const response = await axios.post('http://127.0.0.1:8000/predict', data);
+          console.log(response.data);
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   };
   </script>
   
+  <style>
+/* Agrega estilos para darle formato a la tabla o a la página */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+}
+</style>
