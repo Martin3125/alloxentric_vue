@@ -91,5 +91,4 @@ def evaluate_models(modeling):
 
     # plt.tight_layout()
     # plt.show()
-
-    return df_final
+    return modeling

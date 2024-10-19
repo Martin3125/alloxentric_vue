@@ -425,21 +425,17 @@ async def get_all_deudores_ids():
 
 
 #--------------------------------Models---------------------------------------------------------------
-from flask import Flask, request, jsonify
+# from flask import Flask, request, jsonify
 import pandas as pd
 import numpy as np
 from src.data_preparation import prepare_data
-from src.modeling import run_kmeans, run_lstm
-from src.evaluation import evaluate_models
-
-import numpy as np
-import pandas as pd
+# from src.modeling import run_kmeans, run_lstm
+# from src.evaluation import evaluate_models
 from fastapi import FastAPI, Request
-from sklearn.preprocessing import StandardScaler
+# from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import load_model
 from joblib import load as joblib_load
 from fastapi.responses import JSONResponse
-
 
 
 # Configurar CORS
@@ -454,7 +450,7 @@ app.add_middleware(
 UPLOAD_FOLDER = 'uploads/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-#  FastAPI - Cargar modelos
+# Cargar modelos
 def load_models():
     try:
         lstm_model = load_model('lstm_model.keras')
@@ -466,17 +462,75 @@ def load_models():
 # Procesar archivo CSV
 def process_file(file_path):
     data = pd.read_csv(file_path, sep=';')
-
+    
     if data.empty:
         raise ValueError("El archivo CSV está vacío.")
     
-    # Verificar si la columna 'homologada' existe
     if 'homologada' not in data.columns:
         raise KeyError("La columna 'homologada' no existe en el archivo CSV.")
     
     return data
 
-# FastAPI - Subida de archivo
+# Predicciones
+def predict(data, kmeans_model, lstm_model):
+    try:
+        df_final = prepare_data(pd.DataFrame(data))
+
+        # K-Means
+        kmeans_pred = kmeans_model.predict(df_final)
+        df_final['cluster'] = kmeans_pred
+
+        # LSTM
+        X_deudores = df_final.drop(columns=['etiqueta_accion', 'fecha', 'Descripcion', 'fecha_pago', 'id_cliente'])
+        X_deudores_reshaped = X_deudores.values.reshape((X_deudores.shape[0], 1, X_deudores.shape[1]))
+        y_pred = np.argmax(lstm_model.predict(X_deudores_reshaped), axis=1)
+        df_final['accion_predicha'] = y_pred
+
+        df_group = df_final.groupby('accion_predicha').agg(
+            deudores=('deudor', lambda x: ','.join(x.astype(str))),
+            total_deudores=('deudor', 'count')
+        ).reset_index()
+
+        return df_group, kmeans_pred
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
+
+def load_and_predict(data):
+    try:
+        lstm_model, kmeans_model = load_models()
+        df_group, kmeans_pred = predict(data, kmeans_model, lstm_model)
+        return df_group, kmeans_pred
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
+
+# Subida de archivo
+# @app.post('/api/upload')
+# async def upload_file(file: UploadFile = File(...)):
+#     if not file:
+#         raise HTTPException(status_code=400, detail="No se envió ningún archivo")
+
+#     # Guardar archivo
+#     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+#     with open(file_path, "wb") as buffer:
+#         buffer.write(await file.read())
+
+#     # Procesar el archivo
+#     try:
+#         data = process_file(file_path)
+#         features = prepare_data(data)
+#     except KeyError as e:
+#         raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
+
+#     # Hacer predicciones
+#     try:
+#         df_group, kmeans_pred = load_and_predict(features)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
+
+#     return JSONResponse(content=df_group.to_dict(orient="records"))
+
 @app.post('/api/upload')
 async def upload_file(file: UploadFile = File(...)):
     if not file:
@@ -495,6 +549,13 @@ async def upload_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
+     # Hacer predicciones
+#     try:
+#         df_group, kmeans_pred = load_and_predict(features)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
+
+#     return JSONResponse(content=df_group.to_dict(orient="records"))
 
     # Cargar modelos y hacer predicciones
     try:
@@ -509,43 +570,22 @@ async def upload_file(file: UploadFile = File(...)):
         'lstm_prediction': lstm_pred.tolist()
     })
 
-# # FastAPI - Predicción
+
+# Predicción
 @app.post('/api/predict')
 async def predict(request: Request):
-    # Obtener datos del cuerpo de la solicitud
-    data = await request.json()
+    try:
+        data = await request.json()
+        if not data:
+            return JSONResponse(content={"error": "No se recibieron datos."}, status_code=400)
 
-    # Verificar si los datos están vacíos
-    if not data:
-        return JSONResponse(content={"error": "No se recibieron datos."}, status_code=400)
+        features = pd.DataFrame(data)
+        lstm_model, kmeans_model = load_models()
+        df_group, kmeans_pred = predict(features, kmeans_model, lstm_model)
 
-    # Fase 3: Preparación de datos
-    df_final = prepare_data(pd.DataFrame(data))  # Asegúrate de que esta función esté correctamente definida
-
-    # Cargar el modelo LSTM
-    lstm_model = load_model('lstm_model.keras')
-
-    # Preparar datos para la predicción con LSTM
-    df_deudores = df_final.copy()  # Crear una copia del DataFrame original
-    X_deudores = df_deudores.drop(columns=['etiqueta_accion', 'fecha', 'Descripcion', 'fecha_pago', 'id_cliente'])
-
-    # Reshape para que coincida con el formato de entrada del modelo LSTM
-    # X_deudores_reshaped = X_deudores.values.reshape((X_deudores.shape[0], 1, X_deudores.shape[1]))
-
-    # Realizar predicciones con el modelo LSTM
-    y_pred = np.argmax(lstm_model.predict(X_deudores_reshaped), axis=1)
-
-    # Agregar las predicciones al DataFrame original
-    df_deudores['accion_predicha'] = y_pred
-
-    # Agrupar deudores por acción predicha
-    df_group = df_deudores.groupby('accion_predicha').agg(
-        deudores=('deudor', lambda x: ','.join(x.astype(str))),
-        total_deudores=('deudor', 'count')
-    ).reset_index()
-
-    # Retornar el resultado agrupado como respuesta en formato JSON
-    return JSONResponse(content=df_group.to_dict(orient="records"))
+        return JSONResponse(content=df_group.to_dict(orient="records"))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en la solicitud de predicción: {str(e)}")
 
 if __name__ == '__main__':
     import uvicorn
