@@ -425,18 +425,15 @@ async def get_all_deudores_ids():
 
 
 #--------------------------------Models---------------------------------------------------------------
-# from flask import Flask, request, jsonify
-import pandas as pd
-import numpy as np
-from src.data_preparation import prepare_data
-# from src.modeling import run_kmeans, run_lstm
-# from src.evaluation import evaluate_models
-from fastapi import FastAPI, Request
-# from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.models import load_model
-from joblib import load as joblib_load
+from fastapi import FastAPI, Request, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+import os
+from data_preparation import prepare_data
+from modeling import run_kmeans, run_lstm
 
+app = FastAPI()
 
 # Configurar CORS
 app.add_middleware(
@@ -450,87 +447,40 @@ app.add_middleware(
 UPLOAD_FOLDER = 'uploads/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Cargar modelos
-def load_models():
-    try:
-        lstm_model = load_model('lstm_model.keras')
-        kmeans_model = joblib.load('kmeans_model.pkl')
-        return lstm_model, kmeans_model
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al cargar los modelos: {str(e)}")
-
 # Procesar archivo CSV
 def process_file(file_path):
-    data = pd.read_csv(file_path, sep=';')
-    
-    if data.empty:
-        raise ValueError("El archivo CSV está vacío.")
-    
-    if 'homologada' not in data.columns:
-        raise KeyError("La columna 'homologada' no existe en el archivo CSV.")
-    
-    return data
+    try:
+        # Leer el archivo CSV
+        data = pd.read_csv(file_path, sep=';')
+
+        if data.empty:
+            raise ValueError("El archivo CSV está vacío.")
+
+        # Preparar datos usando la función definida en data_preparation.py
+        df_final = prepare_data(data)
+
+        return df_final
+    except KeyError as e:
+        raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Error de datos: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
 # Predicciones
-def predict(data, kmeans_model, lstm_model):
+def predict(df_final):
     try:
-        df_final = prepare_data(pd.DataFrame(data))
+        # Aplicar K-Means
+        df_final = run_kmeans(df_final)
 
-        # K-Means
-        kmeans_pred = kmeans_model.predict(df_final)
-        df_final['cluster'] = kmeans_pred
+        # Ahora se puede llamar a run_lstm directamente con df_final
+        df_deudores_grouped = run_lstm(df_final)  # Aquí se llama a run_lstm
 
-        # LSTM
-        X_deudores = df_final.drop(columns=['etiqueta_accion', 'fecha', 'Descripcion', 'fecha_pago', 'id_cliente'])
-        X_deudores_reshaped = X_deudores.values.reshape((X_deudores.shape[0], 1, X_deudores.shape[1]))
-        y_pred = np.argmax(lstm_model.predict(X_deudores_reshaped), axis=1)
-        df_final['accion_predicha'] = y_pred
-
-        df_group = df_final.groupby('accion_predicha').agg(
-            deudores=('deudor', lambda x: ','.join(x.astype(str))),
-            total_deudores=('deudor', 'count')
-        ).reset_index()
-
-        return df_group, kmeans_pred
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
-
-def load_and_predict(data):
-    try:
-        lstm_model, kmeans_model = load_models()
-        df_group, kmeans_pred = predict(data, kmeans_model, lstm_model)
-        return df_group, kmeans_pred
+        return df_deudores_grouped  # Devolvemos el DataFrame agrupado directamente
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
 
 # Subida de archivo
-# @app.post('/api/upload')
-# async def upload_file(file: UploadFile = File(...)):
-#     if not file:
-#         raise HTTPException(status_code=400, detail="No se envió ningún archivo")
-
-#     # Guardar archivo
-#     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-#     with open(file_path, "wb") as buffer:
-#         buffer.write(await file.read())
-
-#     # Procesar el archivo
-#     try:
-#         data = process_file(file_path)
-#         features = prepare_data(data)
-#     except KeyError as e:
-#         raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
-
-#     # Hacer predicciones
-#     try:
-#         df_group, kmeans_pred = load_and_predict(features)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
-
-#     return JSONResponse(content=df_group.to_dict(orient="records"))
-
 @app.post('/api/upload')
 async def upload_file(file: UploadFile = File(...)):
     if not file:
@@ -543,50 +493,58 @@ async def upload_file(file: UploadFile = File(...)):
 
     # Procesar el archivo
     try:
-        data = process_file(file_path)
-        features = prepare_data(data)
-    except KeyError as e:
-        raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
+        df_final = process_file(file_path)  # Procesar el archivo para obtener df_final
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
-     # Hacer predicciones
-#     try:
-#         df_group, kmeans_pred = load_and_predict(features)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
 
-#     return JSONResponse(content=df_group.to_dict(orient="records"))
-
-    # Cargar modelos y hacer predicciones
+    # Hacer predicciones
     try:
-        lstm_model, kmeans_model = load_models()
-        kmeans_pred, lstm_pred = predict(features, kmeans_model, lstm_model)
+        df_group = predict(df_final)  # Ahora se pasa df_final a la función predict
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
 
     return JSONResponse(content={
         'status': 'success',
-        'kmeans_prediction': kmeans_pred.tolist(),
-        'lstm_prediction': lstm_pred.tolist()
+        'predicciones': df_group.to_dict(orient="records")
     })
 
-
-# Predicción
+predicciones_resultados = [] 
+# Predicción directa
 @app.post('/api/predict')
-async def predict(request: Request):
+async def predict_endpoint(request: Request):
+    global predicciones_resultados  # Declarar la variable global
     try:
         data = await request.json()
         if not data:
             return JSONResponse(content={"error": "No se recibieron datos."}, status_code=400)
 
         features = pd.DataFrame(data)
-        lstm_model, kmeans_model = load_models()
-        df_group, kmeans_pred = predict(features, kmeans_model, lstm_model)
 
-        return JSONResponse(content=df_group.to_dict(orient="records"))
+        # Manejar valores NaN
+        if features.isnull().values.any():
+            features = features.dropna()
+
+        df_group = predict(features)  # Cambié aquí: ahora solo se pasa un argumento
+        predicciones_resultados = df_group.to_dict(orient="records")
+
+        return JSONResponse(content=predicciones_resultados)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en la solicitud de predicción: {str(e)}")
+
+# Endpoint GET para obtener los resultados de predicción
+@app.get('/api/resultados')
+async def get_resultados():
+    return JSONResponse(content={
+        'status': 'success',
+        'predicciones': predicciones_resultados  # Devolver los resultados almacenados
+    })
 
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host='0.0.0.0', port=8000, log_level="info")
+
+
+
+
+
+
