@@ -44,13 +44,14 @@
 
 <script>
 export default {
-
   name: 'Registro-',// Definición del componente
   data() {
     return {
       nombre: '',
       email: '',
-      pwd: ''
+      pwd: '',
+      passwordConfirm: '',  // Agregar la confirmación de la contraseña
+      errorMessage: '' // Agregar el manejo de mensajes de error
     };
   },
   methods: {
@@ -59,8 +60,10 @@ export default {
         const userData = {
           nombre: this.nombre,
           email: this.email,
-          pwd: this.pwd
+          pwd: this.pwd,
+          confirm_password: this.passwordConfirm  // Asegúrate de enviar también la confirmación
         };
+        
         const respuesta = await fetch('http://127.0.0.1:8000/api/register', {
           method: 'POST',
           headers: {
@@ -76,15 +79,15 @@ export default {
         } else {
           const data = await respuesta.json();
           console.log(data);
-          this.$router.push('/');// Aquí puedes redirigir al usuario o limpiar el formulario
+          this.$router.push('/');// Redirigir o limpiar el formulario después del registro exitoso
         }
       } catch (error) {
         console.error('Error en la solicitud:', error);
+        this.errorMessage = 'Error en el servidor';
       }
     }
   }
-};
-
+}
 </script>
   
 <style>
