@@ -49,22 +49,15 @@
             <div class="b_procesar">
                 <button class="btn btn-primary" style="width: 100%;" @click="uploadFile">Iniciar Procesamiento</button>
             </div>
-
-            <!-- Sección para mostrar los resultados de la predicción -->
-            <div v-if="predictions.lstm_prediction && predictions.kmeans_prediction" class="predictions">
-                <h3>Resultados de la Predicción</h3>
-                <p><strong>Predicción LSTM:</strong> {{ predictions.lstm_prediction }}</p>
-                <p><strong>Predicción K-Means:</strong> {{ predictions.kmeans_prediction }}</p>
-            </div>
                 
           </div>
 
-          <div class="b_procesar">
+          <!-- <div class="b_procesar">
             <button class="btn btn-primary" style="width: 100%;" @click="openModal()">Iniciar Ahora</button>
           </div>
           <div class="b_procesar">
             <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
-          </div>
+          </div> -->
           
         </div>
       </div>
@@ -184,7 +177,7 @@
         hora: '',
         file: null,
         uploadedDocuments: [],
-        predictions: {},  // Para almacenar las predicciones
+        predictions: [],  // Cambia a un array para manejar múltiples predicciones
       };
     },
     methods: {
@@ -204,18 +197,18 @@
         this.uploadedDocuments.splice(index, 1);
       },
       async uploadFile() {
-      if (!this.file) {
-        alert('Por favor, selecciona un archivo para subir.');
-        return;
-      }
-      const formData = new FormData();
-      formData.append('file', this.file);
-
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/upload', {  // Ajusta la ruta si es necesario
-          method: 'POST',
-          body: formData,
-        });
+        if (!this.file) {
+          alert('Por favor, selecciona un archivo para subir.');
+          return;
+        }
+        const formData = new FormData();
+        formData.append('file', this.file);
+  
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
   
           if (!response.ok) {
             const errorData = await response.json();
@@ -224,51 +217,20 @@
           } else {
             const data = await response.json();
             console.log('Resultados de predicción:', data);
-            // Aquí puedes manejar los resultados de la predicción
-            this.predictions = data;
-            this.$router.push('/generar_resultados');
-          }
-        } catch (error) {
-          console.error('Error en la solicitud:', error);
-        }
-      },
-      async g_resultados() {
-        try {
-          const userData = {
-            nombre: this.nombre,
-            fecha: this.fecha,
-            hora: this.hora
-          };
-          const respuesta = await fetch('http://127.0.0.1:8000/api/procesamiento_P', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
-          });
   
-          if (!respuesta.ok) {
-            const errorData = await respuesta.json();
-            console.error('Error en la respuesta:', errorData);
-            this.errorMessage = errorData.detail || 'Error en el registro';
-          } else {
-            const data = await respuesta.json();
-            console.log(data);
-            this.cerrarModalProgramar();
-            this.$router.push('/generar_resultados'); // Aquí puedes redirigir al usuario o limpiar el formulario
+            // Asegúrate de que la estructura de data sea correcta
+            if (data.status === 'success' && data.predicciones) {
+              this.predictions = data.predicciones; // Almacena las predicciones
+              localStorage.setItem('predicciones', JSON.stringify(this.predictions)); // Guarda en local storage
+              this.$router.push('/resultados'); // Redirige a resultados.vue
+            } else {
+              console.log('No se encontraron predicciones.');
+            }
           }
         } catch (error) {
           console.error('Error en la solicitud:', error);
         }
       },
-      async predict(data) {
-        try {
-          const response = await axios.post('http://127.0.0.1:8000/predict', data);
-          console.log(response.data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
     }
   };
   </script>
