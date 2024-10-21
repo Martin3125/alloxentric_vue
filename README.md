@@ -1,6 +1,6 @@
 # Proyecto: Optimizador de Cobraza (Alloxentric)
 
-![Logo del proyecto](https://alloxentric.com/wp-content/uploads/2020/11/alloxentric_logo-3x.png) ![alt text](https://www.duoc.cl/wp-content/uploads/2022/09/logo-0.png)
+![Logo del proyecto](https://alloxentric.com/wp-content/uploads/2020/11/alloxentric_logo-3x.png)
 
 Integrantes: 
 * Víctor Silva
