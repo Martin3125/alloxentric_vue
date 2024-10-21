@@ -1,44 +1,63 @@
 # Proyecto: Optimizador de Cobraza
 
-Integrantes: - Víctor Silva
-             - Martín Soto 
+Integrantes: 
+    * Víctor Silva
+    * Martín Soto 
 
 ## Resumen del Proyecto
-El proyecto consiste en crear un modelo de machine learning que permita segmentar a los clientes morosos en diferentes grupos según su comportamiento de pago y, posteriormente, predecir la mejor acción de cobranza para cada grupo. Esto se logrará utilizando un enfoque en dos etapas:
-Segmentación de Clientes con K-Means: En esta primera etapa, se utilizará el algoritmo K-Means para agrupar a los clientes en clústeres basados en características como historial de pagos, monto de la deuda, tiempo de morosidad, y otras variables relevantes. Esta segmentación permitirá identificar patrones comunes en los comportamientos de los clientes, facilitando el diseño de estrategias de cobranza específicas para cada grupo.
-Predicción de Acciones con LSTM: En la segunda etapa, se implementará un modelo LSTM (Long Short-Term Memory) para predecir la probabilidad de éxito de diferentes acciones de cobranza (por ejemplo, llamadas, mensajes, llamadas de bot) para cada grupo de clientes. LSTM es ideal para este propósito debido a su capacidad para manejar datos secuenciales y capturar relaciones a largo plazo en los datos de comportamiento de los clientes.
+El proyecto tiene como objetivo desarrollar un modelo de machine learning para segmentar a los clientes morosos en diferentes grupos, según su comportamiento de pago, y luego predecir la mejor acción de cobranza para cada grupo. Se implementará en dos etapas:
+
+1. Segmentación de Clientes con K-Means:
+Se usará el algoritmo K-Means para agrupar a los clientes en clústeres, basándose en características como el historial de pagos, monto de la deuda, tiempo de morosidad, entre otras variables relevantes. Esto permitirá identificar patrones comunes en los comportamientos de los clientes, facilitando el diseño de estrategias de cobranza personalizadas para cada grupo.
+
+2. Predicción de Acciones con LSTM:
+En la segunda etapa, se implementará un modelo LSTM (Long Short-Term Memory) para predecir la probabilidad de éxito de diferentes acciones de cobranza (por ejemplo, llamadas, mensajes de texto, llamadas automáticas) para cada grupo de clientes. LSTM es adecuado para este propósito debido a su capacidad para manejar datos secuenciales y capturar relaciones a largo plazo en el comportamiento de los clientes.
 
 ## Despliegue dela ambiente de desarrollo (Alloxentric)
 
 This template should help get you started developing with Vue 3 in Vite.
 
-## Recommended IDE Setup
+## Configuración Recomendada del IDE 
+
+[Node.js](https://nodejs.org/en)
+
+[MongoDB](https://www.mongodb.com/products/tools/compass)
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Customize configuration
+## Personalizar la Configuración
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-## Project Setup
 
+## Configuración del Proyecto
+Instala todas las dependencias necesarias 
 ```sh
 npm install
 ```
+### Servidor local
+Se debe instalar en caso de no tener uvicorn
+```sh
+pip install fastapi uvicorn pymongo pydantic
+```
+Ejecuta el servidor local
+```sh
+uvicorn data_base:app --reload
+```
 
-### Compile and Hot-Reload for Development
+### Compilación y Recarga Automática para Desarrollo
 
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Compilación y Minificación para Producción
 
 ```sh
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Lint con [ESLint](https://eslint.org/)
 
 ```sh
 npm run lint
