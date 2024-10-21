@@ -1,0 +1,3 @@
+_id,ID_deudor,nombre_deudor,accion,fecha_envio,intervalo,fecha_estimada,demora,fecha_real,debe_pagar,valor_pagar
+66c80716136e3ff3a8b4c5f4,21,Juan Pérez,Pago,2023-08-22,Mensual,2023-09-22,5 días,2023-09-27,1500,1550
+66c810d5136e3ff3a8b4c5f6,22,jhon wick,sin acciones,2023-08-22,2 días,2023-09-22,5 días,2023-09-27,1500,1550
