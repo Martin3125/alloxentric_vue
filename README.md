@@ -1,6 +1,6 @@
 # Proyecto: Optimizador de Cobraza (Alloxentric)
 
-![Logo del proyecto](https://alloxentric.com/wp-content/uploads/2020/11/alloxentric_logo-3x.png)
+![Logo del proyecto](https://alloxentric.com/wp-content/uploads/2020/11/alloxentric_logo-3x.png) ![alt text](https://www.duoc.cl/wp-content/uploads/2022/09/logo-0.png)
 
 Integrantes: 
 * Víctor Silva
@@ -16,7 +16,7 @@ Se usará el algoritmo K-Means para agrupar a los clientes en clústeres, basán
 En la segunda etapa, se implementará un modelo LSTM (Long Short-Term Memory) para predecir la probabilidad de éxito de diferentes acciones de cobranza (por ejemplo, llamadas, mensajes de texto, llamadas automáticas) para cada grupo de clientes. LSTM es adecuado para este propósito debido a su capacidad para manejar datos secuenciales y capturar relaciones a largo plazo en el comportamiento de los clientes.
 
 ## Despliegue del ambiente de desarrollo (Alloxentric)
-Para poder ejecutar el abiente de desarrollo se debe tomar en cuenta los siguientes pasos:
+Para poder ejecutar el ambiente de desarrollo se debe tomar en cuenta los siguientes pasos:
 
 1. Instalar Node.js
 2. Intalar Mongo DB Compass
