@@ -1,8 +1,10 @@
-# Proyecto: Optimizador de Cobraza
+# Proyecto: Optimizador de Cobraza (Alloxentric)
+
+![Logo del proyecto](https://alloxentric.com/wp-content/uploads/2020/11/alloxentric_logo-3x.png)
 
 Integrantes: 
-    * Víctor Silva
-    * Martín Soto 
+* Víctor Silva
+* Martín Soto 
 
 ## Resumen del Proyecto
 El proyecto tiene como objetivo desarrollar un modelo de machine learning para segmentar a los clientes morosos en diferentes grupos, según su comportamiento de pago, y luego predecir la mejor acción de cobranza para cada grupo. Se implementará en dos etapas:
@@ -13,9 +15,15 @@ Se usará el algoritmo K-Means para agrupar a los clientes en clústeres, basán
 2. Predicción de Acciones con LSTM:
 En la segunda etapa, se implementará un modelo LSTM (Long Short-Term Memory) para predecir la probabilidad de éxito de diferentes acciones de cobranza (por ejemplo, llamadas, mensajes de texto, llamadas automáticas) para cada grupo de clientes. LSTM es adecuado para este propósito debido a su capacidad para manejar datos secuenciales y capturar relaciones a largo plazo en el comportamiento de los clientes.
 
-## Despliegue dela ambiente de desarrollo (Alloxentric)
+## Despliegue del ambiente de desarrollo (Alloxentric)
+Para poder ejecutar el abiente de desarrollo se debe tomar en cuenta los siguientes pasos:
 
-This template should help get you started developing with Vue 3 in Vite.
+1. Instalar Node.js
+2. Intalar Mongo DB Compass
+3. Ejecutar el npm install
+4. Ejecutar pip install fastapi uvicorn pymongo pydantic
+5. Ejecutar uvicorn data_base:app --reload
+6. Ejecutar npm run dev
 
 ## Configuración Recomendada del IDE 
 
