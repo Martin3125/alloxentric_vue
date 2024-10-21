@@ -1,6 +1,17 @@
 <template>
     <link rel="stylesheet" href="src/assets/resultados.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
+
+    <header>
+        <div id="logo_header">
+            <img src="@/assets/2.png" alt="logo">
+            <h2>Alloxentric</h2>
+        </div>
+        <div id="menu">
+            <!-- Menu content can be added here -->
+        </div>
+    </header>
+
     <div class="main">
         <Menu_P />
         <div class="general">
@@ -37,7 +48,7 @@
 <script>
 import Menu_P from './Menu-.vue';
 export default {
-    name: 'resultados',
+    name: 'resultados-',
     components: {
         Menu_P,
     },

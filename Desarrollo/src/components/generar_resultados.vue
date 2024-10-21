@@ -45,11 +45,7 @@
                 <p>{{ doc.name }}</p>
                 <a href="#" @click.prevent="removeDocument(index)"><img src="@/assets/clear.png" alt=""></a>
               </div>
-            </div>
-            <div class="b_procesar">
-                <button class="btn btn-primary" style="width: 100%;" @click="uploadFile">Iniciar Procesamiento</button>
-            </div>
-                
+            </div>    
           </div>
 
           <!-- <div class="b_procesar">
@@ -58,11 +54,16 @@
           <div class="b_procesar">
             <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
           </div> -->
-          
+            <div class="b_procesar">
+                <button class="btn btn-primary" style="width: 100%;" @click="openModal()" >Iniciar Procesamiento</button>
+            </div>
+          <div class="b_procesar">
+            <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
+          </div> 
         </div>
       </div>
     </div>
-  
+   <!-- ------------------------Modal de Iniciar Después------------------------------------------------ -->
       <div class="modal" tabindex="-1" id="modal_pesos2">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -79,7 +80,7 @@
           </div>
         </div>
       </div>
-  
+   <!-- ------------------------Modal de Programar procesamiento------------------------------------------------ -->
       <div class="modal" tabindex="-1" id="modal_programar">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -109,7 +110,7 @@
           </div>
         </div>
       </div>
-  
+  <!-- ------------------------Modal de Iniciar procesamiento------------------------------------------------ -->
       <div class="modal" tabindex="-1" id="modal_pesos">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -121,49 +122,36 @@
             </div>
             <div class="modal-footer">
               <a class="btn btn-secondary" href="/cobranza">SI</a>
-              <a class="btn btn-primary" href="/resultados" type="submit">NO</a>
+              <a class="btn btn-primary"  type="submit" @click="uploadFile">NO</a>
+              <!-- href="/resultados" -->
             </div>
           </div>
         </div>
       </div>
+    </div>    
+    <!-- ------------------------Mensaje de Iniciando Procesamiento------------------------------------------------ -->
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Iniciando Procesamiento</strong>
+          <small>11 mins ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          El archivo está siendo procesado. Esto puede tardar unos minutos.
+        </div>
+      </div>
     </div>
-    <div>
-    <h1>Predicción de Acciones de Deudores</h1>
-
-    <form @submit.prevent="getPredictions">
-      <!-- Puedes añadir campos para cargar datos si es necesario -->
-      <button type="submit">Obtener Predicciones</button>
-    </form>
-
-    <div v-if="predictions.length">
-      <h2>Resultados de Predicción</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Acción Predicha</th>
-            <th>Deudores</th>
-            <th>Total Deudores</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in predictions" :key="index">
-            <td>{{ item.accion_predicha }}</td>
-            <td>{{ item.deudores }}</td>
-            <td>{{ item.total_deudores }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-    
 
   </template>
   
   <script>
   import { openModal, openModal2, cerrarModal, cerrarModal2, cerrarModalProgramar, iniciarDespues } from './js/generar_resultados.js';
   import Menu_P from './Menu-.vue';
-  import axios from 'axios';
+  import bootstrap from'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+  
   
   export default {
     name: 'generar_resultados',
@@ -203,6 +191,9 @@
         }
         const formData = new FormData();
         formData.append('file', this.file);
+        const toastLiveExample = document.getElementById('liveToast');
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+        toastBootstrap.show();
   
         try {
           const response = await fetch('http://127.0.0.1:8000/api/upload', {

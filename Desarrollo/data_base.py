@@ -25,6 +25,17 @@ import os
 from fastapi import FastAPI, Request
 
 
+from fastapi import FastAPI, Request, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+import os
+from data_preparation import prepare_data
+from modeling import run_kmeans, run_lstm
+
+# app = FastAPI()
+
+
 
 # Inicializar la aplicación FastAPI
 app = FastAPI()
@@ -425,15 +436,7 @@ async def get_all_deudores_ids():
 
 
 #--------------------------------Models---------------------------------------------------------------
-from fastapi import FastAPI, Request, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-import pandas as pd
-import os
-from data_preparation import prepare_data
-from modeling import run_kmeans, run_lstm
 
-app = FastAPI()
 
 # Configurar CORS
 app.add_middleware(
