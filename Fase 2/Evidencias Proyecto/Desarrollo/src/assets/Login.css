@@ -1,0 +1,113 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+html, body {
+    height: 100vh;
+    width: 100%;
+    font-family: 'Nunito', sans-serif;
+}
+
+body {
+    font-weight: 200;
+    background-color: #ffffff;
+}
+
+h2 {
+    font-weight: 600;
+}
+
+.container-fluid {
+    height: 100%;
+}
+
+.card {
+    background-color: #06B7B2;
+    color: white;
+    height: 100vh;
+}
+
+.card-body {
+    padding: 2rem;
+    margin-top: 20%;
+}
+
+#logo_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#logo_header > img {
+    width: 55px;
+    height: 55px;
+}
+
+#formLogin {
+    background-color: #06B7B2;
+    color: white;
+}
+
+#formCorreo, #formContraseña {
+    margin-bottom: 1rem;
+}
+
+#btnIniciarSesion, #btnRegistrarse {
+    margin-top: 1rem;
+}
+
+.card1 {
+    background-color: #ffffff;
+    margin-top: 20%;
+    margin-right: 10%;
+    justify-content: center;
+    height: 20%;
+    width: 50%;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .card {
+        height: auto;
+        margin: 0;
+        height: 100vh;
+    }
+
+    .card1 {
+        margin-top: 10%;
+        width: 80%;
+        margin-right: 0;
+    }
+
+    .card-body {
+        padding: 2rem;
+        margin-top: 10%;
+    }
+
+    #logo_header > img {
+        width: 45px;
+        height: 45px;
+    }
+    .card1 {
+        display: none; /* Ocultar la imagen a la derecha en pantallas pequeñas */
+    }
+}
+
+@media (max-width: 576px) {
+    .card-body {
+        padding: 0.5rem;
+        margin-top: 5%;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    #logo_header > img {
+        width: 35px;
+        height: 35px;
+    }
+}
