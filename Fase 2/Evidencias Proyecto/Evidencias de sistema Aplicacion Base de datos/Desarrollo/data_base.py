@@ -63,6 +63,7 @@ acciones_collection = db["AccionCobranza"]
 reporte_collection = db["Reporte"]
 archivos_collection = db["Archivos"]
 procesamiento_collection = db["Procesamiento"]
+directorios_collection = db["directorios"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -134,6 +135,10 @@ class Pago(BaseModel):
     h_inicio: str  
     fecha_Pago: str 
     totalPago: str 
+    
+# Modelo Pydantic para crear un directorio
+class Directorio(BaseModel):
+    nombre_directorio: str
 
 #Endpoint de prueba de conexiones 
 @app.get("/api/health")
@@ -529,5 +534,104 @@ if __name__ == '__main__':
 
 
 
+#--------------------------------directorios---------------------------------------------------------------
 
 
+from fastapi import FastAPI, HTTPException, status
+from pymongo import MongoClient
+from pydantic import BaseModel
+from typing import List
+
+
+# Obtener todos los directorios - GET
+@app.get("/directorios", response_model=List[str])
+def obtener_directorios():
+    directorios = directorios_collection.distinct("nombre_directorio")  # Obtener directorios únicos
+    if not directorios:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron directorios.")
+    return directorios
+
+# Obtener archivos de un directorio - GET
+@app.get("/directorios/{directorio}/archivos", response_model=List[str])
+def obtener_archivos_de_directorio(directorio: str):
+    directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
+    if not directorio_obj:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+    
+    archivos = directorio_obj.get("archivos", [])  # Obtener los archivos del directorio
+    return archivos
+# Ver el contenido de un archivo - GET
+@app.get("/directorios/{directorio}/archivos/{archivo}")
+def ver_contenido_archivo(directorio: str, archivo: str):
+    directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
+    if not directorio_obj:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+    
+    archivos = directorio_obj.get("archivos", [])
+    if archivo not in archivos:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Archivo no encontrado.")
+    
+    # Aquí puedes modificar para obtener el archivo desde el sistema de archivos si es necesario
+    # En este ejemplo, se devuelve un texto simulado como contenido del archivo.
+    contenido_archivo = f"Contenido del archivo {archivo} en el directorio {directorio}."
+    
+    return {"contenido": contenido_archivo}
+
+# Crear un nuevo directorio - POST
+@app.post("/directorios", status_code=status.HTTP_201_CREATED)
+def crear_directorio(directorio: Directorio):
+    # Verificar si ya existe el directorio
+    if directorios_collection.find_one({"nombre_directorio": directorio.nombre_directorio}):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El directorio ya existe.")
+    
+    # Crear un nuevo directorio
+    nuevo_directorio = {
+        "nombre_directorio": directorio.nombre_directorio,
+        "archivos": []  # Lista vacía de archivos por defecto
+    }
+    
+    # Insertar el nuevo directorio en la colección
+    directorios_collection.insert_one(nuevo_directorio)
+    
+    return {"mensaje": "Directorio creado exitosamente", "directorio": directorio.nombre_directorio}
+
+# Eliminar un directorio - DELETE
+@app.delete("/directorios/{directorio}", status_code=status.HTTP_200_OK)
+def eliminar_directorio(directorio: str):
+    resultado = directorios_collection.delete_one({"nombre_directorio": directorio})
+    
+    if resultado.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+    
+    return {"mensaje": "Directorio eliminado exitosamente"}
+
+
+# Ruta donde se guardarán los archivos localmente
+BASE_DIR = "directorios"  # Cambia esta ruta a donde quieras almacenar los archivos
+
+# Subir un archivo a un directorio específico - POST
+@app.post("/directorios/{directorio}/subir_archivo")
+async def subir_archivo(directorio: str, file: UploadFile = File(...)):
+    # Verificar si el directorio existe en MongoDB
+    directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
+    if not directorio_obj:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+
+    # Crear la ruta completa del archivo
+    directorio_path = os.path.join(BASE_DIR, directorio)
+    if not os.path.exists(directorio_path):
+        os.makedirs(directorio_path)  # Crear el directorio si no existe
+
+    file_path = os.path.join(directorio_path, file.filename)
+
+    # Guardar el archivo en el sistema de archivos
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    # Agregar el archivo a la lista de archivos del directorio en MongoDB
+    directorios_collection.update_one(
+        {"nombre_directorio": directorio},
+        {"$addToSet": {"archivos": file.filename}}  # $addToSet asegura que no haya duplicados
+    )
+
+    return {"mensaje": f"Archivo {file.filename} subido correctamente al directorio {directorio}."}
