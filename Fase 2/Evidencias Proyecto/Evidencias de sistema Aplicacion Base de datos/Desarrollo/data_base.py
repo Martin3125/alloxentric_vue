@@ -64,6 +64,7 @@ reporte_collection = db["Reporte"]
 archivos_collection = db["Archivos"]
 procesamiento_collection = db["Procesamiento"]
 directorios_collection = db["directorios"]
+resultados_collection  = db["Resultados"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -104,12 +105,13 @@ class Procesamiento(BaseModel):
     hora: time
 
 class Resultados(BaseModel):
-    ID: int
-    nombre_documento: str
-    fecha: date
-    registro_gente: float
-    accion: str
-    gente_contactar: float
+    Id_resultados: int
+    nombre: str
+    fecha: str
+    registro: int
+    tipo: str
+    cantidad: str
+    precio: str
 
 class Reporte(BaseModel):
     ID_deudor: Optional[str]
@@ -635,3 +637,40 @@ async def subir_archivo(directorio: str, file: UploadFile = File(...)):
     )
 
     return {"mensaje": f"Archivo {file.filename} subido correctamente al directorio {directorio}."}
+
+
+#--------------------------------Resultados---------------------------------------------------------------
+# main.py
+from fastapi import FastAPI, HTTPException, status
+from pymongo import MongoClient
+from typing import List
+
+# Obtener todos los resultados - GET
+@app.get("/resultados", response_model=List[Resultados])
+def obtener_resultados():
+    resultados = list(resultados_collection.find())  # Obtener todos los resultados
+    if not resultados:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron resultados.")
+    return resultados
+
+# Crear un nuevo resultado - POST
+@app.post("/resultados", response_model=Resultados, status_code=status.HTTP_201_CREATED)
+def crear_resultado(resultado: Resultados):
+    # Verificar si ya existe un resultado con el mismo ID
+    if resultados_collection.find_one({"Id_resultados": resultado.Id_resultados}):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El resultado ya existe.")
+    
+    # Insertar el nuevo resultado en la colección
+    resultados_collection.insert_one(resultado.dict())
+    
+    return resultado
+
+# Eliminar un resultado - DELETE
+@app.delete("/resultados/{id_resultado}", status_code=status.HTTP_200_OK)
+def eliminar_resultado(id_resultado: int):
+    resultado = resultados_collection.delete_one({"Id_resultados": id_resultado})
+    
+    if resultado.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultado no encontrado.")
+    
+    return {"mensaje": "Resultado eliminado exitosamente"}
