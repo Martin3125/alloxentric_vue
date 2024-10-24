@@ -35,12 +35,9 @@ from modeling import run_kmeans, run_lstm
 
 # app = FastAPI()
 
-
-
 # Inicializar la aplicación FastAPI
 app = FastAPI()
 import os
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -77,14 +74,6 @@ class User(BaseModel):
 class LoginUser(BaseModel):
     email: EmailStr
     pwd: constr(min_length=6, max_length=12)
-
-
-
-# class Sin_acciones(BaseModel):
-#     nombre_cobranza: constr(max_length=16)
-#     fecha_cobranza: datetime
-#     intervalo: int
-#     valor: float
 
 # Model for individual actions
 class AccionCobranza(BaseModel):
@@ -305,18 +294,11 @@ async def register_or_update_accion(acciones: List[AccionCobranza]):
 def get_acciones():
     return [{"accion": "test"}]
 
-
 # base de los demas endpoints 
-
 # Simulación de base de datos en memoria
 documentos_db = {}
 procesamientos_db = {}
 resultados_db = {}
-
-# @app.get("/ejemplo/")
-# async def ejemplo():
-#     respuesta = dict(mensaje="Éxito", codigo=200)
-#     return respuesta
 
 # Procesamiento - POST: Iniciar procesamiento de documentos subidos
 @app.post("/api/procesamiento", response_model=str)
@@ -432,8 +414,6 @@ async def get_all_deudores_ids():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
     
     return deudor_ids
-
-
 
 #--------------------------------Models---------------------------------------------------------------
 
