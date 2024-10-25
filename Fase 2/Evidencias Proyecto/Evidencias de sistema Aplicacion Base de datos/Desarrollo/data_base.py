@@ -65,6 +65,7 @@ archivos_collection = db["Archivos"]
 procesamiento_collection = db["Procesamiento"]
 directorios_collection = db["directorios"]
 resultados_collection  = db["Resultados"]
+predicciones_collection = db["predicciones"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -104,6 +105,11 @@ class Procesamiento(BaseModel):
     fecha: date
     hora: time
 
+# Modelo para las predicciones
+class Prediccion(BaseModel):
+    accion_predicha: str
+    total_deudores: int
+
 class Resultados(BaseModel):
     Id_resultados: int
     nombre: str
@@ -111,7 +117,8 @@ class Resultados(BaseModel):
     registro: int
     tipo: str
     cantidad: str
-    precio: str
+    precio: float
+    predicciones: List[Prediccion]
 
 class Reporte(BaseModel):
     ID_deudor: Optional[str]
@@ -490,6 +497,19 @@ async def upload_file(file: UploadFile = File(...)):
     # Hacer predicciones
     try:
         df_group = predict(df_final)  # Ahora se pasa df_final a la función predict
+        predicciones_resultados = df_group.to_dict(orient="records")
+
+          # Preparar documentos para MongoDB
+        predicciones_documentos = [
+            {
+                "accion_predicha": pred["accion_predicha"],
+                "total_deudores": pred["total_deudores"]
+            }
+            for pred in predicciones_resultados
+        ]
+
+        # Guardar en MongoDB
+        predicciones_collection.insert_many(predicciones_documentos)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
 
@@ -499,7 +519,8 @@ async def upload_file(file: UploadFile = File(...)):
     })
 
 predicciones_resultados = [] 
-# Predicción directa
+#--------------------------------Predicción directa---------------------------------------------------------------
+
 @app.post('/api/predict')
 async def predict_endpoint(request: Request):
     global predicciones_resultados  # Declarar la variable global
@@ -517,6 +538,18 @@ async def predict_endpoint(request: Request):
         df_group = predict(features)  # Cambié aquí: ahora solo se pasa un argumento
         predicciones_resultados = df_group.to_dict(orient="records")
 
+          # Preparar documentos para MongoDB
+        predicciones_documentos = [
+            {
+                "accion_predicha": pred["accion_predicha"],
+                "total_deudores": pred["total_deudores"]
+            }
+            for pred in predicciones_resultados
+        ]
+
+        # Guardar en MongoDB
+        predicciones_collection.insert_many(predicciones_documentos)
+
         return JSONResponse(content=predicciones_resultados)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error en la solicitud de predicción: {str(e)}")
@@ -528,6 +561,19 @@ async def get_resultados():
         'status': 'success',
         'predicciones': predicciones_resultados  # Devolver los resultados almacenados
     })
+
+# # Endpoint GET para obtener los resultados de predicción
+# @app.get('/api/resultados')
+# async def get_resultados():
+#     # Recuperar las predicciones desde MongoDB
+#     predicciones = list(predicciones_collection.find({}, {"_id": 0}))  # Excluir el campo _id para simplicidad
+#     if not predicciones:
+#         raise HTTPException(status_code=404, detail="No se encontraron predicciones.")
+
+#     return JSONResponse(content={
+#         'status': 'success',
+#         'predicciones': predicciones
+#     })
 
 if __name__ == '__main__':
     import uvicorn
@@ -674,3 +720,25 @@ def eliminar_resultado(id_resultado: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultado no encontrado.")
     
     return {"mensaje": "Resultado eliminado exitosamente"}
+
+#----------------------------------predicciones-------------------------------------------------------
+
+@app.get('/api/predicciones')
+async def get_predicciones():
+    try:
+        # Buscar solo el campo 'predicciones' en la base de datos
+        predicciones = list(predicciones_collection.find({}, {"predicciones": 1, "_id": 0}))
+        
+        # Si no se encuentran predicciones
+        if not predicciones:
+            raise HTTPException(status_code=404, detail="No se encontraron predicciones.")
+        
+        # Aplanar las predicciones si es necesario
+        predicciones_lista = [pred for doc in predicciones for pred in doc['predicciones']]
+
+        return JSONResponse(content={
+            'status': 'success',
+            'predicciones': predicciones_lista
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener predicciones: {str(e)}")

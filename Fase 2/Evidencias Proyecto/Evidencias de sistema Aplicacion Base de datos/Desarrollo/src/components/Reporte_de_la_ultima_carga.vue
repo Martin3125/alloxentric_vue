@@ -28,10 +28,14 @@
               <h2>Reporte de la ultima carga</h2>
               <!-- <button @click="crearProducto">Crear nuevo</button> -->
               <select v-model="tipoSeleccionado">
-                <option value="" selected>Tipo</option>
-                <option value="Tipo1">Tipo1</option>
-                <option value="Tipo2">Tipo2</option>
-                <option value="Electrónica">Electrónica</option>
+                <option value="" selected>Tipo de acción</option>
+                <option value="Sin acciones">Sin acciones</option>
+                <option value="Correo electrónico">Correo electrónico</option>
+                <option value="SMS">SMS</option>
+                <option value="Whatsapp">Whatsapp</option>
+                <option value="Llamada por bot">Llamada por bot</option>
+                <option value="Llamada directa">Llamada directa</option>
+                <option value="Acciones judiciales">Acciones judiciales</option> 
               </select>
               <div class="input_search">
                 <input v-model="busqueda" type="search" placeholder="Buscar" />
@@ -45,11 +49,13 @@
                 <tr>
                   <th>ID</th>
                   <th>Nombre del documento</th>
-                  <th>Fecha</th>  
+                  <th>Fecha de carga</th>  
                   <th>Registro de gente</th>
                   <th>Tipo de acción</th>
                   <th>Cantidad de gente a contactar</th>
                   <th>Precio</th>
+                  <th>Acciones de cobranza</th>
+                  <th>Total deudores</th>
                   <th>Operaciones</th> <!-- (Descargar) -->
                 </tr>
               </thead>
@@ -63,10 +69,36 @@
                   <td>{{ resultado.cantidad }}</td>
                   <td>{{ resultado.precio }}</td>
                   <td>
+                    <ul v-for="(prediccion, i) in resultado.predicciones" :key="i">
+                    
+                       {{ prediccion.accion_predicha }}
+                        
+                      </ul>
+                    </td>
+                    <td>
+                      <ul v-for="(prediccion, i) in resultado.predicciones" :key="i">
+                        
+                       {{ prediccion.total_deudores }}
+                       
+                      </ul>
+                    </td>
+                  <td>
                     <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
                     <i class="bi bi-trash" @click="eliminarResultado(resultado._id)"></i>
                   </td>
+                  
               </tr>
+              <!-- <tr v-for="(resultado, index) in predictions" :key="index">
+                            <td style="border: 1px solid black;">{{ resultado.accion_predicha }}</td>
+                            <td style="border: 1px solid black;">{{ resultado.total_deudores }}</td>
+                        </tr> -->
+                       
+              </tbody>
+              <tbody>
+                  <tr v-for="(prediccion, _id) in predicciones" :key="_id">
+                      <td style="border: 1px solid black;">{{ prediccion.accion_predicha }}</td>
+                      <td style="border: 1px solid black;">{{ prediccion.total_deudores }}</td>
+                  </tr>
               </tbody>
             </table>
 
@@ -90,6 +122,7 @@ export default {
   mounted() {
     initializeFilter();
     this.fetchResultados();
+    this.fetchPredicciones();
   },
   components: {
     Menu_P,
@@ -99,8 +132,10 @@ export default {
       busqueda: "",
       tipoSeleccionado: "",
       resultados: [],
+      predicciones: [], 
       currentPage: 1,
       itemsPerPage: 5,
+      // predictions: JSON.parse(localStorage.getItem('predicciones')) || [], // Recupera las predicciones del local storage
     };
   },
   computed: {
@@ -142,7 +177,17 @@ export default {
       } catch (error) {
         console.error('Error deleting result:', error);
       }
-    }
+    },
+    async fetchPredicciones() {
+        try {
+            const response = await axios.get('/api/predicciones');
+            if (response.data && response.data.predicciones) {
+                this.predicciones = response.data.predicciones; // Asigna las predicciones al array
+            }
+        } catch (error) {
+            console.error('Error al obtener las predicciones:', error);
+        }
+    },
   },
 };
 </script>

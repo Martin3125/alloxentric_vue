@@ -39,7 +39,9 @@
                         </tr>
                     </tbody>
                 </table>
-                <p v-if="predictions.length === 0">No hay resultados disponibles.</p>
+                <p v-if="predicciones.length === 0">No hay resultados disponibles.</p>
+
+             
             </div>
         </div>
     </div>
@@ -47,19 +49,154 @@
 
 <script>
 import Menu_P from './Menu-.vue';
+import axios from 'axios';
+
 export default {
     name: 'resultados-',
     components: {
         Menu_P,
     },
     data() {
-        return {
-            predictions: JSON.parse(localStorage.getItem('predicciones')) || [], // Recupera las predicciones del local storage
-        };
+    return {
+      predicciones: [], // Almacena las predicciones desde el backend
+      predictions: JSON.parse(localStorage.getItem('predicciones')) || [], // Recupera las predicciones del local storage
+    };
+  },
+  mounted() {
+        this.fetchPredictions(); // Llamar a la función para obtener las predicciones cuando el componente se monte
+    },
+    methods: {
+        async fetchPredicciones() {
+            try {
+                const response = await axios.get('/api/predicciones');
+                if (response.data && response.data.predicciones) {
+                    this.predicciones = response.data.predicciones; // Asigna las predicciones al array
+                }
+            } catch (error) {
+                console.error('Error al obtener las predicciones:', error);
+            }
+        },
     },
 }
 </script>
 
-<style>
-/* Aquí puedes agregar estilos adicionales si es necesario */
+<style scoped>
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	font-family: "Raleway", sans-serif;
+	background-color: #eef4fd;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	box-shadow: 8px 8px 5px 0px #bdbdbdbf;
+	width: 90%;
+	background-color: #ffffff;
+	border-radius: 30px;
+  justify-content: center;
+  margin: auto;
+}
+
+.table_header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 30px 0;
+}
+
+button {
+	outline: none;
+	border: none;
+	background-color: #27bb13;
+	color: #ffffff;
+	padding: 10px 30px;
+	border-radius: 20px;
+	text-transform: uppercase;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #27bb13;
+}
+
+select {
+	border: none;
+	border-bottom: 1px solid #c9c9c9;
+	width: 200px;
+	padding: 10px 0;
+	font-size: 16px;
+}
+
+.input_search {
+	position: relative;
+}
+
+.input_search input {
+	border-radius: 30px;
+	width: 400px;
+	outline: none;
+	padding: 10px 20px;
+	border: 1px solid #c9c9c9;
+	box-sizing: border-box;
+	padding-right: 50px;
+}
+
+.input_search #search {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	margin-right: 1rem;
+	transform: translate(-50%, -50%);
+}
+
+table {
+	border-spacing: 0;
+	margin-top: 1rem;
+}
+
+thead {
+	background-color: #fff7b3;
+}
+
+th {
+	padding: 10px;
+}
+
+tbody tr {
+	border-bottom: 1px solid #dfdfdf;
+}
+
+tbody td {
+	padding: 10px;
+	border-bottom: 1px solid #dfdfdf;
+	text-align: center;
+}
+
+tbody td #icons {
+	font-size: 20px;
+	cursor: pointer;
+	margin-left: 10px;
+	color: #797979;
+}
+
+tbody tr:hover {
+	background-color: #f5f5f5;
+}
+
+.table_fotter {
+	margin-top: 1rem;
+	padding: 0 30px 20px;
+}
 </style>
