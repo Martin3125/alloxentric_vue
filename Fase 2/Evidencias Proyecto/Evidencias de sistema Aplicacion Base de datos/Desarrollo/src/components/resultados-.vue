@@ -39,7 +39,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p v-if="predicciones.length === 0">No hay resultados disponibles.</p>
+                <!-- <p v-if="predicciones.length === 0">No hay resultados disponibles.</p> -->
 
              
             </div>

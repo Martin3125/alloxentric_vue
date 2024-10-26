@@ -94,6 +94,9 @@ def run_lstm(df_final):
         'Acciones judiciales': 6,
     }
 
+    # Diccionario inverso para convertir los números de vuelta a nombres de acciones
+    acciones_dict_inverso = {v: k for k, v in acciones_dict.items()}
+
     # Determinar la etiqueta de acción
     df_final['etiqueta_accion'] = df_final[acciones_columnas].idxmax(axis=1)
     df_final['etiqueta_accion'] = df_final['etiqueta_accion'].map(acciones_dict)
@@ -163,6 +166,10 @@ def run_lstm(df_final):
 
     # Agregar las predicciones al DataFrame original
     df_deudores['accion_predicha'] = y_deudores_pred
+
+    # Mapear los valores numéricos a los nombres de acciones
+
+    df_deudores['accion_predicha'] = df_deudores['accion_predicha'].map(acciones_dict_inverso)
 
     # Agrupar deudores por acción predicha, separando los IDs por comas y contando el número de deudores
     df_group = df_deudores.groupby('accion_predicha').agg(

@@ -11,6 +11,7 @@ import resultados from './components/resultados-.vue'
 import res_periodo_anterior from './components/res_periodo_anterior.vue'
 import Reporte_de_desempeño from './components/Reporte_de_desempeño.vue'
 import Reporte_de_la_ultima_carga from './components/Reporte_de_la_ultima_carga.vue'
+import Settings from './components/Settings.vue'
 
 
 
@@ -25,6 +26,7 @@ const routes = [
   { path: '/Reporte_de_la_ultima_carga', component: Reporte_de_la_ultima_carga },
   { path: '/resultados', component: resultados },
   { path: '/res_periodo_anterior', component: res_periodo_anterior },
+  { path: '/settings', component: Settings },
   
 
 ]

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Form
 from pydantic import BaseModel, EmailStr, constr
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -66,6 +66,7 @@ procesamiento_collection = db["Procesamiento"]
 directorios_collection = db["directorios"]
 resultados_collection  = db["Resultados"]
 predicciones_collection = db["predicciones"]
+modelo_collection = db["modelo"]
 
 # Definición del modelo de usuario
 class User(BaseModel):
@@ -131,6 +132,15 @@ class Reporte(BaseModel):
     fecha_real: date
     debe_pagar: float
     valor_pagar: float
+ 
+class Modelo(BaseModel):
+    pond_sin_acciones: float
+    pond_correo_electronico: float
+    pond_sms: float
+    pond_whatsapp: float
+    pond_llamada_por_bot: float
+    pond_llamada_directa: float
+    pond_acciones_judiciales: float
 
 class KMeansModel(BaseModel):
     model_name: str  
@@ -428,6 +438,52 @@ async def get_all_deudores_ids():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
     
     return deudor_ids
+
+
+@app.post("/api/manipular-modelo")
+async def update_weights(weights: List[float] = Form(...)):
+    if len(weights) != 7:
+        raise HTTPException(status_code=400, detail="Se requieren exactamente 7 pesos.")
+
+    # Crear un diccionario con los nombres de los campos
+    modelo_data_dict = {
+        "pond_sin_acciones": weights[0],
+        "pond_correo_electronico": weights[1],
+        "pond_sms": weights[2],
+        "pond_whatsapp": weights[3],
+        "pond_llamada_por_bot": weights[4],
+        "pond_llamada_directa": weights[5],
+        "pond_acciones_judiciales": weights[6],
+    }
+
+    # Crear el modelo a partir del diccionario
+    modelo_data = Modelo(**modelo_data_dict)
+
+    # Buscar un documento existente
+    existing_modelo = modelo_collection.find_one({})
+
+    if existing_modelo:
+        # Actualizar el documento existente
+        result = modelo_collection.update_one(
+            {"_id": existing_modelo["_id"]},
+            {"$set": modelo_data.dict()}
+        )
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="No se pudo actualizar el registro")
+    else:
+        # Insertar un nuevo documento
+        modelo_collection.insert_one(modelo_data.dict())
+
+    return JSONResponse(content={'message': 'Pesos actualizados correctamente'}, status_code=200)
+
+
+@app.get("/api/modelo")
+async def get_modelo():
+    existing_modelo = modelo_collection.find_one({})
+    if existing_modelo:
+        return JSONResponse(content=existing_modelo, status_code=200)
+    else:
+        raise HTTPException(status_code=404, detail="No se encontró ningún registro")
 
 #--------------------------------Models---------------------------------------------------------------
 

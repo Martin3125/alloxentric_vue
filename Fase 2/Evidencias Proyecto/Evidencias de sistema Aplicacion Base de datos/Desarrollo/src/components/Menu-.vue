@@ -85,7 +85,7 @@
                 <hr class="my-3">
                 <ul class="nav flex-column mb-auto">
                     <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2" href="#" style="color: #ffffff;">
+                    <a class="nav-link d-flex align-items-center gap-2" href="/settings" style="color: #ffffff;">
                         <svg class="bi"><use xlink:href="#gear-wide-connected"></use></svg>
                         Settings
                     </a>
