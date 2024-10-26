@@ -176,6 +176,17 @@ body {
     justify-content: flex-start;
 }
 
+#Titulo2{
+    color: #ffffff;
+    width: 100%;
+    height: 9vh;
+    border: 30px;
+    /* margin: auto; */
+    margin-top: 2%;
+    margin-left: 10%; 
+    margin-bottom: 2%;
+    margin-right: 2%;
+}
 #usuario{
     background-color: #000000;
     color: #ffffff;
