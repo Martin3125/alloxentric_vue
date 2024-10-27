@@ -5,18 +5,30 @@
   
       <header>
         <div id="logo_header">
+          <button class="toggle-btn" @click="toggleSidebar">
+              <span class="icon" v-if="isCollapsed">☰</span>
+              <span class="icon" v-else>✖</span>
+          </button>
           <img src="@/assets/2.png" alt="logo">
           <h2>Alloxentric</h2>
         </div>
+        <div class="input_search" >
+          <input v-model="busqueda" type="search" placeholder="Buscar" />
+          <i class="bi bi-search" id="search"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
+        </div>
+
         <div id="menu">
           <!-- Menu content can be added here -->
         </div>
       </header>
   
       <div class="main">
-        <Menu_P />
+        <Menu_P v-if="!isCollapsed"/>
         <div class="general">
-          <div class="general-resultados">
+          <!-- <div class="general-resultados">
             <div class="pag-resultados">
               <h5 style="margin-top: 3%;">Generar resultados</h5>
             </div>
@@ -24,7 +36,7 @@
             <div class="user">
               <h5 style="margin-top: 3%;">Usuario</h5>
             </div>
-          </div>
+          </div> -->
   
           <div class="resultados">
           <div class="main-documentos">
@@ -166,6 +178,7 @@
         file: null,
         uploadedDocuments: [],
         predictions: [],  // Cambia a un array para manejar múltiples predicciones
+        isCollapsed: true,
       };
     },
     methods: {
@@ -222,6 +235,9 @@
           console.error('Error en la solicitud:', error);
         }
       },
+      toggleSidebar() {
+        this.isCollapsed = !this.isCollapsed;
+      },
     }
   };
   </script>
@@ -236,5 +252,22 @@ th, td {
   border: 1px solid black;
   padding: 8px;
   text-align: center;
+}
+.input_search input {
+	border-radius: 30px;
+	width: 40%;
+	outline: none;
+	padding: 10px 20px;
+	border: 1px solid #c9c9c9;
+	box-sizing: border-box;
+	padding-right: 50px;
+  margin-left: 15%;
+}
+.card-title2{
+    display: flex;
+    justify-content:center;
+    margin: auto;
+    font-weight: 600;
+
 }
 </style>

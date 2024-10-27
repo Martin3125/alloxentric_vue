@@ -3,28 +3,33 @@
    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600&display=swap" rel="stylesheet">
    <header>
     <div id="logo_header">
+      <button class="toggle-btn" @click="toggleSidebar">
+          <span class="icon" v-if="isCollapsed">☰</span>
+          <span class="icon" v-else>✖</span>
+      </button>
       <img src="@/assets/2.png" alt="logo" />
       <h2>Alloxentric</h2>
+    </div>
+    <div class="input_search" >
+      <input v-model="busqueda" type="search" placeholder="Buscar" />
+      <i class="bi bi-search" id="search"></i>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
     </div>
     <div id="menu"></div>
   </header>
 
   <div class="my-component">
     <div id="general">
-      <Menu_P />
+      <Menu_P v-if="!isCollapsed"/>
       <main id="cards">
         <div id="arriba">
-          <div class="input_search" id="Titulo2">
-            <input v-model="busqueda" type="search" placeholder="Buscar" />
-            <i class="bi bi-search" id="search"></i>
-          </div>
-          <div class="card-body" id="usuario">
-            <h5 class="card-title2">Usuario</h5>
-          </div>
+          
         </div>
 
         <div id="bodycard">
-          <div class="container">
+          <div class="container2">
             <div class="table_header">
               <h2>Últimos archivos subidos</h2>
               <select v-model="itemsPerPage" @change="updatePagination">
@@ -116,6 +121,8 @@ export default {
       itemsPerPage: 5,
       currentPage: 1,
       maxVisiblePages: 5,
+      isCollapsed: true,
+      usuarioLogueado: "",  // Aquí se almacenará el nombre del usuario
     };
   },
   computed: {
@@ -144,6 +151,21 @@ export default {
 
   },
   methods: {
+    async login(email, password) {
+      try {
+        const response = await axios.post("http://localhost:8000/api/login", {
+          email: email,
+          pwd: password,
+        });
+
+        if (response.data.success) {
+          this.usuarioLogueado = response.data.nombre;  // Guardar el nombre del usuario
+          console.log("Inicio de sesión exitoso");
+        }
+      } catch (error) {
+        console.error("Error en el inicio de sesión:", error.response.data.detail);
+      }
+    },
     async getArchivos() {
       try {
         const response = await axios.get('http://localhost:8000/api/inicio');
@@ -182,10 +204,15 @@ export default {
         console.error("Error al eliminar el procesamiento:", error);
       }
     },
+    toggleSidebar() {
+        this.isCollapsed = !this.isCollapsed;
+      },
   },
   mounted() {
     this.getArchivos();
-    this.getProcesamientos();
+    this.getProcesamientos(); 
+    this.login();
+     // Método para obtener el usuario si está disponible
   },
 };
 </script>
@@ -197,7 +224,7 @@ export default {
 .container {
 	display: flex;
 	flex-direction: column;
-	box-shadow: 8px 8px 5px 0px #bdbdbdbf;
+	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
 	width: 90%;
 	background-color: #ffffff;
 	border-radius: 30px;
@@ -207,11 +234,13 @@ export default {
 .container2 {
 	display: flex;
 	flex-direction: column;
-	box-shadow: 8px 8px 5px 0px #bdbdbdbf;
+	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
 	width: 90%;
 	background-color: #ffffff;
 	border-radius: 30px;
-   margin: auto;
+  margin: auto;
+  margin-left: 1%;
+  margin-right: 1%;
 }
 
 .container, .container2 {
@@ -231,16 +260,15 @@ export default {
 button {
 	outline: none;
 	border: none;
-	background-color: #27bb13;
+	background-color: #06B7B2;
 	color: #ffffff;
 	padding: 10px 30px;
 	border-radius: 20px;
-	text-transform: uppercase;
 	cursor: pointer;
 }
 
 button:hover {
-	background-color: #27bb13;
+	background-color: #06B7B2;
 }
 
 select {
@@ -263,6 +291,7 @@ select {
 	border: 1px solid #c9c9c9;
 	box-sizing: border-box;
 	padding-right: 50px;
+  margin-left: 15%;
 }
 
 .input_search #search {
@@ -326,15 +355,19 @@ button {
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #27bb13;
+  background-color: #06B7B2;
   color: white;
 }
 
 button:disabled {
-  background-color: #27bb13;
+  background-color: #06B7B2;
 }
 
 button.active {
   background-color: #ffa500; /* Cambiar color para la página activa */
+}
+
+.toggle-btn{
+  background-color: #06B7B2;
 }
 </style>

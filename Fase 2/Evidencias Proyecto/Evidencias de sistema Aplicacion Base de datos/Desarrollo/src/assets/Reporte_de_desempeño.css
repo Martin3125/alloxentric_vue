@@ -30,7 +30,6 @@ header {
     font-weight: 600;
     padding-left: 20px;
 }
-
 #menu {
     /* width: 45%;
     display: flex;
@@ -78,57 +77,10 @@ header {
 }
 
 
-#hist_masterbikes {
-    display: flex;
-    width: 80%;
-    padding: 20px;
-    margin: 20px 0 20px 9%;
-    background-color: black;
-    color: white;
-}
-
 body {
     background-color: #ffffff;
     background-color: #ffffff;
     background-image: url("");}
-
-#hist_masterbikes>img {
-    width: 700px;
-    margin-right: 15px;
-}
-
-#parrafo_hist>h1 {
-    color: rgb(212, 175, 55);
-}
-
-footer {
-    font-family: 'Chakra Petch', sans-serif;
-    background-color: black;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-}
-
-#redes_sociales {
-    display: flex;
-    align-items: center;
-}
-
-#redes_sociales>a>img {
-    width: 60px;
-    height: 60px;
-}
-
-#logo_footer {
-    display: flex;
-    align-items: center;
-    padding-right: 20px;
-}
-
-#logo_footer>img {
-    width: 200px;
-    height: 200px;
-}
 
 
 #general{
@@ -143,6 +95,7 @@ footer {
     width: 80%;
     height: 80vh;
     margin: auto;
+    margin-top: 2%;
     display: flex;
     justify-content: space-between;
 }
@@ -309,7 +262,7 @@ footer {
 
 h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
 label {
@@ -328,7 +281,7 @@ button {
     cursor: pointer;
 }
 button:hover {
-    background-color: #0056b3;
+    background-color: #06B7B2;
 }
 
 table {

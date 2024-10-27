@@ -3,24 +3,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
     <header>
         <div id="logo_header">
-            <img src="@/assets/2.png" alt="logo">
-            <h2>Alloxentric</h2>
+          <button class="toggle-btn" @click="toggleSidebar">
+              <span class="icon" v-if="isCollapsed">☰</span>
+              <span class="icon" v-else>✖</span>
+          </button>
+          <img src="@/assets/2.png" alt="logo">
+          <h2>Alloxentric</h2>
         </div>
-
+        <div class="input_search" >
+          <input v-model="busqueda" type="search" placeholder="Buscar" />
+          <i class="bi bi-search" id="search"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
+        </div>
         <div id="menu">
         </div>
     </header>
+    
 <div id="general">
-  <Menu_P  />
+  <Menu_P v-if="!isCollapsed"/>
     <main id="cards">
-        <div id="arriba">
+        <!-- <div id="arriba">
             <div class="card-body"  id="Titulo" >
                 <h5 class="card-title1">Informes</h5>
             </div>
             <div class="card-body" id="usuario">
                 <h5 class="card-title2">Usuario</h5>
             </div>
-        </div>
+        </div> -->
         <div  id="card"  class="card">
           <div class="container">
             <!-- Header de la tabla -->
@@ -37,10 +48,6 @@
                 <option value="Llamada directa">Llamada directa</option>
                 <option value="Acciones judiciales">Acciones judiciales</option> 
               </select>
-              <div class="input_search">
-                <input v-model="busqueda" type="search" placeholder="Buscar" />
-                <i class="bi bi-search" id="search"></i>
-              </div>
             </div>
 
             <!-- Tabla de productos -->
@@ -207,6 +214,7 @@ export default {
       deudor_ids: [],  // Aquí se almacenarán los IDs de los deudores
       busqueda: "",
       tipoSeleccionado: "",
+      isCollapsed: true,
     };
   },
   mounted() {
@@ -251,7 +259,7 @@ export default {
 
     async getReporteDesempeno(deudor_id) {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/reportes/${deudor_id}`);
+        const response = await axios.get(`http://localhost:8000/api/reportes/${deudor_id}`);
         console.log(response.data);  // Verifica el formato de los datos en la consola
         // Si la respuesta es un array, agrega los reportes
         if (Array.isArray(response.data)) {
@@ -262,7 +270,10 @@ export default {
       } catch (error) {
         console.error("Error al obtener el reporte de desempeño para el deudor:", deudor_id, error);
       }
-    }
+    },
+    toggleSidebar() {
+        this.isCollapsed = !this.isCollapsed;
+      },
   },
 }
 </script>
@@ -273,7 +284,7 @@ export default {
 .container {
 	display: flex;
 	flex-direction: column;
-	box-shadow: 8px 8px 5px 0px #bdbdbdbf;
+	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
 	width: 90%;
 	background-color: #ffffff;
 	border-radius: 30px;
@@ -288,21 +299,6 @@ export default {
 	padding: 20px 30px 0;
 }
 
-button {
-	outline: none;
-	border: none;
-	background-color: #27bb13;
-	color: #ffffff;
-	padding: 10px 30px;
-	border-radius: 20px;
-	text-transform: uppercase;
-	font-size: 14px;
-	cursor: pointer;
-}
-
-button:hover {
-	background-color: #27bb13;
-}
 
 select {
 	border: none;
@@ -373,4 +369,11 @@ tbody tr:hover {
 	padding: 0 30px 20px;
 }
 
+.card-title2{
+    display: flex;
+    justify-content:center;
+    margin: auto;
+    font-weight: 600;
+
+}
 </style>

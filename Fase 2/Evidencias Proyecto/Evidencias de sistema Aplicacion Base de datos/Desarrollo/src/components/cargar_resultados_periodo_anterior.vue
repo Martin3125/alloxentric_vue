@@ -4,10 +4,20 @@
 <body>
     <header>
         <div id="logo_header">
+          <button class="toggle-btn" @click="toggleSidebar">
+              <span class="icon" v-if="isCollapsed">☰</span>
+              <span class="icon" v-else>✖</span>
+          </button>
             <img src="@/assets/2.png" alt="logo">
             <h2>Alloxentric</h2>
         </div>
-
+        <div class="input_search" >
+          <input v-model="busqueda" type="search" placeholder="Buscar" />
+          <i class="bi bi-search" id="search"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
+        </div>
         <div id="menu">
         </div>
         
@@ -16,16 +26,16 @@
 
 </body>
     <div class="main">
-        <Menu_P  />
+      <Menu_P v-if="!isCollapsed"/>
             <div class="general">
-                <div id="arriba">
+                <!-- <div id="arriba">
                     <div class="card-body"  id="Titulo1" >
                         <h5 class="card-title1">Cargar resultados</h5>
                     </div>
                     <div class="card-body" id="usuario">
                         <h5 class="card-title2">Usuario</h5>
                     </div>
-                </div>
+                </div> -->
                 <div class="resultados">
                     <div class="main-resultados">
                         <div class="mb-3" id="select_resultados">
@@ -103,6 +113,7 @@ export default {
       nuevoDirectorio: '',
       contenidoArchivo: '',
       archivo: null,  // Archivo seleccionado para subir
+      isCollapsed: true,
     };
   },
   methods: {
@@ -200,6 +211,9 @@ export default {
     confirmar() {
       alert("Resultados confirmados.");
     },
+    toggleSidebar() {
+        this.isCollapsed = !this.isCollapsed;
+      },
   },
   mounted() {
     this.fetchDirectories();
@@ -297,6 +311,23 @@ export default {
   cursor: pointer;
 }
 
+.input_search input {
+	border-radius: 30px;
+	width: 40%;
+	outline: none;
+	padding: 10px 20px;
+	border: 1px solid #c9c9c9;
+	box-sizing: border-box;
+	padding-right: 50px;
+  margin-left: 15%;
+}
+.card-title2{
+    display: flex;
+    justify-content:center;
+    margin: auto;
+    font-weight: 600;
+
+}
 .modal-overlay {
   position: fixed;
   top: 0;

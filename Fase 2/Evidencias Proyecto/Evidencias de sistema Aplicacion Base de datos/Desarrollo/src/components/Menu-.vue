@@ -102,7 +102,7 @@
 </div>
 </template>
 
-<script>
+<!-- <script>
 // import Inicio from './Inicio-.vue';
 // import Cobranza from './Cobranza-.vue';
 
@@ -116,4 +116,20 @@ export default {
   
  
 }
+</script> -->
+
+<script>
+export default {
+  name: 'Menu_P',
+  data() {
+    return {
+      isCollapsed: true,
+    };
+  },
+  methods: {
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
+    },
+  },
+};
 </script>

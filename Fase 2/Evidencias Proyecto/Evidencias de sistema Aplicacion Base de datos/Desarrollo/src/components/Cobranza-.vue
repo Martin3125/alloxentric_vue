@@ -4,24 +4,34 @@
     <body>
     <header>
         <div id="logo_header">
+          <button class="toggle-btn" @click="toggleSidebar">
+              <span class="icon" v-if="isCollapsed">☰</span>
+              <span class="icon" v-else>✖</span>
+          </button>
             <img src="@/assets/2.png" alt="logo">
             <h2>Alloxentric</h2>
         </div>
-
+        <div class="input_search" >
+          <input v-model="busqueda" type="search" placeholder="Buscar" />
+          <i class="bi bi-search" id="search"></i>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
+        </div>
         <div id="menu">
         </div>
     </header>
 <div id="general">
-  <Menu_P  />
+  <Menu_P v-if="!isCollapsed"/>
     <main id="cards">
-        <div id="arriba">
+        <!-- <div id="arriba">
             <div class="card-body"  id="Titulo" >
                 <h5 class="card-title1">Cobranza</h5>
             </div>
             <div class="card-body" id="usuario">
                 <h5 class="card-title2">Usuario</h5>
             </div>
-        </div>
+        </div> -->
         <div  id="card"  class="card">
             <div class="card-body" >
                 <h5 class="card-title3">Acciones de Cobranza</h5>
@@ -59,7 +69,8 @@ export default {
         { Id_accion: null, accion_cobranza: 'Llamada por bot', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
         { Id_accion: null, accion_cobranza: 'Llamada directa', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
         { Id_accion: null, accion_cobranza: 'Acciones judiciales', fecha_cobranza: '', intervalo: 0, valor: 0.00 }
-      ]
+      ],
+      isCollapsed: true,
     };
   },
   methods: {
@@ -85,7 +96,10 @@ export default {
       } catch (error) {
         console.error('Error en la solicitud:', error);
       }
-    }
+    },
+    toggleSidebar() {
+        this.isCollapsed = !this.isCollapsed;
+      },
   }
 };
 </script>
