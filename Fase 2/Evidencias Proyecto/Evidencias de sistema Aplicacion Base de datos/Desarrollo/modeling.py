@@ -9,6 +9,7 @@ from tensorflow.keras import layers, models
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.datasets import make_classification
+from pymongo import MongoClient
 
 # Implementa el modelo K-means aquí
 def run_kmeans(df_final):
@@ -70,6 +71,29 @@ def run_kmeans(df_final):
 
     return df_final
 
+# Conexión a MongoDB
+client = MongoClient("mongodb://localhost:27017/")
+db = client["alloxentric"]
+modelo_collection = db["modelo"]
+
+def obtener_ponderaciones():
+    # Obtener el documento de ponderaciones desde MongoDB
+    modelo = modelo_collection.find_one({})
+    n_samples = modelo.get("n_samples", 10000)
+    if modelo:
+        return [
+            modelo["pond_sin_acciones"],
+            modelo["pond_correo_electronico"],
+            modelo["pond_sms"],
+            modelo["pond_whatsapp"],
+            modelo["pond_llamada_por_bot"],
+            modelo["pond_llamada_directa"],
+            modelo["pond_acciones_judiciales"],
+        ], n_samples
+    else:
+        # Valores predeterminados si no se encuentran ponderaciones en la base de datos
+        return [0.85, 0.05, 0.05, 0.05, 0.01, 0.01, 0.1], 10000
+    
 # Implementa el modelo LSTM aquí
 def run_lstm(df_final):
     # Suponiendo que df_final ya contiene las columnas de acciones
@@ -109,16 +133,24 @@ def run_lstm(df_final):
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
+     # Obtener ponderaciones y n_samples actualizados desde MongoDB
+    ponderaciones, n_samples = obtener_ponderaciones()
+
     # Crear datos sintéticos para clases minoritarias
-    n_samples = 10000  # Ajusta este valor según sea necesario
-    X_synthetic, y_synthetic = make_classification(n_samples=n_samples,
-                                                n_features=X.shape[1],
-                                                n_classes=len(np.unique(y)),
-                                                n_informative=X.shape[1] // 2,
-                                                n_redundant=0,
-                                                n_clusters_per_class=1,
-                                                weights=[0.85, 0.05, 0.05, 0.05, 0.01, 0.01, 0.1],
-                                                random_state=42)
+    # n_samples = 10000  # Ajusta este valor según sea necesario
+    X_synthetic, y_synthetic = make_classification(
+        n_samples=n_samples,
+        n_features=X.shape[1],
+        n_classes=len(np.unique(y)),
+        n_informative=X.shape[1] // 2,
+        n_redundant=0,
+        n_clusters_per_class=1,
+        weights=ponderaciones,
+        random_state=42
+    )
+
+    print(f"Ponderaciones: {ponderaciones}")
+    print(f"N° Samples: {n_samples}")
 
     # Combinar datos originales con datos sintéticos
     X_combined = np.vstack((X_scaled, X_synthetic))

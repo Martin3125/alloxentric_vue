@@ -141,6 +141,7 @@ class Modelo(BaseModel):
     pond_llamada_por_bot: float
     pond_llamada_directa: float
     pond_acciones_judiciales: float
+    n_samples: int
 
 class KMeansModel(BaseModel):
     model_name: str  
@@ -441,7 +442,7 @@ async def get_all_deudores_ids():
 
 
 @app.post("/api/manipular-modelo")
-async def update_weights(weights: List[float] = Form(...)):
+async def update_weights(weights: List[float] = Form(...), n_samples: int = Form(...)):
     if len(weights) != 7:
         raise HTTPException(status_code=400, detail="Se requieren exactamente 7 pesos.")
 
@@ -454,6 +455,7 @@ async def update_weights(weights: List[float] = Form(...)):
         "pond_llamada_por_bot": weights[4],
         "pond_llamada_directa": weights[5],
         "pond_acciones_judiciales": weights[6],
+        "n_samples": n_samples  # Añadir n_samples al diccionario
     }
 
     # Crear el modelo a partir del diccionario
