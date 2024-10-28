@@ -177,6 +177,7 @@ body {
 	flex-direction: column;
 	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
 	width: 90%;
+  height: 80%;
 	background-color: #ffffff;
 	border-radius: 30px;
   justify-content: center;
