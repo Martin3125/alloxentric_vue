@@ -1,122 +1,92 @@
 <template>
-    <link rel="stylesheet" href="src/assets/Reporte_de_la_ultima_carga.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
-    <header>
-        <div id="logo_header">
+  <link rel="stylesheet" href="src/assets/Reporte_de_la_ultima_carga.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
+  <header>
+      <div id="logo_header">
           <button class="toggle-btn" @click="toggleSidebar">
-            <span class="icon" v-if="isCollapsed">☰</span>
-            <span class="icon" v-else>✖</span>
-        </button>
-            <img src="@/assets/2.png" alt="logo">
-            <h2>Alloxentric</h2>
-        </div>
-        <div class="input_search" >
+              <span class="icon" v-if="isCollapsed">☰</span>
+              <span class="icon" v-else>✖</span>
+          </button>
+          <img src="@/assets/2.png" alt="logo">
+          <h2>Alloxentric</h2>
+      </div>
+      <div class="input_search">
           <input v-model="busqueda" type="search" placeholder="Buscar" />
           <i class="bi bi-search" id="search"></i>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
-        </div>
-        <div id="menu">
-        </div>
-    </header>
-<div id="general">
-  <Menu_P v-if="!isCollapsed"/>
-    <main id="cards">
-        <!-- <div id="arriba">
-            <div class="card-body"  id="Titulo" >
-                <h5 class="card-title1">Informes</h5>
-            </div>
-            <div class="card-body" id="usuario" >
-                <h5 class="card-title2">Usuario</h5>
-            </div>
-        </div> -->
-        <div  id="card"  class="card">
-          <div class="container">
-            <!-- Header de la tabla -->
-            <div class="table_header">
-              <h2>Reporte de la ultima carga</h2>
-              <!-- <button @click="crearProducto">Crear nuevo</button> -->
-              <select v-model="tipoSeleccionado">
-                <option value="" selected>Tipo de acción</option>
-                <option value="Sin acciones">Sin acciones</option>
-                <option value="Correo electrónico">Correo electrónico</option>
-                <option value="SMS">SMS</option>
-                <option value="Whatsapp">Whatsapp</option>
-                <option value="Llamada por bot">Llamada por bot</option>
-                <option value="Llamada directa">Llamada directa</option>
-                <option value="Acciones judiciales">Acciones judiciales</option> 
-              </select>
-            </div>
+      </div>
+      <div class="card-body">
+          <h5 class="card-title2">Usuario: {{ usuarioLogueado }}</h5>
+      </div>
+  </header>
+  <div id="general">
+      <Menu_P v-if="!isCollapsed"/>
+      <main id="cards">
+          <div id="card" class="card">
+              <div class="container">
+                  <!-- Header de la tabla -->
+                  <div class="table_header">
+                      <h2>Reporte de la última carga</h2>
+                      <select v-model="tipoSeleccionado">
+                          <option value="" selected>Tipo de acción</option>
+                          <option value="Sin acciones">Sin acciones</option>
+                          <option value="Correo electrónico">Correo electrónico</option>
+                          <option value="SMS">SMS</option>
+                          <option value="Whatsapp">Whatsapp</option>
+                          <option value="Llamada por bot">Llamada por bot</option>
+                          <option value="Llamada directa">Llamada directa</option>
+                          <option value="Acciones judiciales">Acciones judiciales</option>
+                      </select>
+                  </div>
 
-            <!-- Tabla de productos -->
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre del documento</th>
-                  <th>Fecha de carga</th>  
-                  <th>Registro de gente</th>
-                  <th>Tipo de acción</th>
-                  <th>Cantidad de gente a contactar</th>
-                  <th>Precio</th>
-                  <th>Acciones de cobranza</th>
-                  <th>Total deudores</th>
-                  <th>Operaciones</th> <!-- (Descargar) -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="resultado in paginatedResultados" :key="resultado.id">
-                  <td>{{ resultado.Id_resultados }}</td>
-                  <td>{{ resultado.nombre }}</td>
-                  <td>{{ resultado.fecha }}</td>
-                  <td>{{ resultado.registro }}</td>
-                  <td>{{ resultado.tipo }}</td>
-                  <td>{{ resultado.cantidad }}</td>
-                  <td>{{ resultado.precio }}</td>
-                  <td>
-                    <ul v-for="(prediccion, i) in resultado.predicciones" :key="i">
-                    
-                       {{ prediccion.accion_predicha }}
-                        
-                      </ul>
-                    </td>
-                    <td>
-                      <ul v-for="(prediccion, i) in resultado.predicciones" :key="i">
-                        
-                       {{ prediccion.total_deudores }}
-                       
-                      </ul>
-                    </td>
-                  <td>
-                    <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
-                    <i class="bi bi-trash" @click="eliminarResultado(resultado._id)"></i>
-                  </td>
-                  
-              </tr>
-              <!-- <tr v-for="(resultado, index) in predictions" :key="index">
-                            <td style="border: 1px solid black;">{{ resultado.accion_predicha }}</td>
-                            <td style="border: 1px solid black;">{{ resultado.total_deudores }}</td>
-                        </tr> -->
-                       
-              </tbody>
-              <tbody>
-                  <tr v-for="(prediccion, _id) in predicciones" :key="_id">
-                      <td style="border: 1px solid black;">{{ prediccion.accion_predicha }}</td>
-                      <td style="border: 1px solid black;">{{ prediccion.total_deudores }}</td>
-                  </tr>
-              </tbody>
-            </table>
+                  <!-- Tabla de productos -->
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>#</th>
+                              <th>ID Procesamiento</th>
+                              <th>Documento Cargado</th>
+                              <th>Fecha de Carga</th>
+                              <th>Registro de Deudores</th>
+                              <th>Acciones de Cobranza</th>
+                              <th>Deudores a Contactar</th>
+                              <th>Precio</th>
+                              <th>Operaciones</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr v-for="(resultado, index) in paginatedResultados" :key="index">
+                              <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                              <td>{{ resultado.id_procesamiento }}</td>
+                              <td>{{ resultado.documento_cargado }}</td>
+                              <td>{{ resultado.fecha_carga }}</td>
+                              <td>{{ resultado.registro_deudores }}</td>
+                              <td>{{ resultado.acciones_cobranza }}</td>
+                              <td>{{ resultado.deudores_contactar }}</td>
+                              <td>{{ resultado.precio }}</td>
+                              <td>
+                                  <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
+                                  <i class="bi bi-trash" @click="eliminarResultado(resultado._id)"></i>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
 
-            <!-- Footer de la tabla -->
-            <div class="table_footer">
-              <p>Total de filas: {{ paginatedResultados.length }}</p>
+                  <!-- Footer de la tabla con paginación -->
+                  <div class="table_footer">
+                      <p>Total de filas: {{ resultadosFiltrados.length }}</p>
+                      <div class="pagination">
+                          <button @click="changePage(1)" :disabled="currentPage === 1">Primera</button>
+                          <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Anterior</button>
+                          <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                          <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Siguiente</button>
+                          <button @click="changePage(totalPages)" :disabled="currentPage === totalPages">Última</button>
+                      </div>
+                  </div>
+              </div>
           </div>
-          </div>
-        </div>
-    </main>
-</div>
-</template> 
+      </main>
+  </div>
+</template>
 
 <script>
 import { initializeFilter } from './js/filtro.js';
@@ -126,81 +96,70 @@ import axios from 'axios';
 export default {
   name: 'Reporte_ultima_carga',
   mounted() {
-    initializeFilter();
-    this.fetchResultados();
-    this.fetchPredicciones();
+      initializeFilter();
+      this.fetchResultados();
   },
   components: {
-    Menu_P,
+      Menu_P,
   },
   data() {
-    return {
-      busqueda: "",
-      tipoSeleccionado: "",
-      resultados: [],
-      predicciones: [], 
-      currentPage: 1,
-      itemsPerPage: 5,
-      // predictions: JSON.parse(localStorage.getItem('predicciones')) || [], // Recupera las predicciones del local storage
-      isCollapsed: true,
-    };
+      return {
+          busqueda: "",
+          tipoSeleccionado: "",
+          resultados: [],
+          currentPage: 1,
+          itemsPerPage: 5, // Mostrará solo 5 registros por página
+          isCollapsed: true,
+      };
   },
   computed: {
-    resultadosFiltrados() {
-      return this.resultados.filter((resultado) => {
-        const coincideBusqueda = resultado.nombre.toLowerCase().includes(this.busqueda.toLowerCase());
-        const coincideTipo = !this.tipoSeleccionado || resultado.tipo === this.tipoSeleccionado;
-        return coincideBusqueda && coincideTipo;
-      });
-    },
-    paginatedResultados() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.resultadosFiltrados.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.resultadosFiltrados.length / this.itemsPerPage);
-    }
+      resultadosFiltrados() {
+          return this.resultados.filter((resultado) => {
+              const coincideBusqueda = resultado.documento_cargado.toLowerCase().includes(this.busqueda.toLowerCase());
+              const coincideTipo = !this.tipoSeleccionado || resultado.acciones_cobranza === this.tipoSeleccionado;
+              return coincideBusqueda && coincideTipo;
+          });
+      },
+      paginatedResultados() {
+          const start = (this.currentPage - 1) * this.itemsPerPage;
+          const end = start + this.itemsPerPage;
+          return this.resultadosFiltrados.slice(start, end);
+      },
+      totalPages() {
+          return Math.ceil(this.resultadosFiltrados.length / this.itemsPerPage);
+      }
   },
   methods: {
-    async fetchResultados() {
-      try {
-        const response = await axios.get('http://localhost:8000/resultados');
-        this.resultados = response.data;
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    },
-    changePage(page) {
-      this.currentPage = page;
-    },
-    editarResultado(resultado) {
-      console.log("Editar resultado", resultado);
-    },
-    async eliminarResultado(id) {
-      try {
-        await axios.delete(`http://localhost:8000/resultados/${id}`);
-        this.fetchResultados();
-      } catch (error) {
-        console.error('Error deleting result:', error);
-      }
-    },
-    async fetchPredicciones() {
-        try {
-            const response = await axios.get('/api/predicciones');
-            if (response.data && response.data.predicciones) {
-                this.predicciones = response.data.predicciones; // Asigna las predicciones al array
-            }
-        } catch (error) {
-            console.error('Error al obtener las predicciones:', error);
-        }
-    },
-    toggleSidebar() {
-        this.isCollapsed = !this.isCollapsed;
+      async fetchResultados() {
+          try {
+              const response = await axios.get('http://localhost:8000/resultados');
+              this.resultados = response.data;
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+      },
+      changePage(page) {
+          this.currentPage = page;
+      },
+      editarResultado(resultado) {
+          console.log("Editar resultado", resultado);
+      },
+      async eliminarResultado(id) {
+          try {
+              await axios.delete(`http://localhost:8000/resultados/${id}`);
+              this.fetchResultados();
+          } catch (error) {
+              console.error('Error deleting result:', error);
+          }
+      },
+      toggleSidebar() {
+          this.isCollapsed = !this.isCollapsed;
       },
   },
 };
 </script>
+
+
 
 <style scoped>
 

@@ -33,6 +33,8 @@ import os
 from data_preparation import prepare_data
 from modeling import run_kmeans, run_lstm
 
+
+
 # app = FastAPI()
 
 # Inicializar la aplicación FastAPI
@@ -111,15 +113,24 @@ class Prediccion(BaseModel):
     accion_predicha: str
     total_deudores: int
 
+# class Resultados(BaseModel):
+    # Id_resultados: int
+    # nombre: str
+    # fecha: str
+    # registro: int
+    # tipo: str
+    # cantidad: str
+    # precio: float
+    # predicciones: List[Prediccion]
+
 class Resultados(BaseModel):
-    Id_resultados: int
-    nombre: str
-    fecha: str
-    registro: int
-    tipo: str
-    cantidad: str
+    id_procesamiento: str
+    documento_cargado: str
+    fecha_carga: str
+    registro_deudores: int
+    acciones_cobranza: str
+    deudores_contactar: int
     precio: float
-    predicciones: List[Prediccion]
 
 class Reporte(BaseModel):
     ID_deudor: Optional[str]
@@ -486,6 +497,8 @@ async def get_modelo():
         return JSONResponse(content=existing_modelo, status_code=200)
     else:
         raise HTTPException(status_code=404, detail="No se encontró ningún registro")
+    
+
 
 #--------------------------------Models---------------------------------------------------------------
 
@@ -751,10 +764,17 @@ from typing import List
 
 # Obtener todos los resultados - GET
 @app.get("/resultados", response_model=List[Resultados])
-def obtener_resultados():
-    resultados = list(resultados_collection.find())  # Obtener todos los resultados
-    if not resultados:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron resultados.")
+async def obtener_resultados():
+    resultados = []
+    for resultado in resultados_collection.find():
+        resultado["id_procesamiento"] = resultado["id_procesamiento"]
+        resultado["documento_cargado"] = resultado["documento_cargado"]
+        resultado["fecha_carga"] = resultado["fecha_carga"]
+        resultado["registro_deudores"] = resultado["registro_deudores"]
+        resultado["acciones_cobranza"] = resultado["acciones_cobranza"]
+        resultado["deudores_contactar"] = resultado["deudores_contactar"]
+        resultado["precio"] = resultado["precio"]
+        resultados.append(Resultados(**resultado))  # Usa el modelo para la respuesta
     return resultados
 
 # Crear un nuevo resultado - POST
@@ -800,3 +820,40 @@ async def get_predicciones():
         })
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener predicciones: {str(e)}")
+    
+
+
+    
+
+# from fastapi import FastAPI, HTTPException, Depends
+# from fastapi.security import OAuth2PasswordBearer
+# from keycloak import KeycloakOpenID
+#------------------------------Prueba keycloak--------------------------------------------------------------------
+
+# # Configura Keycloak
+# keycloak = KeycloakOpenID(
+#     server_url='http://localhost:8080/auth/',
+#     client_id='vue-app',
+#     realm_name='Alloxentric',  # Reemplaza con el nombre de tu realm
+# )
+
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+
+# @app.post("/api/login")
+# async def login_user(token: str = Depends(oauth2_scheme)):
+#     try:
+#         # Verificar el token
+#         user_info = keycloak.decode_token(token, options={"verify_signature": True})
+#         email = user_info['preferred_username']
+
+#         # Aquí puedes buscar al usuario en tu base de datos si es necesario
+#         user_record = users_collection.find_one({"email": email})
+#         if not user_record:
+#             raise HTTPException(status_code=400, detail="Usuario no encontrado")
+
+#         return {"success": True, "message": "Inicio de sesión exitoso", "user": user_record}
+
+#     except Exception as e:
+#         raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+#----------------------------------------------------------------------------------------------------------------
