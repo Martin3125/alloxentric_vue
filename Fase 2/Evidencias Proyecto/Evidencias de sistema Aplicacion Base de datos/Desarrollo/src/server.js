@@ -74,3 +74,23 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+import session from 'express-session';
+import Keycloak from 'keycloak-connect';
+
+const memoryStore = new session.MemoryStore();
+app.use(session({
+  secret: 'your-session-secret',
+  resave: false,
+  saveUninitialized: true,
+  store: memoryStore
+}));
+
+const keycloak = new Keycloak({ store: memoryStore });
+
+app.use(keycloak.middleware());
+
+// Protect routes with Keycloak
+app.get('/api/protected', keycloak.protect(), (req, res) => {
+  res.json({ message: 'This is a protected route' });
+});

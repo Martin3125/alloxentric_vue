@@ -207,12 +207,14 @@ export default {
     toggleSidebar() {
         this.isCollapsed = !this.isCollapsed;
       },
+    logout() {
+      this.$keycloak.logout();
+    },
   },
   mounted() {
     this.getArchivos();
     this.getProcesamientos(); 
     this.login();
-     // Método para obtener el usuario si está disponible
   },
 };
 </script>

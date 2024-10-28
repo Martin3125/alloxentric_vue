@@ -857,3 +857,37 @@ async def get_predicciones():
 #         raise HTTPException(status_code=401, detail="Token inválido o expirado")
 
 #----------------------------------------------------------------------------------------------------------------
+
+#----------------------------------Keycloak-------------------------------------------------------
+
+# from fastapi import Depends, HTTPException, Security
+# from fastapi.security import OAuth2PasswordBearer
+# from jose import JWTError, jwt
+
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# async def get_current_user(token: str = Depends(oauth2_scheme)):
+#     try:
+#         payload = jwt.decode(token, "YOUR_KEYCLOAK_PUBLIC_KEY", algorithms=["RS256"])
+#         username: str = payload.get("preferred_username")
+#         if username is None:
+#             raise HTTPException(status_code=401, detail="Token no válido")
+#         return username
+#     except JWTError:
+#         raise HTTPException(status_code=401, detail="Token no válido o expirado")
+
+# @app.get("/api/protected-endpoint")
+# async def protected_endpoint(username: str = Depends(get_current_user)):
+#     return {"message": f"Hola, {username}"}
+# from fastapi import FastAPI, Depends
+# from keycloak import KeycloakOpenID
+
+
+
+# @app.get("/api/protected-route")
+# def protected_route(token: str = Depends(oauth2_scheme)):
+#     try:
+#         userinfo = keycloak.userinfo(token)
+#         return {"message": "You are authenticated", "userinfo": userinfo}
+#     except Exception as e:
+#         return {"error": str(e)}
