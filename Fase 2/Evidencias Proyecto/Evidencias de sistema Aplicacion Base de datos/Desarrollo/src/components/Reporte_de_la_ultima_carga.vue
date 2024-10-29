@@ -51,6 +51,8 @@
                               <th>Deudores a Contactar</th>
                               <th>Precio</th>
                               <th>Operaciones</th>
+                              <th>Predicción de Cobranza</th>
+                              
                           </tr>
                       </thead>
                       <tbody>
@@ -67,6 +69,10 @@
                                   <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
                                   <i class="bi bi-trash" @click="eliminarResultado(resultado._id)"></i>
                               </td>
+                              <!-- <td>{{ resultado.predicciones }}</td> -->
+                              <td v-for="(prediccion, pIndex) in resultado.predicciones" :key="pIndex">
+                                {{ prediccion.accion_predicha }} ({{ prediccion.total_deudores }})
+                            </td>
                           </tr>
                       </tbody>
                   </table>

@@ -62,7 +62,7 @@ users_collection = db["usuarios"]
 cobranza_collection = db["Cobranza"]
 Sin_acciones_collection = db["Sin_acciones"] 
 acciones_collection = db["AccionCobranza"]
-reporte_collection = db["Reporte"]
+reporte_collection = db["Reporte_desempeño"]
 archivos_collection = db["Archivos"]
 procesamiento_collection = db["Procesamiento"]
 directorios_collection = db["directorios"]
@@ -128,9 +128,12 @@ class Resultados(BaseModel):
     documento_cargado: str
     fecha_carga: str
     registro_deudores: int
-    acciones_cobranza: str
+    # acciones_cobranza: List[AccionCobranza]  # Conectar acciones de cobranza
+    # archivos: List[Archivos]  # Conectar archivos
     deudores_contactar: int
     precio: float
+    predicciones: List[Prediccion]  # Conectar predicciones
+
 
 class Reporte(BaseModel):
     ID_deudor: Optional[str]
@@ -774,8 +777,31 @@ async def obtener_resultados():
         resultado["acciones_cobranza"] = resultado["acciones_cobranza"]
         resultado["deudores_contactar"] = resultado["deudores_contactar"]
         resultado["precio"] = resultado["precio"]
+        # resultado.setdefault("predicciones", [])
+        predicciones = list(predicciones_collection.find({"id_procesamiento": resultado["id_procesamiento"]}))
+        resultado["predicciones"] = [Prediccion(**prediccion) for prediccion in predicciones]
         resultados.append(Resultados(**resultado))  # Usa el modelo para la respuesta
     return resultados
+# @app.get("/resultados", response_model=List[Resultados])
+# async def obtener_resultados():
+#     resultados = []
+#     for resultado in resultados_collection.find():
+#         predicciones = list(predicciones_collection.find({"id_procesamiento": resultado["id_procesamiento"]}))
+#         resultado["predicciones"] = [Prediccion(**prediccion) for prediccion in predicciones]
+
+#         # Asignar otros campos
+#         resultado["id_procesamiento"] = resultado["id_procesamiento"]
+#         resultado["documento_cargado"] = resultado["documento_cargado"]
+#         resultado["fecha_carga"] = resultado["fecha_carga"]
+#         resultado["registro_deudores"] = resultado["registro_deudores"]
+#         resultado["deudores_contactar"] = resultado["deudores_contactar"]
+#         resultado["precio"] = resultado["precio"]
+        
+#         # Añade el resultado al array de resultados
+#         resultados.append(Resultados(**resultado))
+
+#     return resultados
+
 
 # Crear un nuevo resultado - POST
 @app.post("/resultados", response_model=Resultados, status_code=status.HTTP_201_CREATED)
@@ -789,6 +815,7 @@ def crear_resultado(resultado: Resultados):
     
     return resultado
 
+
 # Eliminar un resultado - DELETE
 @app.delete("/resultados/{id_resultado}", status_code=status.HTTP_200_OK)
 def eliminar_resultado(id_resultado: int):
@@ -798,6 +825,8 @@ def eliminar_resultado(id_resultado: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultado no encontrado.")
     
     return {"mensaje": "Resultado eliminado exitosamente"}
+
+
 
 #----------------------------------predicciones-------------------------------------------------------
 

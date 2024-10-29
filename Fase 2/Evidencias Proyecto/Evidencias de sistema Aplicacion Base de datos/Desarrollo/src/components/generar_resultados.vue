@@ -43,10 +43,6 @@
             <div class="mb-3" id="select_documentos">
               <input class="form-control" type="file" @change="handleFileUpload" style="width: 100%;">
             </div>
-
-            <div class="mb-3" id="btn_documentos">
-              <button type="submit" id="btn_documentos" class="btn btn-secondary" style="width: 100%; background-color: black;" @click="uploadFile">Subir</button>
-            </div>
           </div>
 
           <div class="main-procesamiento">
