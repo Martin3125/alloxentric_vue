@@ -47,11 +47,12 @@
                               <th>Documento Cargado</th>
                               <th>Fecha de Carga</th>
                               <th>Registro de Deudores</th>
-                              <th>Acciones de Cobranza</th>
-                              <th>Deudores a Contactar</th>
+                              <!-- <th>Acciones de Cobranza</th>
+                              <th>Deudores a Contactar</th> -->
+                              <th>Predicción de Cobranza</th>
                               <th>Precio</th>
                               <th>Operaciones</th>
-                              <th>Predicción de Cobranza</th>
+                              
                               
                           </tr>
                       </thead>
@@ -62,8 +63,9 @@
                               <td>{{ resultado.documento_cargado }}</td>
                               <td>{{ resultado.fecha_carga }}</td>
                               <td>{{ resultado.registro_deudores }}</td>
-                              <td>{{ resultado.acciones_cobranza }}</td>
-                              <td>{{ resultado.deudores_contactar }}</td>
+                              <!-- <td>{{ resultado.acciones_cobranza }}</td>
+                              <td>{{ resultado.deudores_contactar }}</td> -->
+                              <td>{{ resultado.predicciones }}</td>
                               <td>{{ resultado.precio }}</td>
                               <td>
                                   <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
@@ -114,7 +116,7 @@ export default {
           tipoSeleccionado: "",
           resultados: [],
           currentPage: 1,
-          itemsPerPage: 5, // Mostrará solo 5 registros por página
+          itemsPerPage: 7, // Mostrará solo 5 registros por página
           isCollapsed: true,
       };
   },
