@@ -35,6 +35,10 @@ from modeling import run_kmeans, run_lstm
 
 from models import User, LoginUser, AccionCobranza, Deudor, Archivos, Procesamiento, Prediccion, Resultados, Reporte, Modelo, KMeansModel, Pago, Directorio
 
+import uuid
+
+import random
+import string
 
 # app = FastAPI()
 
@@ -405,125 +409,17 @@ async def get_modelo():
 #--------------------------------Models---------------------------------------------------------------
 
 
-# Configurar CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
-UPLOAD_FOLDER = 'uploads/'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-# Procesar archivo CSV
-def process_file(file_path):
-    try:
-        # Leer el archivo CSV
-        data = pd.read_csv(file_path, sep=';')
-
-        if data.empty:
-            raise ValueError("El archivo CSV está vacío.")
-
-        # Preparar datos usando la función definida en data_preparation.py
-        df_final = prepare_data(data)
-
-        return df_final
-    except KeyError as e:
-        raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Error de datos: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
-
-# Predicciones
-def predict(df_final):
-    try:
-        # Aplicar K-Means
-        df_final = run_kmeans(df_final)
-
-        # Ahora se puede llamar a run_lstm directamente con df_final
-        df_deudores_grouped = run_lstm(df_final)  # Aquí se llama a run_lstm
-
-        return df_deudores_grouped  # Devolvemos el DataFrame agrupado directamente
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
-
-# Subida de archivo
-@app.post('/api/upload')
-async def upload_file(file: UploadFile = File(...)):
-    if not file:
-        raise HTTPException(status_code=400, detail="No se envió ningún archivo")
-
-    # Guardar archivo temporalmente
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-    with open(file_path, "wb") as buffer:
-        buffer.write(await file.read())
-
-    # Procesar el archivo
-    try:
-        df_final = process_file(file_path)  # Procesar el archivo para obtener df_final
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
-
-    # Hacer predicciones
-    try:
-        df_group = predict(df_final)  # Ahora se pasa df_final a la función predict
-        predicciones_resultados = df_group.to_dict(orient="records")
-
-          # Preparar documentos para MongoDB
-        predicciones_documentos = [
-            {
-                "accion_predicha": pred["accion_predicha"],
-                "total_deudores": pred["total_deudores"]
-            }
-            for pred in predicciones_resultados
-        ]
-
-        # Guardar en MongoDB
-        predicciones_collection.insert_many(predicciones_documentos)
-
-         # Preparar datos para la tabla de resultados
-        id_procesamiento = "123"  # Genera o asigna un ID único aquí
-        documento_cargado = file.filename
-        fecha_carga = datetime.now().strftime("%Y-%m-%d")  # Fecha de carga
-        registro_deudores = len(predicciones_documentos)  # Total de predicciones guardadas
-        deudores_contactar = 0  # Cambia según tu lógica
-        precio = 0.0  # Cambia según tu lógica
-
-        # Preparar el documento para la tabla de resultados
-        resultados_documento = {
-            "id_procesamiento": id_procesamiento,
-            "documento_cargado": documento_cargado,
-            "fecha_carga": fecha_carga,
-            "registro_deudores": registro_deudores,
-            "deudores_contactar": deudores_contactar,
-            "precio": precio,
-            "predicciones": predicciones_documentos  # Aquí puedes omitir si no necesitas almacenarlas de nuevo
-        }
-
-        # Guardar en la colección de resultados
-        resultados_collection.insert_one(resultados_documento)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
-
-    return JSONResponse(content={
-        'status': 'success',
-        'predicciones': df_group.to_dict(orient="records")
-    })
-
-predicciones_resultados = [] 
 
 
 
 # Endpoint GET para obtener los resultados de predicción
-@app.get('/api/resultados')
-async def get_resultados():
-    return JSONResponse(content={
-        'status': 'success',
-        'predicciones': predicciones_resultados  # Devolver los resultados almacenados
-    })
+# @app.get('/api/resultados')
+# async def get_resultados():
+#     return JSONResponse(content={
+#         'status': 'success',
+#         'predicciones': predicciones_resultados  # Devolver los resultados almacenados
+#     })
 
 # # Endpoint GET para obtener los resultados de predicción
 # @app.get('/api/resultados')
@@ -654,48 +550,29 @@ from fastapi import FastAPI, HTTPException, status
 from pymongo import MongoClient
 from typing import List
 
-# Obtener todos los resultados - GET
-# @app.get("/resultados", response_model=List[Resultados])
-# async def obtener_resultados():
-#     resultados = []
-#     for resultado in resultados_collection.find():
-#         resultado["id_procesamiento"] = resultado["id_procesamiento"]
-#         resultado["documento_cargado"] = resultado["documento_cargado"]
-#         resultado["fecha_carga"] = resultado["fecha_carga"]
-#         resultado["registro_deudores"] = resultado["registro_deudores"]
-#         # # resultado["acciones_cobranza"] = resultado["acciones_cobranza"]
-#         # # resultado["deudores_contactar"] = resultado["deudores_contactar"]
-#         # resultado.setdefault("predicciones", [])
-#         resultado["precio"] = resultado["precio"]
-        
-#         # predicciones = list(predicciones_collection.find({"id_procesamiento": resultado["id_procesamiento"]}))
-#         # resultado["predicciones"] = [Prediccion(**prediccion) for prediccion in predicciones]
-#         resultados.append(Resultados(**resultado))  # Usa el modelo para la respuesta
-#     return resultados
 
-# Obtener todos los resultados - GET
 @app.get("/resultados", response_model=List[Resultados])
 async def obtener_resultados():
     resultados = []
     
-    # Iterar sobre los documentos de la colección resultados
+    # Iterar sobre los documentos en la colección `resultados`
     for resultado in resultados_collection.find():
-        # Convertir el resultado a un diccionario, asegurándose de que el ID de MongoDB no se incluya
+        # Asegurarse de que todos los campos estén presentes en el diccionario
         resultado_dict = {
-            "id_procesamiento": resultado["id_procesamiento"],
-            "documento_cargado": resultado["documento_cargado"],
-            "fecha_carga": resultado["fecha_carga"],
-            "registro_deudores": resultado["registro_deudores"],
-            "deudores_contactar": resultado["deudores_contactar"],  # Incluido
-            "precio": resultado["precio"],
-            "predicciones": resultado.get("predicciones", [])  # Obtiene las predicciones si existen
+            "id_procesamiento": resultado.get("id_procesamiento", ""),
+            "documento_cargado": resultado.get("documento_cargado", ""),
+            "fecha_carga": resultado.get("fecha_carga", ""),  # Obtener la fecha del documento
+            "registro_deudores": resultado.get("registro_deudores", 0),
+            "deudores_contactar": resultado.get("deudores_contactar", 0),
+            "precio": resultado.get("precio", 0.0),
+            "accion_predicha": resultado.get("accion_predicha", "")
         }
-        
-        # Agregar el resultado al arreglo de resultados
-        resultados.append(Resultados(**resultado_dict))  # Usa el modelo para la respuesta
-    
-    return resultados
 
+        # Crear una instancia de Resultados y agregarla a la lista
+        resultados.append(Resultados(**resultado_dict))
+    
+    # Retornar la lista de resultados
+    return resultados
 
 
 # Crear un nuevo resultado - POST
@@ -793,3 +670,22 @@ def eliminar_resultado(id_resultado: int):
 #         return {"message": "You are authenticated", "userinfo": userinfo}
 #     except Exception as e:
 #         return {"error": str(e)}
+
+from fastapi import FastAPI, Depends
+from fastapi_keycloak import FastAPIKeycloak
+
+keycloak = FastAPIKeycloak(
+    server_url="http://localhost:5173/",
+    client_id="vue-app",
+    client_secret="6VzztuMZVbXIMd0BP5DTYbFX9WNN3cM3T",  # Client secret de tu aplicación
+    admin_client_id="admin-cli",  # El ID del cliente de administración, por ejemplo
+    admin_client_secret="4xa2nXf9Bw8DTqeaegYtHSn2iT8jpU56",
+    realm="alloxentric",
+    callback_uri="http://localhost:8000/callback",
+)
+
+
+
+@app.get("/protected")
+def protected_route(user=Depends(keycloak.get_current_user)):
+    return {"message": "Protected route", "user": user}

@@ -62,11 +62,12 @@ class Resultados(BaseModel):
     documento_cargado: str
     fecha_carga: str
     registro_deudores: int
+    accion_predicha: str
     # acciones_cobranza: List[AccionCobranza]  # Conectar acciones de cobranza
     # archivos: List[Archivos]  # Conectar archivos
     deudores_contactar: int
     precio: float
-    predicciones: List[Prediccion]  # Conectar predicciones
+
 
 
 class Reporte(BaseModel):

@@ -68,7 +68,7 @@ export default {
     methods: {
         async fetchPredicciones() {
             try {
-                const response = await axios.get('/api/predicciones');
+                const response = await axios.get('/api/resultados');
                 if (response.data && response.data.predicciones) {
                     this.predicciones = response.data.predicciones; // Asigna las predicciones al array
                 }
