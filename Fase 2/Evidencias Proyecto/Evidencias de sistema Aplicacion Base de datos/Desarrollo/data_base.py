@@ -37,8 +37,6 @@ from models import User, LoginUser, AccionCobranza, Deudor, Archivos, Procesamie
 
 import uuid
 
-import random
-import string
 
 # app = FastAPI()
 
@@ -409,7 +407,104 @@ async def get_modelo():
 #--------------------------------Models---------------------------------------------------------------
 
 
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+UPLOAD_FOLDER = 'uploads/'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Procesar archivo CSV
+def process_file(file_path):
+    try:
+        # Leer el archivo CSV
+        data = pd.read_csv(file_path, sep=';')
+
+        if data.empty:
+            raise ValueError("El archivo CSV está vacío.")
+
+        # Preparar datos usando la función definida en data_preparation.py
+        df_final = prepare_data(data)
+
+        return df_final
+    except KeyError as e:
+        raise HTTPException(status_code=400, detail=f"Error de columna: {str(e)}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"Error de datos: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
+
+# Predicciones
+def predict(df_final):
+    try:
+        # Aplicar K-Means
+        df_final = run_kmeans(df_final)
+
+        # Ahora se puede llamar a run_lstm directamente con df_final
+        df_deudores_grouped = run_lstm(df_final)  # Aquí se llama a run_lstm
+
+        return df_deudores_grouped  # Devolvemos el DataFrame agrupado directamente
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
+
+# Subida de archivo
+@app.post('/api/upload')
+async def upload_file(file: UploadFile = File(...)):
+    if not file:
+        raise HTTPException(status_code=400, detail="No se envió ningún archivo")
+
+    # Guardar archivo temporalmente
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    # Procesar el archivo
+    try:
+        df_final = process_file(file_path)  # Procesar el archivo para obtener df_final
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
+
+    # Generar un ID único de procesamiento
+    id_procesamiento = str(uuid.uuid4())  # Genera un ID único para el procesamiento actual
+
+    # Hacer predicciones
+    try:
+        df_group = predict(df_final)  # Obtener predicciones
+        predicciones_resultados = df_group.to_dict(orient="records")
+
+        # Preparar documentos para MongoDB (colección de resultados)
+        resultados_documentos = [
+            {
+                "id_procesamiento": id_procesamiento,  # ID de procesamiento único para todas las predicciones
+                "documento_cargado": file.filename,
+                "fecha_carga": datetime.now().strftime("%Y-%m-%d"),
+                "accion_predicha": pred["accion_predicha"],  # Acción de cobranza
+                "total_deudores": pred["total_deudores"],  # Total de deudores para la acción predicha
+                "registro_deudores": len(predicciones_resultados),  # Total de predicciones generadas
+                "deudores_contactar": pred["total_deudores"],  # Total de deudores para cada acción
+                "precio": 0.0  # Ajustar lógica del precio si es necesario
+            }
+            for pred in predicciones_resultados
+        ]
+
+        # Guardar en la colección de resultados de MongoDB
+        resultados_collection.insert_many(resultados_documentos)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al predecir: {str(e)}")
+
+    return JSONResponse(content={
+        'status': 'success',
+        'id_procesamiento': id_procesamiento,  # ID único del procesamiento
+        'predicciones': predicciones_resultados
+    })
+
+predicciones_resultados = [] 
 
 
 
@@ -550,6 +645,24 @@ from fastapi import FastAPI, HTTPException, status
 from pymongo import MongoClient
 from typing import List
 
+# Obtener todos los resultados - GET
+# @app.get("/resultados", response_model=List[Resultados])
+# async def obtener_resultados():
+#     resultados = []
+#     for resultado in resultados_collection.find():
+#         resultado["id_procesamiento"] = resultado["id_procesamiento"]
+#         resultado["documento_cargado"] = resultado["documento_cargado"]
+#         resultado["fecha_carga"] = resultado["fecha_carga"]
+#         resultado["registro_deudores"] = resultado["registro_deudores"]
+#         # # resultado["acciones_cobranza"] = resultado["acciones_cobranza"]
+#         # # resultado["deudores_contactar"] = resultado["deudores_contactar"]
+#         # resultado.setdefault("predicciones", [])
+#         resultado["precio"] = resultado["precio"]
+        
+#         # predicciones = list(predicciones_collection.find({"id_procesamiento": resultado["id_procesamiento"]}))
+#         # resultado["predicciones"] = [Prediccion(**prediccion) for prediccion in predicciones]
+#         resultados.append(Resultados(**resultado))  # Usa el modelo para la respuesta
+#     return resultados
 
 @app.get("/resultados", response_model=List[Resultados])
 async def obtener_resultados():
@@ -573,6 +686,7 @@ async def obtener_resultados():
     
     # Retornar la lista de resultados
     return resultados
+
 
 
 # Crear un nuevo resultado - POST
@@ -670,22 +784,3 @@ def eliminar_resultado(id_resultado: int):
 #         return {"message": "You are authenticated", "userinfo": userinfo}
 #     except Exception as e:
 #         return {"error": str(e)}
-
-from fastapi import FastAPI, Depends
-from fastapi_keycloak import FastAPIKeycloak
-
-keycloak = FastAPIKeycloak(
-    server_url="http://localhost:5173/",
-    client_id="vue-app",
-    client_secret="6VzztuMZVbXIMd0BP5DTYbFX9WNN3cM3T",  # Client secret de tu aplicación
-    admin_client_id="admin-cli",  # El ID del cliente de administración, por ejemplo
-    admin_client_secret="4xa2nXf9Bw8DTqeaegYtHSn2iT8jpU56",
-    realm="alloxentric",
-    callback_uri="http://localhost:8000/callback",
-)
-
-
-
-@app.get("/protected")
-def protected_route(user=Depends(keycloak.get_current_user)):
-    return {"message": "Protected route", "user": user}
