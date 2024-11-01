@@ -41,42 +41,35 @@
                 <h2>Modelos</h2>
                 <br>
                 <form @submit.prevent="submitForm">
-
-                    <!--Ajuste de ponderaciones o weights para el balanceo de clases-->
-                    <h4>Ponderaciones de clases</h4>
+                    <!-- Ajuste de ponderaciones en porcentajes -->
+                    <h4>Ponderaciones de clases (en porcentaje)</h4>
+                    
                     <label for="sin_acciones">Sin acciones:</label>
-                    <input type="number" id="sin_acciones" v-model="weights[0]" step="0.01">
+                    <input type="number" id="sin_acciones" v-model.number="percentages[0]" step="1" min="0" max="100" @input="adjustPercentages(0)" @keydown.prevent>
                     <br>
 
                     <label for="correo_electronico">Correo electrónico:</label>
-                    <input type="number" id="correo_electronico" v-model="weights[1]" step="0.01">
+                    <input type="number" id="correo_electronico" v-model.number="percentages[1]" step="1" min="0" max="100" @input="adjustPercentages(1)" @keydown.prevent>
                     <br>
 
                     <label for="sms">SMS:</label>
-                    <input type="number" id="sms" v-model="weights[2]" step="0.01">
+                    <input type="number" id="sms" v-model.number="percentages[2]" step="1" min="0" max="100" @input="adjustPercentages(2)" @keydown.prevent>
                     <br>
 
                     <label for="whatsapp">Whatsapp:</label>
-                    <input type="number" id="whatsapp" v-model="weights[3]" step="0.01">
+                    <input type="number" id="whatsapp" v-model.number="percentages[3]" step="1" min="0" max="100" @input="adjustPercentages(3)" @keydown.prevent>
                     <br>
 
                     <label for="llamada_bot">Llamada por bot:</label>
-                    <input type="number" id="llamada_bot" v-model="weights[4]" step="0.01">
+                    <input type="number" id="llamada_bot" v-model.number="percentages[4]" step="1" min="0" max="100" @input="adjustPercentages(4)" @keydown.prevent>
                     <br>
 
                     <label for="llamada_directa">Llamada directa:</label>
-                    <input type="number" id="llamada_directa" v-model="weights[5]" step="0.01">
+                    <input type="number" id="llamada_directa" v-model.number="percentages[5]" step="1" min="0" max="100" @input="adjustPercentages(5)" @keydown.prevent>
                     <br>
 
                     <label for="acciones_judiciales">Acciones judiciales:</label>
-                    <input type="number" id="acciones_judiciales" v-model="weights[6]" step="0.01">
-                    <br><br>
-
-
-                    <!--Ajustes de n° samples para balancear clases-->
-                    <h4>Ajuste de datos sintéticos</h4>
-                    <label for="n_samples">Número de muestras sintéticas:</label>
-                    <input type="number" id="n_samples" v-model="n_samples" step="1" min="1" value="10000">
+                    <input type="number" id="acciones_judiciales" v-model.number="percentages[6]" step="1" min="0" max="100" @input="adjustPercentages(6)" @keydown.prevent>
                     <br><br>
 
                     <button class="btn btn-secondary" type="button" @click="resetForm">Restablecer todo</button>
@@ -84,6 +77,7 @@
                 </form>
 
                 <div v-if="message" class="message">{{ message }}</div>
+
             </div>
         </div>
     </div>
@@ -100,36 +94,72 @@ export default {
     },
     data() {
         return {
-            weights: [0.85, 0.05, 0.05, 0.05, 0.01, 0.01, 0.1], // Inicializa los pesos
-            n_samples: 10000, // Inicializa n_samples
+            percentages: [85, 5, 5, 1, 1, 1, 2], // Valores iniciales en porcentaje
+            weights: [], // Se calculará a partir de percentages
+            n_samples: 10000,
             message: '',
-            loadedData: null, // Para cargar los datos guardados
+            loadedData: null,
             busqueda: "",
             isCollapsed: true
         };
     },
     methods: {
-        async submitForm() {
-            try {
-                const formData = new FormData();
-                this.weights.forEach((weight, index) => {
-                    formData.append(`weights`, weight);
-                });
-                formData.append('n_samples', this.n_samples); // Añadir n_samples a formData
+        adjustPercentages(changedIndex) {
+            let total = this.percentages.reduce((sum, val) => sum + val, 0);
+            
+            if (total !== 100) {
+                const adjustment = 100 - total;
+                const otherIndices = this.percentages
+                    .map((_, i) => i)
+                    .filter(i => i !== changedIndex);
 
-                const response = await axios.post('http://localhost:8000/api/manipular-modelo', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                const currentTotalWithoutChanged = this.percentages
+                    .filter((_, i) => i !== changedIndex)
+                    .reduce((sum, val) => sum + val, 0);
+
+                otherIndices.forEach(index => {
+                    const proportion = this.percentages[index] / currentTotalWithoutChanged;
+                    this.percentages[index] += Math.round(adjustment * proportion);
                 });
-                this.message = response.data.message;
-                this.saveWeightsToLocal();
-                this.loadWeights();
-            } catch (error) {
-                console.error(error);
-                this.message = error.response ? error.response.data.detail : 'Error al guardar los cambios';
+
+                // Asegurarse de que el total vuelva a ser exactamente 100
+                const finalTotal = this.percentages.reduce((sum, val) => sum + val, 0);
+                if (finalTotal !== 100) {
+                    this.percentages[changedIndex] += 100 - finalTotal;
+                }
             }
         },
+        async submitForm() {
+        // Validar que la suma de porcentajes sea 100
+        const totalPercentage = this.percentages.reduce((acc, p) => acc + p, 0);
+        if (totalPercentage !== 100) {
+            this.message = "La suma de los porcentajes debe ser igual a 100%";
+            return;
+        }
+
+        // Convertir los porcentajes a pesos
+        this.weights = this.percentages.map(p => p / 100);
+
+        try {
+            const formData = new FormData();
+            this.weights.forEach((weight, index) => {
+                formData.append(`weights`, weight);
+            });
+            formData.append('n_samples', this.n_samples);
+
+            const response = await axios.post('http://localhost:8000/api/manipular-modelo', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            this.message = response.data.message;
+            this.saveWeightsToLocal();
+            this.loadWeights();
+        } catch (error) {
+            console.error(error);
+            this.message = error.response ? error.response.data.detail : 'Error al guardar los cambios';
+        }
+    },
         
         async loadWeights() {
             try {
@@ -161,18 +191,19 @@ export default {
             const savedWeights = localStorage.getItem('weights');
             if (savedWeights) {
                 this.weights = JSON.parse(savedWeights);
+                this.percentages = this.weights.map(w => w * 100); // Convertir pesos a porcentajes
             }
             const savedSamples = localStorage.getItem('n_samples');
             if (savedSamples) {
-                this.n_samples = parseInt(savedSamples); // Cargar n_samples de localStorage
+                this.n_samples = parseInt(savedSamples);
             }
         },
 
         resetForm() {
-            // Restablecer los valores predeterminados
-            this.weights = [0.85, 0.05, 0.05, 0.05, 0.01, 0.01, 0.1];
-            this.n_samples = 10000; // Restablecer n_samples
+            this.percentages = [85, 5, 5, 1, 1, 1, 2]; // Restablecer a valores iniciales
+            this.n_samples = 10000;
         },
+
         toggleSidebar() {
         this.isCollapsed = !this.isCollapsed;
       },

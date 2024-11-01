@@ -81,7 +81,8 @@ def obtener_ponderaciones():
     modelo = modelo_collection.find_one({})
     n_samples = modelo.get("n_samples", 10000)
     if modelo:
-        return [
+        # Extraer las ponderaciones
+        ponderaciones = [
             modelo["pond_sin_acciones"],
             modelo["pond_correo_electronico"],
             modelo["pond_sms"],
@@ -89,10 +90,21 @@ def obtener_ponderaciones():
             modelo["pond_llamada_por_bot"],
             modelo["pond_llamada_directa"],
             modelo["pond_acciones_judiciales"],
-        ], n_samples
+        ]
+        
+        # Normalizar las ponderaciones para que sumen 1
+        total = sum(ponderaciones)
+        ponderaciones_normalizadas = [p / total for p in ponderaciones]
+        
+        return ponderaciones_normalizadas, n_samples
     else:
-        # Valores predeterminados si no se encuentran ponderaciones en la base de datos
-        return [0.85, 0.05, 0.05, 0.05, 0.01, 0.01, 0.1], 10000
+        # Valores predeterminados y normalización
+        ponderaciones = [0.85, 0.05, 0.05, 0.01, 0.01, 0.01, 0.02]
+        total = sum(ponderaciones)
+        ponderaciones_normalizadas = [p / total for p in ponderaciones]
+        
+        return ponderaciones_normalizadas, n_samples
+
     
 # Implementa el modelo LSTM aquí
 def run_lstm(df_final):
@@ -134,10 +146,10 @@ def run_lstm(df_final):
     X_scaled = scaler.fit_transform(X)
 
      # Obtener ponderaciones y n_samples actualizados desde MongoDB
-    ponderaciones, n_samples = obtener_ponderaciones()
+    ponderaciones_normalizadas, n_samples = obtener_ponderaciones()
 
     # Crear datos sintéticos para clases minoritarias
-    # n_samples = 10000  # Ajusta este valor según sea necesario
+    n_samples = 10000  # Ajusta este valor según sea necesario
     X_synthetic, y_synthetic = make_classification(
         n_samples=n_samples,
         n_features=X.shape[1],
@@ -145,11 +157,11 @@ def run_lstm(df_final):
         n_informative=X.shape[1] // 2,
         n_redundant=0,
         n_clusters_per_class=1,
-        weights=ponderaciones,
+        weights=ponderaciones_normalizadas,
         random_state=42
     )
 
-    print(f"Ponderaciones: {ponderaciones}")
+    print(f"Ponderaciones: {ponderaciones_normalizadas}")
     print(f"N° Samples: {n_samples}")
 
     # Combinar datos originales con datos sintéticos

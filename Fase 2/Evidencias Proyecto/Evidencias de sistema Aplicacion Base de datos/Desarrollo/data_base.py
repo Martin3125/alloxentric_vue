@@ -37,6 +37,8 @@ from models import User, LoginUser, AccionCobranza, Deudor, Archivos, Procesamie
 
 import uuid
 
+import random
+import string
 
 # app = FastAPI()
 
@@ -470,12 +472,15 @@ async def upload_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
     # Generar un ID único de procesamiento
-    id_procesamiento = str(uuid.uuid4())  # Genera un ID único para el procesamiento actual
+    id_procesamiento = f"{random.choice(string.ascii_uppercase)}{random.randint(1, 999):03d}"
 
     # Hacer predicciones
     try:
         df_group = predict(df_final)  # Obtener predicciones
         predicciones_resultados = df_group.to_dict(orient="records")
+
+        # Calcular la suma de total_deudores para registro_deudores
+        registro_deudores_total = sum(pred["total_deudores"] for pred in predicciones_resultados)
 
         # Preparar documentos para MongoDB (colección de resultados)
         resultados_documentos = [
@@ -485,7 +490,7 @@ async def upload_file(file: UploadFile = File(...)):
                 "fecha_carga": datetime.now().strftime("%Y-%m-%d"),
                 "accion_predicha": pred["accion_predicha"],  # Acción de cobranza
                 "total_deudores": pred["total_deudores"],  # Total de deudores para la acción predicha
-                "registro_deudores": len(predicciones_resultados),  # Total de predicciones generadas
+                "registro_deudores": registro_deudores_total,  # Total de predicciones generadas
                 "deudores_contactar": pred["total_deudores"],  # Total de deudores para cada acción
                 "precio": 0.0  # Ajustar lógica del precio si es necesario
             }
@@ -784,3 +789,39 @@ def eliminar_resultado(id_resultado: int):
 #         return {"message": "You are authenticated", "userinfo": userinfo}
 #     except Exception as e:
 #         return {"error": str(e)}
+
+
+
+
+
+#----------------------------------------------KEYCLOAK FINAL---------------------------------------------------------
+# from fastapi import FastAPI, Depends, HTTPException
+# from fastapi.security import OAuth2PasswordBearer
+# from keycloak import KeycloakOpenID
+
+
+# keycloak_openid = KeycloakOpenID(server_url='http://localhost:8080/auth/',
+#                                   client_id='vue-app',
+#                                   realm_name='Alloxentric',
+#                                   client_secret_key='LnI3hrpnmA9xWMspe4RfFAsleAzLQgrS')  # Solo si es un cliente confidencial
+
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# def verify_token(token: str = Depends(oauth2_scheme)):
+#     try:
+#         user_info = keycloak_openid.introspect(token)
+#         if not user_info.get('active'):
+#             raise HTTPException(status_code=401, detail="Invalid token")
+#         return user_info
+#     except Exception as e:
+#         raise HTTPException(status_code=401, detail=str(e))
+
+# @app.get("/api/protected")
+# async def protected_route(user_info: dict = Depends(verify_token)):
+#     return {"message": "This is a protected route", "user": user_info}
+
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
+    
+#---------------------------------------------------------------------------------------------------------------------------------------
