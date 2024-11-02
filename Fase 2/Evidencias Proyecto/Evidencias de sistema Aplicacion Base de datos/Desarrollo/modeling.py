@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.datasets import make_classification
 from pymongo import MongoClient
+import json
 
 # Implementa el modelo K-means aquí
 def run_kmeans(df_final):
@@ -192,7 +193,11 @@ def run_lstm(df_final):
 
     # Evaluar el modelo
     y_pred = np.argmax(model.predict(X_test_reshaped), axis=1)
+    report = classification_report(y_test, y_pred, output_dict=True)
     print(classification_report(y_test, y_pred))
+
+    with open('metrics_report.json', 'w') as f:
+        json.dump(report, f)
 
     # Predecir usando el conjunto original
     # Asegúrate de que df_deudores contiene solo las columnas necesarias para la predicción

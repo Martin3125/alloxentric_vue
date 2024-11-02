@@ -34,7 +34,7 @@ class Deudor(BaseModel):
 class Archivos(BaseModel):
     Id_archivo: Optional[str] 
     nombre: str
-    fecha: date
+    fecha: str
 
 class Procesamiento(BaseModel):
     Id_procesamiento: Optional[str] 

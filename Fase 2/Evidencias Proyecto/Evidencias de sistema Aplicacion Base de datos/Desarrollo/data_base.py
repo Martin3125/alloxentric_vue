@@ -128,9 +128,9 @@ async def get_all_archivos():
     archivo_modificados = []
     for archivo in archivos:
         archivo_modificado = {
-            "Id_archivo": archivo["Id_archivo"],
+            "Id_archivo": str(archivo["_id"]),  # Convierte ObjectId a str
             "nombre": archivo["nombre"],
-            "fecha": archivo["fecha"]  
+            "fecha": archivo["fecha"]
         }
         archivo_modificados.append(archivo_modificado)
         
@@ -478,6 +478,13 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         df_group = predict(df_final)  # Obtener predicciones
         predicciones_resultados = df_group.to_dict(orient="records")
+
+        # Guardar el archivo y la fecha en MongoDB
+        archivo_documento = {
+            "nombre": file.filename,
+            "fecha": datetime.now().strftime("%Y-%m-%d")
+        }
+        archivos_collection.insert_one(archivo_documento) 
 
         # Calcular la suma de total_deudores para registro_deudores
         registro_deudores_total = sum(pred["total_deudores"] for pred in predicciones_resultados)

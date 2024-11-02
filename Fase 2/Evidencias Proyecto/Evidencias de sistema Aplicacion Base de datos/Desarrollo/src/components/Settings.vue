@@ -42,34 +42,41 @@
                 <br>
                 <form @submit.prevent="submitForm">
                     <!-- Ajuste de ponderaciones en porcentajes -->
-                    <h4>Ponderaciones de clases (en porcentaje)</h4>
+                    <h4>Pesos de las acciones (en porcentaje)</h4>
                     
                     <label for="sin_acciones">Sin acciones:</label>
                     <input type="number" id="sin_acciones" v-model.number="percentages[0]" step="1" min="0" max="100" @input="adjustPercentages(0)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[0] }}</span>
                     <br>
 
                     <label for="correo_electronico">Correo electrónico:</label>
                     <input type="number" id="correo_electronico" v-model.number="percentages[1]" step="1" min="0" max="100" @input="adjustPercentages(1)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[1] }}</span>
                     <br>
 
                     <label for="sms">SMS:</label>
                     <input type="number" id="sms" v-model.number="percentages[2]" step="1" min="0" max="100" @input="adjustPercentages(2)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[2] }}</span>
                     <br>
 
                     <label for="whatsapp">Whatsapp:</label>
                     <input type="number" id="whatsapp" v-model.number="percentages[3]" step="1" min="0" max="100" @input="adjustPercentages(3)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[3] }}</span>
                     <br>
 
                     <label for="llamada_bot">Llamada por bot:</label>
                     <input type="number" id="llamada_bot" v-model.number="percentages[4]" step="1" min="0" max="100" @input="adjustPercentages(4)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[4] }}</span>
                     <br>
 
                     <label for="llamada_directa">Llamada directa:</label>
                     <input type="number" id="llamada_directa" v-model.number="percentages[5]" step="1" min="0" max="100" @input="adjustPercentages(5)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[5] }}</span>
                     <br>
 
                     <label for="acciones_judiciales">Acciones judiciales:</label>
                     <input type="number" id="acciones_judiciales" v-model.number="percentages[6]" step="1" min="0" max="100" @input="adjustPercentages(6)" @keydown.prevent>
+                    <span>F1 Score: {{ f1Scores[6] }}</span>
                     <br><br>
 
                     <button class="btn btn-secondary" type="button" @click="resetForm">Restablecer todo</button>
@@ -77,7 +84,6 @@
                 </form>
 
                 <div v-if="message" class="message">{{ message }}</div>
-
             </div>
         </div>
     </div>
@@ -96,6 +102,7 @@ export default {
         return {
             percentages: [85, 5, 5, 1, 1, 1, 2], // Valores iniciales en porcentaje
             weights: [], // Se calculará a partir de percentages
+            f1Scores: [], // Aquí se almacenan los F1-scores correspondientes
             n_samples: 10000,
             message: '',
             loadedData: null,
@@ -161,7 +168,7 @@ export default {
         }
     },
         
-        async loadWeights() {
+    async loadWeights() {
             try {
                 const response = await axios.get('http://localhost:8000/api/modelo');
                 this.loadedData = response.data;
@@ -174,7 +181,18 @@ export default {
                     this.loadedData.pond_llamada_directa,
                     this.loadedData.pond_acciones_judiciales
                 ];
-                this.n_samples = this.loadedData.n_samples || 10000; // Cargar n_samples si existe
+
+                this.f1Scores = [
+                    this.loadedData.f1_sin_acciones,
+                    this.loadedData.f1_correo_electronico,
+                    this.loadedData.f1_sms,
+                    this.loadedData.f1_whatsapp,
+                    this.loadedData.f1_llamada_por_bot,
+                    this.loadedData.f1_llamada_directa,
+                    this.loadedData.f1_acciones_judiciales
+                ];
+
+                this.n_samples = this.loadedData.n_samples || 10000;
                 this.saveWeightsToLocal();
             } catch (error) {
                 console.error(error);

@@ -1,32 +1,30 @@
 <template>
-   <link rel="stylesheet" href="src\assets\Inicio.css">
-   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600&display=swap" rel="stylesheet">
-   <header>
+  <link rel="stylesheet" href="src/assets/Inicio.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600&display=swap" rel="stylesheet">
+  <header>
     <div id="logo_header">
       <button class="toggle-btn" @click="toggleSidebar">
-          <span class="icon" v-if="isCollapsed">☰</span>
-          <span class="icon" v-else>✖</span>
+        <span class="icon" v-if="isCollapsed">☰</span>
+        <span class="icon" v-else>✖</span>
       </button>
       <img src="@/assets/2.png" alt="logo" />
       <h2>Alloxentric</h2>
     </div>
-    <div class="input_search" >
+    <div class="input_search">
       <input v-model="busqueda" type="search" placeholder="Buscar" />
       <i class="bi bi-search" id="search"></i>
     </div>
     <div class="card-body">
-      <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
+      <h5 class="card-title2">Usuario: {{ usuarioLogueado }}</h5>
     </div>
     <div id="menu"></div>
   </header>
 
   <div class="my-component">
     <div id="general">
-      <Menu_P v-if="!isCollapsed"/>
+      <Menu_P v-if="!isCollapsed" />
       <main id="cards">
-        <div id="arriba">
-          
-        </div>
+        <div id="arriba"></div>
 
         <div id="bodycard">
           <div class="container2">
@@ -87,7 +85,9 @@
                   <td>{{ procesamiento.hora }}</td>
                   <td>
                     <i class="bi bi-pencil-square" @click="editarResultado(procesamiento)"></i>
-                    <i class="bi bi-trash" @click="deleteProcesamiento(procesamiento.Id_procesamiento)"><img src="@/assets/clear.png" alt=""></i>
+                    <i class="bi bi-trash" @click="deleteProcesamiento(procesamiento.Id_procesamiento)">
+                      <img src="@/assets/clear.png" alt="Eliminar" />
+                    </i>
                   </td>
                 </tr>
               </tbody>
@@ -104,7 +104,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import Menu_P from './Menu-.vue';
@@ -147,8 +146,7 @@ export default {
       const start = Math.max(1, this.currentPage - Math.floor(this.maxVisiblePages / 2));
       const end = Math.min(this.totalPages, start + this.maxVisiblePages - 1);
       return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-    }
-
+    },
   },
   methods: {
     async login(email, password) {
@@ -205,8 +203,8 @@ export default {
       }
     },
     toggleSidebar() {
-        this.isCollapsed = !this.isCollapsed;
-      },
+      this.isCollapsed = !this.isCollapsed;
+    },
     logout() {
       this.$keycloak.logout();
     },
@@ -214,7 +212,6 @@ export default {
   mounted() {
     this.getArchivos();
     this.getProcesamientos(); 
-    this.login();
   },
 };
 </script>
