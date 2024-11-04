@@ -65,9 +65,9 @@
             <div class="b_procesar">
                 <button class="btn btn-primary" style="width: 100%;" @click="openModal()" >Iniciar Procesamiento</button>
             </div>
-          <div class="b_procesar">
-            <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
-          </div> 
+          <!-- <div class="b_procesar">
+            <button class="btn btn-primary" style="width: 100%;" @click="iniciarDespues()">Iniciar Después</button>
+          </div>  -->
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
                 </div>
                 <br>
                 <div class="btn_despues" style="margin: auto; display: flex; justify-content: center;">
-                  <button type="submit" class="btn btn-success" style="width: 40%;">Confirmar</button>
+                  <button type="submit" class="btn btn-success" style="width: 40%;" @click="cerrarModalProgramar">Confirmar</button>
                 </div>
               </form>
             </div>

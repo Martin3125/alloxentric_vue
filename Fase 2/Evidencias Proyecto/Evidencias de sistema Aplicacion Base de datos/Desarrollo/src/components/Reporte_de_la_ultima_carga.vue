@@ -21,8 +21,9 @@
     <div id="general">
         <Menu_P v-if="!isCollapsed"/>
         <main id="cards">
-            <div id="card" class="card">
-                
+            
+
+            
                 <div class="container">
                    
                     <!-- Header de la tabla -->
@@ -51,7 +52,8 @@
                                 <th>Deudores registrados</th>
                                 <th>Acciones de Cobranza</th>
                                 <th>Deudores por acción</th>
-                                <th>Precio</th>
+                                <!-- <th>Precio</th>
+                                <th>Valor Multiplicado</th>  -->
                                 <th>Operaciones</th>
                             </tr>
                         </thead>
@@ -64,7 +66,9 @@
                                 <td>{{ resultado.registro_deudores }}</td>
                                 <td>{{ resultado.accion_predicha}}</td> <!-- Campo corregido si es necesario -->
                                 <td>{{ resultado.deudores_contactar }}</td>
-                                <td>{{ resultado.precio }}</td>
+                                <!-- <td>{{ resultado.precio }}</td>  -->
+                                <!-- <td>{{ resultado.valor_multiplicado }}</td>   -->
+                                
                                 <td>
                                     <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
                                     <i class="bi bi-trash" @click="eliminarResultado(resultado.id_procesamiento)"></i>
@@ -72,8 +76,8 @@
                             </tr>
                         </tbody>
                     </table>
-  
                     
+                      
                     <!-- Footer de la tabla con paginación -->
                     <div class="table_footer">
                         
@@ -89,7 +93,7 @@
                         <!-- <p>Total de filas: {{ resultadosFiltrados.length }}</p> -->
                     </div>
                 </div>
-            </div>
+           
         </main>
     </div>
   </template>
@@ -104,6 +108,7 @@
     mounted() {
         initializeFilter();
         this.fetchResultados();
+        this.cargarAcciones();
     },
     components: {
         Menu_P,
@@ -113,6 +118,7 @@
             busqueda: "",
             tipoSeleccionado: "",
             resultados: [],
+            acciones: [],
             currentPage: 1,
             itemsPerPage: 7,
             isCollapsed: true,
@@ -161,6 +167,22 @@
         toggleSidebar() {
             this.isCollapsed = !this.isCollapsed;
         },
+        async cargarAcciones() {
+            try {
+                const response = await axios.get('http://localhost:8000/api/acciones');
+                this.acciones = response.data; // Asignar los datos a la propiedad acciones
+            } catch (error) {
+                console.error('Error al cargar acciones de cobranza:', error);
+                // Manejo de errores, puedes mostrar un mensaje en la interfaz si lo deseas
+            }
+            },
+        accionPorId(idAccion) {
+            return this.acciones.find(accion => accion.Id_accion === idAccion);
+        },
+        calcularValorMultiplicado(deudoresContactar, valor) {
+            return deudoresContactar * valor; // Multiplicación del valor por los deudores a contactar
+        },
+
     },
   };
   </script>
@@ -179,19 +201,20 @@
       margin: 0;
   }
   
+  
   .container {
-      display: flex;
-      flex-direction: column;
-      box-shadow: 8px 8px 8px 8px #bdbdbdbf;
-      width: 90%;
-      max-width: 1200px; /* Limitar el ancho máximo */
-      height: 80%;
-      max-height: 90vh; /* Limitar la altura máxima */
-      background-color: #ffffff;
-      border-radius: 30px;
-      margin: auto;
-      overflow: hidden; /* Evitar que se desborde el contenido */
-  }
+  display: flex;
+    flex-direction: column;
+    box-shadow: 8px 8px 8px 8px #bdbdbdbf;
+    width: 90%;
+    max-width: 1200px; /* Limitar el ancho máximo */
+    height: 90%;
+    background-color: #ffffff;
+    border-radius: 20px;
+    margin: auto; /* Centrar horizontalmente */
+    padding: 20px; /* Espaciado interno */
+    overflow: hidden; /* Evitar que se desborde el contenido */
+    }
   
   .table_header {
       display: flex;

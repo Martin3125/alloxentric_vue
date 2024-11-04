@@ -28,14 +28,6 @@
         <Menu_P v-if="!isCollapsed"/>
 
         <div class="settings-content">
-            <!-- <div class="settings-header">
-                <div class="pag-settings">
-                    <h5 style="margin-top: 3%;">Settings</h5>
-                </div>
-                <div class="user">
-                    <h5 style="margin-top: 3%;">Usuario</h5>
-                </div>
-            </div> -->
 
             <div class="settings-body">
                 <h2>Modelos</h2>
@@ -149,7 +141,7 @@ export default {
 
         try {
             const formData = new FormData();
-            this.weights.forEach((weight, index) => {
+            this.weights.forEach((weight) => {
                 formData.append(`weights`, weight);
             });
             formData.append('n_samples', this.n_samples);
@@ -235,85 +227,68 @@ export default {
 
 <style scoped>
 body {
-    display: flex;
-    justify-content: center; /* Centra el contenido horizontalmente en la página */
-    align-items: center; /* Centra el contenido verticalmente */
-    height: 100vh; /* Utiliza toda la altura de la ventana */
-    margin: 0; /* Elimina el margen por defecto */
-    background-color: #f0f0f0; /* Color de fondo para la página */
+    font-family: 'Nunito', sans-serif;
 }
 
 .settings-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centra horizontalmente */
-    justify-content: center; /* Centra verticalmente */
-    padding: 12px;
-    max-width: 800px; /* Ancho máximo para el formulario */
-    width: 100%; /* Ancho relativo para que sea responsivo */
-    height: auto; /* Ajuste automático de la altura */
-    max-height: 95vh; /* Máxima altura para el formulario */
-    overflow-y: auto; /* Agrega desplazamiento si es necesario */
-    margin: auto; /* Centrando el contenedor en la página */
-    border: 1px solid #ccc; /* Agrega un borde */
-    border-radius: 8px; /* Bordes redondeados */
-    background-color: #ffffff; /* Fondo blanco para el formulario */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
-    position: relative; /* Posición relativa para contener elementos internos */
-    top: 5px; /* Separa del menú superior (ajusta según el espacio del menú) */
+    margin-top: 2%;
+    padding: 10px; /* Espaciado reducido */
 }
 
-form {
-    width: 100%; /* Tomar todo el ancho del contenedor */
+.form-group {
+    display: flex;
+    flex-direction: column; /* Verticaliza el contenido */
+    margin-bottom: 5px; /* Espacio entre grupos de formulario */
 }
 
 label {
-    margin: 8px 0; /* Espacio vertical entre etiquetas y campos */
+    font-size: 14px; /* Tamaño de fuente reducido */
+    margin-bottom: 2px; /* Espaciado mínimo entre label y input */
 }
 
 input[type="number"] {
-    width: 100%; /* Campos de entrada ocupan el ancho completo */
-    padding: 10px; /* Relleno interno para los campos */
-    margin-bottom: 10px; /* Espacio entre campos */
-    border: 1px solid #ccc; /* Borde para los campos */
-    border-radius: 4px; /* Bordes redondeados para los campos */
-    box-sizing: border-box; /* Asegura que el padding y el border se incluyan en el ancho total */
+    padding: 5px; /* Espaciado interno reducido */
+    font-size: 14px; /* Tamaño de fuente reducido para inputs */
+    width: 100%; /* Ocupa el 100% del ancho */
 }
 
-button {
-    width: 48%; /* Botones ocupan la mitad del ancho */
-    padding: 10px; /* Relleno interno para botones */
-    margin: 5px 1%; /* Espacio entre botones */
-    border: none; /* Sin borde */
-    border-radius: 4px; /* Bordes redondeados */
-    cursor: pointer; /* Cambia el cursor al pasar sobre los botones */
+.form-buttons {
+    display: flex;
+    justify-content: space-between; /* Espacio entre botones */
+    margin-top: 10px; /* Espacio entre el formulario y los botones */
 }
 
-.btn-secondary {
-    background-color: #6c757d; /* Color de fondo del botón secundario */
-    color: white; /* Color de texto del botón secundario */
-}
-
-.btn-primary {
-    background-color: #007bff; /* Color de fondo del botón primario */
-    color: white; /* Color de texto del botón primario */
+.btn {
+    padding: 5px 10px; /* Tamaño de botón más pequeño */
+    font-size: 14px; /* Tamaño de fuente reducido para botones */
 }
 
 .message {
-    margin-top: 20px; /* Espacio superior para el mensaje */
-    color: green; /* Color del mensaje de éxito */
-    text-align: center; /* Centrar el texto del mensaje */
+    margin-top: 10px;
+    color: green; /* Color para mensajes de éxito */
+    font-size: 14px; /* Tamaño de fuente reducido para mensajes */
 }
 
-/* Responsividad para pantallas pequeñas */
+/* Ajustes específicos para pantallas pequeñas */
 @media (max-width: 600px) {
     .settings-body {
-        padding: 10px; /* Relleno más pequeño en pantallas pequeñas */
+        padding: 5px; /* Espaciado mínimo */
     }
 
-    button {
-        width: 100%; /* Botones ocupan todo el ancho en pantallas pequeñas */
-        margin: 5px 0; /* Espacio vertical entre botones */
+    .form-group {
+        margin-bottom: 3px; /* Espacio reducido */
+    }
+
+    input[type="number"] {
+        font-size: 12px; /* Tamaño de fuente más pequeño */
+    }
+
+    .btn {
+        padding: 4px 8px; /* Tamaño de botón aún más pequeño */
+    }
+
+    .message {
+        font-size: 12px; /* Tamaño de fuente más pequeño para mensajes */
     }
 }
 

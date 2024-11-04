@@ -3,7 +3,7 @@
         <div id="MenuPrincipal">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="/Inicio" style="color: #ffffff;">
+                        <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="/" style="color: #ffffff;">
                             <svg class="bi"><use xlink:href="#house-fill"></use></svg>
                             Inicio
                         </a>
@@ -91,7 +91,7 @@
                     </a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2" href="/" style="color: #ffffff;">
+                    <a class="nav-link d-flex align-items-center gap-2" href="http://localhost:8080/realms/Alloxentric/account?referrer=security-admin-console&referrer_uri=http%3A%2F%2Flocalhost%3A8080%2Fadmin%2FAlloxentric%2Fconsole%2F%23%2FAlloxentric"  style="color: #ffffff;">
                         <svg class="bi"><use xlink:href="#door-closed"></use></svg>
                         Sign out
                     </a>

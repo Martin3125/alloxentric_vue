@@ -2,8 +2,8 @@
 // import Vue from 'vue';
 import { createRouter, createWebHistory } from 'vue-router'
 import Inicio from './components/Inicio-.vue'
-import Login from './components/Login-.vue'
-import Registro from './components/Registro-.vue'
+// import Login from './components/Login-.vue'
+// import Registro from './components/Registro-.vue'
 import Cobranza from './components/Cobranza-.vue'
 import Cargar_resultados_periodo_anterior from './components/cargar_resultados_periodo_anterior.vue'
 import generar_resultados from './components/generar_resultados.vue'
@@ -15,10 +15,11 @@ import Settings from './components/Settings.vue'
 
 
 
+
 const routes = [
-  { path: '/', component: Login },
-  { path: '/Registro', component: Registro },
-  { path: '/Inicio', component: Inicio },
+  // { path: '/', component: Login },
+  // { path: '/Registro', component: Registro },
+  { path: '/', component: Inicio},
   { path: '/cobranza', component: Cobranza },
   { path: '/cargar_resultados', component: Cargar_resultados_periodo_anterior },
   { path: '/generar_resultados', component: generar_resultados },
@@ -35,5 +36,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
 
 export default router

@@ -61,7 +61,7 @@
 
           <div class="container2">
             <div class="table_header">
-              <h2>Procesamientos programados</h2>
+              <h2>Últimos Procesamientos</h2>
               <select v-model="itemsPerPage" @change="updatePagination">
                 <option value="5">5 filas</option>
                 <option value="10">10 filas</option>
@@ -212,6 +212,11 @@ export default {
   mounted() {
     this.getArchivos();
     this.getProcesamientos(); 
+
+     // Si estás usando Keycloak, puedes obtener el nombre del usuario así:
+  if (this.$keycloak && this.$keycloak.authenticated) {
+    this.usuarioLogueado = this.$keycloak.tokenParsed.preferred_username || "Usuario desconocido";
+  }
   },
 };
 </script>

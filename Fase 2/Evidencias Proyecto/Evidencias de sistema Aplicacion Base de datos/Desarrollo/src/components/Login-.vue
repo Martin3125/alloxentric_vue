@@ -14,18 +14,23 @@
                                 <img src="@/assets/2.png" alt="logo">
                                 <h2>Alloxentric</h2>
                             </div>
-                            <div class="form-group mb-3" id="formCorreo">
+                            <!-- <div class="form-group mb-3" id="formCorreo">
                                 <label for="exampleInputEmail1">Correo electrónico</label>
                                 <input v-model="email" name="email" type="email" class="form-control" id="inputCorreo" aria-describedby="emailHelp" placeholder="Ingrese su correo">
                             </div>
                             <div class="form-group mb-3" id="formContraseña">
                                 <label for="exampleInputPassword1">Contraseña</label>
                                 <input v-model="pwd" name="pwd" type="password" class="form-control" id="inputContraseña" placeholder="Ingrese su contraseña">
+                            </div> -->
+                            <div>
+                              <button  class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" v-if="!keycloak.authenticated" @click="login">Iniciar sesión</button>
+                              <p v-else>Ya estás autenticado.</p>
                             </div>
-                            <!-- <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button> -->
-                            <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button>
                             <a class="btn btn-secondary w-100" id="btnRegistrarse" href="/Registro">Registrarse</a>
                             <label for="" style="text-align: center; color: red;"></label>
+                            <!-- <button type="submit" class="btn btn-primary w-100 mb-2" id="btnIniciarSesion" >Iniciar sesión</button>
+                            <a class="btn btn-secondary w-100" id="btnRegistrarse" href="/Registro">Registrarse</a>
+                            <label for="" style="text-align: center; color: red;"></label> -->
                         </form>
                     </div>
                 </div>
@@ -33,7 +38,8 @@
         </div>
     </div>
 </template>
-<script>
+
+<!-- <script>
 export default {
   name: 'Login-', // Definición del componente
   data() {
@@ -77,12 +83,57 @@ export default {
         console.error('Error al iniciar sesión:', error);
         alert('Error al iniciar sesión: ' + error.message);
       }
+      
     }
   }
 }
+</script> -->
+<script>
+// Login.vue
+import keycloak from '@/keycloak';
+
+export default {
+  name: 'Login-',
+  data() {
+    return {
+      isKeycloakInitialized: false // Control de inicialización
+    };
+  },
+  methods: {
+    login() {
+      // Verifica si el método init está disponible en la instancia de Keycloak
+      if (typeof keycloak.init !== 'function') {
+        console.error('keycloak.init no es una función. Verifica la importación y la instancia de Keycloak.');
+        return;
+      }
+
+      // Solo inicializa Keycloak si no ha sido inicializado previamente
+      if (!this.isKeycloakInitialized) {
+        keycloak
+          .init({ onLoad: 'login-required' })
+          .then(authenticated => {
+            this.isKeycloakInitialized = true; // Marcar como inicializado
+
+            if (authenticated) {
+              console.log('Usuario autenticado');
+              // Redirigir o realizar otra acción después de la autenticación
+            } else {
+              console.warn('Usuario no autenticado');
+            }
+          })
+          .catch(err => {
+            console.error('Error al iniciar sesión con Keycloak:', err);
+          });
+      } else {
+        console.log('Keycloak ya está inicializado y autenticado');
+        // Aquí puedes redirigir o realizar otra acción si ya está autenticado
+      }
+    }
+  }
+};
+
 </script>
 
 <style>
 
 </style>
-  

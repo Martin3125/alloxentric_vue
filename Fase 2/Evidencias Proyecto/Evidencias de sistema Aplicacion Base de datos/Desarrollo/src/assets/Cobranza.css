@@ -130,7 +130,6 @@ footer {
 /* card */
 #card{
     background-color: rgb(255, 255, 255);
-    border: 0.05vh solid #000000;
     width: 80%;
     height: 80vh;
     margin: auto;

@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <div class="b_confirmar">
-                            <a id="guardar" type="submit" class="btn btn-primary" href="/res_periodo_anterior">Confirmar</a>
+                            <a id="guardar" type="submit" class="btn btn-primary" >Confirmar</a>
                         </div>  
                     </div>
             </div>  

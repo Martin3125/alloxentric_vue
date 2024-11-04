@@ -40,7 +40,14 @@ import uuid
 import random
 import string
 
-# app = FastAPI()
+
+
+from fastapi import FastAPI, HTTPException, status
+from pymongo import MongoClient
+from pydantic import BaseModel
+from typing import List
+
+
 
 # Inicializar la aplicación FastAPI
 app = FastAPI()
@@ -51,6 +58,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 
+# Configuración CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -77,12 +85,17 @@ modelo_collection = db["modelo"]
 
 
 
-#Endpoint de prueba de conexiones 
+#----------------------------------------Endpoint de prueba de conexiones--------------------------------------------
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
 
-#Endpoint de registro
+#--------------------------------------------------------------------------------------------------------------------
+
+
+
+
+#------------------------------------------------Endpoint de registro------------------------------------------------
 @app.post("/api/register")
 async def register_user(user: User):
     if users_collection.find_one({"email": user.email}):
@@ -103,7 +116,11 @@ async def register_user(user: User):
     users_collection.insert_one(new_user)
     return {"success": True, "message": "Usuario registrado exitosamente"}
 
-#Endpoint de login
+#--------------------------------------------------------------------------------------------------------------------
+
+
+
+#------------------------------------------------Endpoint de login---------------------------------------------------
 @app.post("/api/login")
 async def login_user(user: LoginUser):
     # Verificar si el usuario existe
@@ -116,8 +133,13 @@ async def login_user(user: LoginUser):
         raise HTTPException(status_code=400, detail="Correo o contraseña incorrectos")
     
     return {"success": True, "message": "Inicio de sesión exitoso"}
+    
+#--------------------------------------------------------------------------------------------------------------------
 
-# Endpoint para obtener todos los archivos
+
+
+
+#----------------------------------Endpoint para obtener todos los archivos------------------------------------------
 @app.get("/api/inicio", response_model=List[Archivos])
 async def get_all_archivos():
     archivos = list(archivos_collection.find())
@@ -135,6 +157,8 @@ async def get_all_archivos():
         archivo_modificados.append(archivo_modificado)
         
     return archivo_modificados
+
+#-------------------------Procesamientos programados-----------------------------------------------------------------
 
 # Endpoint para obtener todos los procesamientos programados
 @app.get("/api/procesamiento_P", response_model=List[Procesamiento])
@@ -176,10 +200,6 @@ async def register_procesamiento(procesamiento: Procesamiento):
         # Verificar si el procesamiento ya está registrado (por Id_procesamiento)
         if procesamiento_collection.find_one({"Id_procesamiento": new_id}):
             raise HTTPException(status_code=400, detail="El procesamiento ya está registrado")
-        # # Verificar si el procesamiento ya está registrado
-        # if procesamiento_collection.find_one({"Id_procesamiento": procesamiento.Id_procesamiento}):
-        #     raise HTTPException(status_code=400, detail="El procesamiento ya está registrado")
-
         # Convertir la hora en segundos desde el inicio del día
         time_field_seconds = procesamiento.hora.hour * 3600 + procesamiento.hora.minute * 60 + procesamiento.hora.second
 
@@ -191,7 +211,6 @@ async def register_procesamiento(procesamiento: Procesamiento):
             "hora": procesamiento.hora.isoformat(),    # Convertir la hora a cadena en formato ISO
             "time_field": time_field_seconds  # Hora en segundos
         }
-
         # Insertar el documento en la base de datos
         procesamiento_collection.insert_one(new_proces)
 
@@ -200,9 +219,15 @@ async def register_procesamiento(procesamiento: Procesamiento):
             # Manejo de excepciones y depuración
             print(f"Error al registrar el procesamiento: {e}")
             raise HTTPException(status_code=500, detail="Error interno del servidor")
+    
 
 
-#Endpoint de cobranza
+#----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+#-------------------------------------------------Endpoint de cobranza-------------------------------------------------
 @app.post("/api/acciones")
 async def register_or_update_accion(acciones: List[AccionCobranza]):
     for accion in acciones:
@@ -232,9 +257,23 @@ async def register_or_update_accion(acciones: List[AccionCobranza]):
     
     return {"success": True, "message": "Acciones registradas exitosamente"}
 
+# GET endpoint para recuperar acciones de cobranza
+@app.get("/api/acciones", response_model=List[AccionCobranza])
+async def get_acciones_cobranza():
+    # Recuperar todos los documentos en la colección
+    acciones = list(acciones_collection.find())
+    if not acciones:
+        raise HTTPException(status_code=404, detail="No se encontraron acciones de cobranza")
+    
+    # Convertir los documentos recuperados a la estructura de la clase AccionCobranza
+    return [AccionCobranza(**accion) for accion in acciones]
+
 @app.get("/api/acciones")
 def get_acciones():
     return [{"accion": "test"}]
+
+#----------------------------------------------------------------------------------------------------------------------
+
 
 # base de los demas endpoints 
 # Simulación de base de datos en memoria
@@ -242,74 +281,78 @@ documentos_db = {}
 procesamientos_db = {}
 resultados_db = {}
 
-# Procesamiento - POST: Iniciar procesamiento de documentos subidos
-@app.post("/api/procesamiento", response_model=str)
-def iniciar_procesamiento(documentos_ids: List[str]):
-    if not documentos_ids:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="IDs de documentos faltantes.")
+# -------------------------Procesamiento - POST: Iniciar procesamiento de documentos subidos----------------------------
+# def iniciar_procesamiento(documentos_ids: List[str]):
+#     if not documentos_ids:
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="IDs de documentos faltantes.")
     
-    # Verificar si todos los documentos existen
-    for doc_id in documentos_ids:
-        if doc_id not in documentos_db:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documentos no encontrados.")
+#     # Verificar si todos los documentos existen
+#     for doc_id in documentos_ids:
+#         if doc_id not in documentos_db:
+#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documentos no encontrados.")
     
-    # Simulación de procesamiento
-    proceso_id = "proc_" + "_".join(documentos_ids)
-    procesamientos_db[proceso_id] = {"documentos": documentos_ids}
+#     # Simulación de procesamiento
+#     proceso_id = "proc_" + "_".join(documentos_ids)
+#     procesamientos_db[proceso_id] = {"documentos": documentos_ids}
     
-    return f"ID del proceso iniciado: {proceso_id}"
+#     return f"ID del proceso iniciado: {proceso_id}"
 
-# Procesamiento (Resultados) - GET: Resultados del procesamiento ejecutado
-@app.get("/procesamiento/{proceso_id}", response_model=dict)
-def obtener_resultados_procesamiento(proceso_id: str):
-    if proceso_id not in procesamientos_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Procesamiento no encontrado.")
+# # Procesamiento (Resultados) - GET: Resultados del procesamiento ejecutado
+# @app.get("/procesamiento/{proceso_id}", response_model=dict)
+# def obtener_resultados_procesamiento(proceso_id: str):
+#     if proceso_id not in procesamientos_db:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Procesamiento no encontrado.")
     
-    try:
-        resultados = procesamientos_db[proceso_id]
-        return resultados
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error - Error del servidor.")
+#     try:
+#         resultados = procesamientos_db[proceso_id]
+#         return resultados
+#     except Exception as e:
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error - Error del servidor.")
 
-# Cargar resultados del período anterior en los Directorios - GET
-@app.get("/resultados/periodo-anterior/directorios/{resultado_id}", response_model=str)
-def cargar_resultados_directorios(resultado_id: str):
-    if resultado_id not in resultados_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-    # Simulación de carga de resultados en directorios
-    return f"Carga de los resultados realizados en el periodo anterior según el directorio: {resultado_id}"
+#----------------------------------------------------------------------------------------------------------------------
 
-# Cargar resultados del período anterior para los Archivos - GET
-@app.get("/resultados/periodo-anterior/archivos/{resultado_id}", response_model=str)
-def cargar_resultados_archivos(resultado_id: str):
-    if resultado_id not in resultados_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-    # Simulación de carga de resultados en archivos
-    return f"Carga de los resultados realizados en el periodo anterior según el archivo: {resultado_id}"
 
-# Generar resultados del período - GET
-@app.get("/resultados/generar/{resultado_id}", response_model=List[dict])
-def generar_resultados(resultado_id: str):
-    if resultado_id not in resultados_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-    try:
-        # Simulación de generación de resultados
-        resultados = [{"id": resultado_id, "resultado": "Datos del procesamiento generado"}]
-        return resultados
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error - Error del servidor.")
 
-# Informes (Reportes de la última carga) - GET
-@app.get("/informes/ultima-carga/{reporte_id}", response_model=str)
-def visualizar_reporte_ultima_carga(reporte_id: str):
-    if reporte_id not in resultados_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
+#----------------------------------------------------------------------------------------------------------------------
+# # Cargar resultados del período anterior en los Directorios - GET
+# @app.get("/resultados/periodo-anterior/directorios/{resultado_id}", response_model=str)
+# def cargar_resultados_directorios(resultado_id: str):
+#     if resultado_id not in resultados_db:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
     
-    # Simulación de visualización de reportes de la última carga
-    return f"Visualización de los reportes de la última carga: {reporte_id}"
+#     # Simulación de carga de resultados en directorios
+#     return f"Carga de los resultados realizados en el periodo anterior según el directorio: {resultado_id}"
+
+# # Cargar resultados del período anterior para los Archivos - GET
+# @app.get("/resultados/periodo-anterior/archivos/{resultado_id}", response_model=str)
+# def cargar_resultados_archivos(resultado_id: str):
+#     if resultado_id not in resultados_db:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
+    
+#     # Simulación de carga de resultados en archivos
+#     return f"Carga de los resultados realizados en el periodo anterior según el archivo: {resultado_id}"
+
+# # Generar resultados del período - GET
+# @app.get("/resultados/generar/{resultado_id}", response_model=List[dict])
+# def generar_resultados(resultado_id: str):
+#     if resultado_id not in resultados_db:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
+    
+#     try:
+#         # Simulación de generación de resultados
+#         resultados = [{"id": resultado_id, "resultado": "Datos del procesamiento generado"}]
+#         return resultados
+#     except Exception as e:
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error - Error del servidor.")
+
+# # Informes (Reportes de la última carga) - GET
+# @app.get("/informes/ultima-carga/{reporte_id}", response_model=str)
+# def visualizar_reporte_ultima_carga(reporte_id: str):
+#     if reporte_id not in resultados_db:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
+    
+#     # Simulación de visualización de reportes de la última carga
+#     return f"Visualización de los reportes de la última carga: {reporte_id}"
 
 # Informes (Reportes de desempeño) - GET
 # @app.get("/informes/desempeno/{deudor_id}", response_model=str)
@@ -319,6 +362,12 @@ def visualizar_reporte_ultima_carga(reporte_id: str):
     
 #     # Simulación de visualización de reporte de desempeño
 #     return f"Visualización del desempeño del deudor con ID: {deudor_id}"
+#----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+#-----------------------------------------Endpoint Reporte de desempeño-----------------------------------------------
 @app.get("/api/reportes/{deudor_id}", response_model=List[Reporte])
 async def get_reporte_deudor(deudor_id: str):
     # Buscar todos los reportes para el deudor específico
@@ -357,7 +406,12 @@ async def get_all_deudores_ids():
     
     return deudor_ids
 
+#----------------------------------------------------------------------------------------------------------------------
 
+
+
+
+#------------------------------------Endpont de settings (manipulación del modelo)-------------------------------------
 @app.post("/api/manipular-modelo")
 async def update_weights(weights: List[float] = Form(...), n_samples: int = Form(...)):
     if len(weights) != 7:
@@ -403,21 +457,19 @@ async def get_modelo():
         return JSONResponse(content=existing_modelo, status_code=200)
     else:
         raise HTTPException(status_code=404, detail="No se encontró ningún registro")
+
+#----------------------------------------------------------------------------------------------------------------------
+
+
     
 
 
 #--------------------------------Models---------------------------------------------------------------
 
 
-# Configurar CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
+
+#---------------------------------------Endpoint para generar resultados-----------------------------------------------------
 UPLOAD_FOLDER = 'uploads/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -518,28 +570,17 @@ async def upload_file(file: UploadFile = File(...)):
 
 predicciones_resultados = [] 
 
+@app.get("/api/cobranza_result")
+async def get_resultados():
+    resultados = list(resultados_collection.find())
+    for resultado in resultados:
+        accion_cobranza = acciones_collection.find_one({
+            "accion_cobranza": resultado["accion_predicha"]
+        })
+        resultado["valor"] = accion_cobranza["valor"] if accion_cobranza else 0.0  # Asignar valor de cobranza
+    
+    return resultados
 
-
-# Endpoint GET para obtener los resultados de predicción
-# @app.get('/api/resultados')
-# async def get_resultados():
-#     return JSONResponse(content={
-#         'status': 'success',
-#         'predicciones': predicciones_resultados  # Devolver los resultados almacenados
-#     })
-
-# # Endpoint GET para obtener los resultados de predicción
-# @app.get('/api/resultados')
-# async def get_resultados():
-#     # Recuperar las predicciones desde MongoDB
-#     predicciones = list(predicciones_collection.find({}, {"_id": 0}))  # Excluir el campo _id para simplicidad
-#     if not predicciones:
-#         raise HTTPException(status_code=404, detail="No se encontraron predicciones.")
-
-#     return JSONResponse(content={
-#         'status': 'success',
-#         'predicciones': predicciones
-#     })
 
 if __name__ == '__main__':
     import uvicorn
@@ -548,14 +589,7 @@ if __name__ == '__main__':
 
 
 
-#--------------------------------directorios---------------------------------------------------------------
-
-
-from fastapi import FastAPI, HTTPException, status
-from pymongo import MongoClient
-from pydantic import BaseModel
-from typing import List
-
+#--------------------------------Endpoint de Directorios---------------------------------------------------------------
 
 # Obtener todos los directorios - GET
 @app.get("/directorios", response_model=List[str])
@@ -650,31 +684,17 @@ async def subir_archivo(directorio: str, file: UploadFile = File(...)):
 
     return {"mensaje": f"Archivo {file.filename} subido correctamente al directorio {directorio}."}
 
+#---------------------------------------------------------------------------------------------------------
 
-#--------------------------------Resultados---------------------------------------------------------------
+
+
+
+#--------------------------------Endpoint de Resultados---------------------------------------------------------------
 # main.py
 from fastapi import FastAPI, HTTPException, status
 from pymongo import MongoClient
 from typing import List
 
-# Obtener todos los resultados - GET
-# @app.get("/resultados", response_model=List[Resultados])
-# async def obtener_resultados():
-#     resultados = []
-#     for resultado in resultados_collection.find():
-#         resultado["id_procesamiento"] = resultado["id_procesamiento"]
-#         resultado["documento_cargado"] = resultado["documento_cargado"]
-#         resultado["fecha_carga"] = resultado["fecha_carga"]
-#         resultado["registro_deudores"] = resultado["registro_deudores"]
-#         # # resultado["acciones_cobranza"] = resultado["acciones_cobranza"]
-#         # # resultado["deudores_contactar"] = resultado["deudores_contactar"]
-#         # resultado.setdefault("predicciones", [])
-#         resultado["precio"] = resultado["precio"]
-        
-#         # predicciones = list(predicciones_collection.find({"id_procesamiento": resultado["id_procesamiento"]}))
-#         # resultado["predicciones"] = [Prediccion(**prediccion) for prediccion in predicciones]
-#         resultados.append(Resultados(**resultado))  # Usa el modelo para la respuesta
-#     return resultados
 
 @app.get("/resultados", response_model=List[Resultados])
 async def obtener_resultados():
@@ -690,7 +710,7 @@ async def obtener_resultados():
             "registro_deudores": resultado.get("registro_deudores", 0),
             "deudores_contactar": resultado.get("deudores_contactar", 0),
             "precio": resultado.get("precio", 0.0),
-            "accion_predicha": resultado.get("accion_predicha", "")
+            "accion_predicha": resultado.get("accion_predicha", ""),
         }
 
         # Crear una instancia de Resultados y agregarla a la lista
@@ -724,111 +744,43 @@ def eliminar_resultado(id_resultado: int):
     
     return {"mensaje": "Resultado eliminado exitosamente"}
 
+#----------------------------------------------------------------------------------------------------------
 
 
 
 
+#----------------------------------------------KEYCLOAK FINAL----------------------------------------------
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from keycloak import KeycloakOpenID
 
 
-# from fastapi import FastAPI, HTTPException, Depends
-# from fastapi.security import OAuth2PasswordBearer
-# from keycloak import KeycloakOpenID
-#------------------------------Prueba keycloak--------------------------------------------------------------------
+keycloak_openid = KeycloakOpenID(
+    server_url="http://localhost:8080/",
+    client_id="vue-app",
+    realm_name="Alloxentric",
+    client_secret_key="LnI3hrpnmA9xWMspe4RfFAsleAzLQgrS"
+)
 
-# # Configura Keycloak
-# keycloak = KeycloakOpenID(
-#     server_url='http://localhost:8080/auth/',
-#     client_id='vue-app',
-#     realm_name='Alloxentric',  # Reemplaza con el nombre de tu realm
-# )
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
-
-# @app.post("/api/login")
-# async def login_user(token: str = Depends(oauth2_scheme)):
-#     try:
-#         # Verificar el token
-#         user_info = keycloak.decode_token(token, options={"verify_signature": True})
-#         email = user_info['preferred_username']
-
-#         # Aquí puedes buscar al usuario en tu base de datos si es necesario
-#         user_record = users_collection.find_one({"email": email})
-#         if not user_record:
-#             raise HTTPException(status_code=400, detail="Usuario no encontrado")
-
-#         return {"success": True, "message": "Inicio de sesión exitoso", "user": user_record}
-
-#     except Exception as e:
-#         raise HTTPException(status_code=401, detail="Token inválido o expirado")
-
-#----------------------------------------------------------------------------------------------------------------
-
-#----------------------------------Keycloak-------------------------------------------------------
-
-# from fastapi import Depends, HTTPException, Security
-# from fastapi.security import OAuth2PasswordBearer
-# from jose import JWTError, jwt
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# async def get_current_user(token: str = Depends(oauth2_scheme)):
-#     try:
-#         payload = jwt.decode(token, "YOUR_KEYCLOAK_PUBLIC_KEY", algorithms=["RS256"])
-#         username: str = payload.get("preferred_username")
-#         if username is None:
-#             raise HTTPException(status_code=401, detail="Token no válido")
-#         return username
-#     except JWTError:
-#         raise HTTPException(status_code=401, detail="Token no válido o expirado")
-
-# @app.get("/api/protected-endpoint")
-# async def protected_endpoint(username: str = Depends(get_current_user)):
-#     return {"message": f"Hola, {username}"}
-# from fastapi import FastAPI, Depends
-# from keycloak import KeycloakOpenID
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8080/realms/Alloxentric/protocol/openid-connect/token")
 
 
+def verify_token(token: str = Depends(oauth2_scheme)):
+    try:
+        user_info = keycloak_openid.introspect(token)
+        if not user_info.get("active"):
+            raise HTTPException(status_code=401, detail="Token inválido o expirado")
+        return user_info
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Error de autenticación: " + str(e))
 
-# @app.get("/api/protected-route")
-# def protected_route(token: str = Depends(oauth2_scheme)):
-#     try:
-#         userinfo = keycloak.userinfo(token)
-#         return {"message": "You are authenticated", "userinfo": userinfo}
-#     except Exception as e:
-#         return {"error": str(e)}
+# Resto de tu código
+@app.get("/api/protected")
+async def protected_route(user_info: dict = Depends(verify_token)):
+    return {"message": "This is a protected route", "user": user_info}
 
-
-
-
-
-#----------------------------------------------KEYCLOAK FINAL---------------------------------------------------------
-# from fastapi import FastAPI, Depends, HTTPException
-# from fastapi.security import OAuth2PasswordBearer
-# from keycloak import KeycloakOpenID
-
-
-# keycloak_openid = KeycloakOpenID(server_url='http://localhost:8080/auth/',
-#                                   client_id='vue-app',
-#                                   realm_name='Alloxentric',
-#                                   client_secret_key='LnI3hrpnmA9xWMspe4RfFAsleAzLQgrS')  # Solo si es un cliente confidencial
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# def verify_token(token: str = Depends(oauth2_scheme)):
-#     try:
-#         user_info = keycloak_openid.introspect(token)
-#         if not user_info.get('active'):
-#             raise HTTPException(status_code=401, detail="Invalid token")
-#         return user_info
-#     except Exception as e:
-#         raise HTTPException(status_code=401, detail=str(e))
-
-# @app.get("/api/protected")
-# async def protected_route(user_info: dict = Depends(verify_token)):
-#     return {"message": "This is a protected route", "user": user_info}
-
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="127.0.0.1", port=8000)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
     
-#---------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------
