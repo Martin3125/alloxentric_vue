@@ -46,6 +46,18 @@
                                 </ul>
                                 </div>
                             </div>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                                <div class="accordion-body">
+                                <ul class="list-group">
+                                    <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center gap-2" href="/Nuevo_Procesamiento" style="color: #ffffff;">
+                                        <svg class="bi"><use xlink:href="#cart"></use></svg>
+                                        Nuevo Procesamiento
+                                    </a>
+                                    </li>
+                                </ul>
+                                </div>
+                            </div>
                             </div>
                             <div class="accordion-item" style="background-color: #06B7B2; color: #ffffff;">
                             <h2 class="accordion-header">

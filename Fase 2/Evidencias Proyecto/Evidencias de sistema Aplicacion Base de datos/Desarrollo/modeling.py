@@ -226,4 +226,12 @@ def run_lstm(df_final):
         total_deudores=('deudor', 'count')  # Contar el total de deudores por acción
     ).reset_index()
 
+    # Crear el DataFrame df_group
+    df_group2 = pd.DataFrame(df_group)
+
+    # Guardar df_group en un archivo CSV
+    df_group2.to_csv('uploads/df_group.csv', index=False)
+
     return df_group
+
+
