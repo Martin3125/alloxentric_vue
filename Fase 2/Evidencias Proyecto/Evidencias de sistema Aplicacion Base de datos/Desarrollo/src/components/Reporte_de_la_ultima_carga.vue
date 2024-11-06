@@ -70,8 +70,9 @@
                                 <!-- <td>{{ resultado.valor_multiplicado }}</td>   -->
                                 
                                 <td>
-                                    <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
-                                    <i class="bi bi-trash" @click="eliminarResultado(resultado.id_procesamiento)"></i>
+                                    <!-- <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
+                                    <i class="bi bi-trash" @click="eliminarResultado(resultado.id_procesamiento)"></i> -->
+                                    <button @click="descargarPDF(resultado)">Descargar</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -99,6 +100,7 @@
   </template>
   
   <script>
+  import jsPDF from 'jspdf';
   import { initializeFilter } from './js/filtro.js';
   import Menu_P from './Menu-.vue';
   import axios from 'axios';
@@ -182,6 +184,109 @@
         calcularValorMultiplicado(deudoresContactar, valor) {
             return deudoresContactar * valor; // Multiplicación del valor por los deudores a contactar
         },
+        descargarPDF(resultado) {
+            const doc = new jsPDF();
+
+            // Título principal en grande y en negrita
+            doc.setFontSize(24);
+            doc.setFont("helvetica", "bold");
+            doc.text("Reporte de Carga", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+
+            // Línea separadora debajo del título
+            doc.setLineWidth(0.5);
+            doc.line(20, 30, doc.internal.pageSize.getWidth() - 20, 30);
+
+            // Cambiar fuente a tamaño normal y menos negrita para el contenido
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+
+            // Espacio para cada campo con etiquetas en negrita y datos alineados
+            const startY = 40; // Posición de inicio del contenido
+            const lineSpacing = 10; // Espaciado entre líneas
+
+            // Resumen de los datos cargados
+            doc.setFont("helvetica", "bold");
+            doc.text("ID Procesamiento:", 20, startY);
+            doc.setFont("helvetica", "normal");
+            doc.text(resultado.id_procesamiento.toString(), 70, startY);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Documento Cargado:", 20, startY + lineSpacing);
+            doc.setFont("helvetica", "normal");
+            doc.text(resultado.documento_cargado, 70, startY + lineSpacing);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Fecha de Carga:", 20, startY + lineSpacing * 2);
+            doc.setFont("helvetica", "normal");
+            doc.text(resultado.fecha_carga, 70, startY + lineSpacing * 2);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Deudores Registrados:", 20, startY + lineSpacing * 3);
+            doc.setFont("helvetica", "normal");
+            doc.text(resultado.registro_deudores.toString(), 70, startY + lineSpacing * 3);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Acciones de Cobranza:", 20, startY + lineSpacing * 4);
+            doc.setFont("helvetica", "normal");
+            doc.text(resultado.accion_predicha, 70, startY + lineSpacing * 4);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Deudores a contactar:", 20, startY + lineSpacing * 5);
+            doc.setFont("helvetica", "normal");
+            doc.text(resultado.deudores_contactar.toString(), 70, startY + lineSpacing * 5);
+
+            // Agregar una nueva página para los deudores
+            doc.addPage();
+
+            // Introducción de la lista de deudores
+            const startY2 = 20; // Iniciar la segunda página desde arriba
+            doc.setFont("helvetica", "normal");
+            doc.text("Los deudores que deberían ser contactados por " + resultado.accion_predicha + " son:", 20, startY2);
+
+            // Ajustar la fuente para los deudores
+            doc.setFontSize(10); // Reducir el tamaño de la fuente para los deudores
+
+            let currentX = 20;
+            let startLineY = startY2 + lineSpacing;  // Comenzamos desde abajo del texto introductorio
+            const lineHeight = 6; // Ajustamos la altura de la línea
+            let lineCount = 0;
+
+            // Convertir la lista de deudores a un arreglo de strings (si es necesario)
+            let deudores = resultado.deudores.toString().split(',');
+
+            // Definir número máximo de deudores por fila y columnas
+            const maxDeudoresPorFila = 40;  // Ajustamos el máximo por fila
+            const maxColumnas = 7;  // Ajustamos el número de columnas
+            let columnCount = 0;
+
+            deudores.forEach((deudor, index) => {
+                // Imprimir cada deudor
+                doc.text(deudor.trim(), currentX, startLineY + lineCount * lineHeight);
+
+                lineCount++;
+                // Si hemos alcanzado el máximo de deudores por fila, pasar a la siguiente columna
+                if (lineCount >= maxDeudoresPorFila) {
+                    lineCount = 0;
+                    columnCount++;
+
+                    // Si hemos usado 5 columnas, agregar una nueva página
+                    if (columnCount >= maxColumnas) {
+                        doc.addPage();
+                        currentX = 20;  // Reiniciar posición X
+                        startLineY = 20;  // Reiniciar posición Y
+                        columnCount = 0;
+                    } else {
+                        currentX += (doc.internal.pageSize.getWidth() - 40) / maxColumnas; // Ajustar ancho de las columnas
+                    }
+                }
+            });
+
+            // Guardar el archivo PDF con un nombre personalizado
+            doc.save(`${resultado.id_procesamiento}_${resultado.accion_predicha}.pdf`);
+        }
+
+
+
 
     },
   };

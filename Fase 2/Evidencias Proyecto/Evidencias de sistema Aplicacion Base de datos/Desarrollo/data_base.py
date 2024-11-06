@@ -550,6 +550,7 @@ async def upload_file(file: UploadFile = File(...)):
                 "accion_predicha": pred["accion_predicha"],  # Acción de cobranza
                 "total_deudores": pred["total_deudores"],  # Total de deudores para la acción predicha
                 "registro_deudores": registro_deudores_total,  # Total de predicciones generadas
+                "deudores": pred["deudores"],
                 "deudores_contactar": pred["total_deudores"],  # Total de deudores para cada acción
                 "precio": 0.0  # Ajustar lógica del precio si es necesario
             }
@@ -684,6 +685,50 @@ async def subir_archivo(directorio: str, file: UploadFile = File(...)):
 
     return {"mensaje": f"Archivo {file.filename} subido correctamente al directorio {directorio}."}
 
+
+# from typing import List, Dict
+# # Obtener tipos de procesamiento disponibles en un directorio - GET
+# @app.get("/directorios/{directorio}/procesamientos", response_model=List[str])
+# def obtener_procesamientos_de_directorio(directorio: str):
+#     directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
+#     if not directorio_obj:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+    
+#     # Obtener los tipos de procesamiento disponibles en el directorio
+#     procesamientos = directorio_obj.get("procesamientos", [])
+#     return procesamientos
+
+# # Añadir un tipo de procesamiento a un directorio - POST
+# @app.post("/directorios/{directorio}/agregar_procesamiento")
+# def agregar_procesamiento(directorio: str, procesamiento: str):
+#     directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
+#     if not directorio_obj:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+
+#     directorios_collection.update_one(
+#         {"nombre_directorio": directorio},
+#         {"$addToSet": {"procesamientos": procesamiento}}
+#     )
+#     return {"mensaje": f"Procesamiento {procesamiento} agregado al directorio {directorio}."}
+
+# # Obtener resultados de un procesamiento específico en un directorio - GET
+# @app.get("/directorios/{directorio}/procesamientos/{procesamiento}/resultados", response_model=List[Dict[str, str]])
+# def obtener_resultados_procesamiento(directorio: str, procesamiento: str):
+#     directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
+#     if not directorio_obj:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
+    
+#     # Verificar si el procesamiento está registrado en el directorio
+#     if procesamiento not in directorio_obj.get("procesamientos", []):
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Procesamiento no encontrado en el directorio.")
+    
+#     # Obtener los resultados específicos de ese procesamiento
+#     resultados = directorio_obj.get("resultados", {}).get(procesamiento, [])
+#     if not resultados:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron resultados para el procesamiento solicitado.")
+    
+#     return resultados
+
 #---------------------------------------------------------------------------------------------------------
 
 
@@ -709,6 +754,7 @@ async def obtener_resultados():
             "fecha_carga": resultado.get("fecha_carga", ""),  # Obtener la fecha del documento
             "registro_deudores": resultado.get("registro_deudores", 0),
             "deudores_contactar": resultado.get("deudores_contactar", 0),
+            "deudores": resultado.get("deudores", ""),
             "precio": resultado.get("precio", 0.0),
             "accion_predicha": resultado.get("accion_predicha", ""),
         }
@@ -750,38 +796,38 @@ def eliminar_resultado(id_resultado: int):
 
 
 #----------------------------------------------KEYCLOAK FINAL----------------------------------------------
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from keycloak import KeycloakOpenID
+# from fastapi import FastAPI, Depends, HTTPException
+# from fastapi.security import OAuth2PasswordBearer
+# from keycloak import KeycloakOpenID
 
 
-keycloak_openid = KeycloakOpenID(
-    server_url="http://localhost:8080/",
-    client_id="vue-app",
-    realm_name="Alloxentric",
-    client_secret_key="LnI3hrpnmA9xWMspe4RfFAsleAzLQgrS"
-)
+# keycloak_openid = KeycloakOpenID(
+#     server_url="http://localhost:8080/",
+#     client_id="vue-app",
+#     realm_name="Alloxentric",
+#     client_secret_key="LnI3hrpnmA9xWMspe4RfFAsleAzLQgrS"
+# )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8080/realms/Alloxentric/protocol/openid-connect/token")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8080/realms/Alloxentric/protocol/openid-connect/token")
 
 
-def verify_token(token: str = Depends(oauth2_scheme)):
-    try:
-        user_info = keycloak_openid.introspect(token)
-        if not user_info.get("active"):
-            raise HTTPException(status_code=401, detail="Token inválido o expirado")
-        return user_info
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="Error de autenticación: " + str(e))
+# def verify_token(token: str = Depends(oauth2_scheme)):
+#     try:
+#         user_info = keycloak_openid.introspect(token)
+#         if not user_info.get("active"):
+#             raise HTTPException(status_code=401, detail="Token inválido o expirado")
+#         return user_info
+#     except Exception as e:
+#         raise HTTPException(status_code=401, detail="Error de autenticación: " + str(e))
 
-# Resto de tu código
-@app.get("/api/protected")
-async def protected_route(user_info: dict = Depends(verify_token)):
-    return {"message": "This is a protected route", "user": user_info}
+# # Resto de tu código
+# @app.get("/api/protected")
+# async def protected_route(user_info: dict = Depends(verify_token)):
+#     return {"message": "This is a protected route", "user": user_info}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
     
 #--------------------------------------------------------------------------------------------------------------
 
