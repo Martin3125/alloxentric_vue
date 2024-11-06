@@ -33,7 +33,7 @@
               <select v-model="itemsPerPage" @change="updatePagination">
                 <option value="5">5 filas</option>
                 <option value="10">10 filas</option>
-                <option value="20">20 filas</option>
+                
               </select>
             </div>
 
@@ -65,7 +65,7 @@
               <select v-model="itemsPerPage" @change="updatePagination">
                 <option value="5">5 filas</option>
                 <option value="10">10 filas</option>
-                <option value="20">20 filas</option>
+                
               </select>
             </div>
 
@@ -94,9 +94,9 @@
             </table>
 
             <div class="pagination">
-              <button @click="prevPage" :disabled="currentPage === 1">Anterior</button>
-              <span>Página {{ currentPage }} de {{ totalPages }}</span>
-              <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
+              <button @click="prevPage2" :disabled="currentPage2 === 1">Anterior</button>
+              <span>Página {{ currentPage2 }} de {{ totalPages }}</span>
+              <button @click="nextPage2" :disabled="currentPage2 === totalPages">Siguiente</button>
             </div>
           </div>
         </div>
@@ -189,6 +189,12 @@ export default {
     nextPage() {
       if (this.currentPage < this.totalPages) this.currentPage++;
     },
+    prevPage2() {
+      if (this.currentPage2 > 1) this.currentPage2--;
+    },
+    nextPage2() {
+      if (this.currentPage2 < this.totalPages2) this.currentPage2++;
+    },
     goToPage(page) {
       if (page > 0 && page <= this.totalPages) {
         this.currentPage = page;
@@ -222,127 +228,109 @@ export default {
 </script>
 
 <style>
-.table-responsive {
-  overflow-x: auto;
-}
-.container {
-	display: flex;
-	flex-direction: column;
-	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
-	width: 90%;
-	background-color: #ffffff;
-	border-radius: 30px;
-  
-}
-
-.container2 {
-	display: flex;
-	flex-direction: column;
-	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
-	width: 90%;
-	background-color: #ffffff;
-	border-radius: 30px;
-  margin: auto;
-  margin-left: 1%;
-  margin-right: 1%;
-}
-
+/* Estilos generales */
 .container, .container2 {
-    width: 90%;
-    height: 40vh;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 8px 8px 8px 8px #bdbdbdbf;
+  width: 90%;
+  background-color: #ffffff;
+  border-radius: 30px;
+  margin: 1% auto;
+  padding: 15px;
 }
-.table_header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 20px 30px 0;
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px 0;
 }
 
 button {
-	outline: none;
-	border: none;
-	background-color: #06B7B2;
-	color: #ffffff;
-	padding: 10px 30px;
-	border-radius: 20px;
-	cursor: pointer;
+  outline: none;
+  border: none;
+  background-color: #06B7B2;
+  color: #ffffff;
+  padding: 10px 30px;
+  border-radius: 20px;
+  cursor: pointer;
 }
 
 button:hover {
-	background-color: #06B7B2;
+  background-color: #06B7B2;
 }
 
 select {
-	border: none;
-	border-bottom: 1px solid #c9c9c9;
-	width: 200px;
-	padding: 10px 0;
-	font-size: 16px;
+  border: none;
+  border-bottom: 1px solid #c9c9c9;
+  width: 200px;
+  padding: 10px 0;
+  font-size: 16px;
 }
 
 .input_search {
-	position: relative;
+  position: relative;
 }
 
 .input_search input {
-	border-radius: 30px;
-	width: 40%;
-	outline: none;
-	padding: 10px 20px;
-	border: 1px solid #c9c9c9;
-	box-sizing: border-box;
-	padding-right: 50px;
+  border-radius: 30px;
+  width: 40%;
+  outline: none;
+  padding: 10px 20px;
+  border: 1px solid #c9c9c9;
+  box-sizing: border-box;
+  padding-right: 50px;
   margin-left: 15%;
 }
 
 .input_search #search {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	margin-right: 1rem;
-	transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-right: 1rem;
+  transform: translate(-50%, -50%);
 }
 
 table {
-	border-spacing: 0;
-	margin-top: 1rem;
+  border-spacing: 0;
+  margin-top: 1rem;
+  width: 100%;
+  overflow-x: auto;
 }
 
 thead {
-	background-color: #fff7b3;
+  background-color: #fff7b3;
 }
 
 th {
-	padding: 10px;
+  padding: 10px;
 }
 
 tbody tr {
-	border-bottom: 1px solid #dfdfdf;
+  border-bottom: 1px solid #dfdfdf;
 }
 
 tbody td {
-	padding: 10px;
-	border-bottom: 1px solid #dfdfdf;
-	text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid #dfdfdf;
+  text-align: center;
 }
 
 tbody td #icons {
-	font-size: 20px;
-	cursor: pointer;
-	margin-left: 10px;
-	color: #797979;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 10px;
+  color: #797979;
 }
 
 tbody tr:hover {
-	background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
-.table_fotter {
-	margin-top: 1rem;
-	padding: 0 30px 20px;
+.table-footer {
+  margin-top: 1rem;
+  padding: 0 30px 20px;
 }
 
 .pagination {
@@ -353,9 +341,7 @@ tbody tr:hover {
   margin-top: 15px;
 }
 
-button {
-  outline: none;
-  border: none;
+button.pagination-btn {
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
@@ -363,15 +349,61 @@ button {
   color: white;
 }
 
-button:disabled {
-  background-color: #06B7B2;
+button.pagination-btn:disabled {
+  background-color: #dfdfdf;
 }
 
 button.active {
   background-color: #ffa500; /* Cambiar color para la página activa */
 }
 
-.toggle-btn{
+.toggle-btn {
   background-color: #06B7B2;
 }
+
+/* Media queries para hacer el diseño responsivo */
+@media (max-width: 768px) {
+  .container, .container2 {
+    width: 95%;
+    height: auto;
+    margin: 0 10px;
+    padding: 10px;
+  }
+
+  .input_search input {
+    width: 80%; /* Ajustar tamaño de los inputs en pantallas más pequeñas */
+    margin-left: 0;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  table {
+    width: 100%;
+    overflow-x: auto; /* Hacer la tabla scrollable en pantallas pequeñas */
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+}
+
+/* Media query para pantallas muy pequeñas (dispositivos móviles muy pequeños) */
+@media (max-width: 480px) {
+  .input_search input {
+    width: 100%; /* En pantallas pequeñas, el input ocupará el ancho completo */
+  }
+
+  .table-header {
+    padding: 10px;
+  }
+
+  button {
+    width: 100%; /* Botones ocupan todo el ancho en pantallas pequeñas */
+    padding: 12px;
+  }
+}
+
 </style>

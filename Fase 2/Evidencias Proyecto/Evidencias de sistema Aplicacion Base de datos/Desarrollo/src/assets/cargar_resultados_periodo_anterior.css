@@ -156,19 +156,19 @@ body {
                 }
                     .home{
                         background-color: black;
-                        width: 40%;
+                        width: 80%;
                         height: 40%;
                         margin: auto;
-                        margin-right: 0%;
+                        margin-right: 5%;
                     }
 
                     .dir{
                         background-color: #06B7B2;
-                        width: 40%;
+                        width: 80%;
                         height: 40%;
                         margin: auto;
                         margin-top: 10%;
-                        margin-right: 0%;
+                        margin-right: 5%;
                     }
 
 
@@ -228,6 +228,22 @@ body {
                     font-weight: 600;
                 }
 
+/* Estilos del contenedor de tarjetas */
+.container {
+    display: flex;
+    flex-direction: column;
+    box-shadow: 8px 8px 8px 8px #bdbdbdbf;
+    width: 90%;
+    max-width: 1200px; /* Limitar el ancho máximo */
+    height: 90%;
+    background-color: #ffffff;
+    border-radius: 20px;
+    margin: auto; /* Centrar horizontalmente */
+    margin-top: 2%;
+    padding: 20px; /* Espaciado interno */
+    overflow: hidden; /* Evitar que se desborde el contenido */
+  }
+  
 #logo_footer {
     display: flex;
     align-items: center;

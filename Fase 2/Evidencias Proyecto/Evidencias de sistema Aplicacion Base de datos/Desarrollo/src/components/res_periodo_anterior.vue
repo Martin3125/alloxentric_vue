@@ -4,35 +4,30 @@
     <body>
     <header>
         <div id="logo_header">
+            <button class="toggle-btn" @click="toggleSidebar">
+                <span class="icon" v-if="isCollapsed">☰</span>
+                <span class="icon" v-else>✖</span>
+            </button>
             <img src="@/assets/2.png" alt="logo">
             <h2>Alloxentric</h2>
         </div>
-
-        <div id="menu">
+        <div class="input_search">
+            <input v-model="busqueda" type="search" placeholder="Buscar" />
+            <i class="bi bi-search" id="search"></i>
         </div>
-        
+        <div class="card-body">
+            <h5 class="card-title2">Usuario: {{ usuarioLogueado }}</h5>
+        </div>
     </header>
     
 
 </body>
 <div class="main">
-    <Menu_P  />
+    <Menu_P v-if="!isCollapsed"/>
+    <main id="cards">
         <div class="general">
 
-            <div class="general-resultados">
-
-                <div class="pag-resultados">
-                    <h5 style="margin-top: 3%;">Resultados del período anterior</h5>
-                </div>
-    
-                <div class="user">
-                    <h5 style="margin-top: 3%;;">Usuario</h5>
-                    <!-- <p style="color: white; text-align: center; font-size: 13px;">Trabajador</p> -->
-                </div>
-    
-            </div>
-
-            <div class="ver-resultados">
+            <div class="container">
                 <div class="titulos">
                     <div class="btn_volver">
                         <a class="btn btn-primary" href="/cargar_resultados" style="width: 100%;">VOLVER</a>
@@ -41,109 +36,148 @@
                     <div class="text_resultados">
                         <h1 style="text-align: left;">Resultados del período anterior </h1>
                     </div>
-                    
-                    
+
+                </div>
+                <!-- Filtro de Procesamiento -->
+                <div class="filtro-procesamiento">
+                    <label for="filtroAccion">Filtrar por Acción de Cobranza: </label>
+                    <select v-model="tipoSeleccionado" id="filtroAccion">
+                        <option value="">Todos</option>
+                        <option value="O876">O876</option>
+                        <option v-for="accion in acciones" :key="accion.Id_accion" :value="accion.nombre">{{ accion.nombre }}</option>
+                    </select>
                 </div>
                 
                 <div class="tbl_resultados">
-                    <table class="table table-borderless" id="table">
+                    <!-- Tabla de resultados -->
+                    <table>
                         <thead>
-                          <tr>
-                            <th style="border: 1px solid black;">ID</th>
-                            <th scope="col" style="border: 1px solid black;">Nombre del documento</th>
-                            <th scope="col" style="border: 1px solid black;">Fecha</th>
-                            <th scope="col" style="border: 1px solid black;">Registro de gente</th>
-                            <th scope="col" style="border: 1px solid black;">Tipo de acción</th>
-                            <th scope="col" style="border: 1px solid black;">Cantidad de gente a contactar</th>
-                            <th>Descargar</th>
-                          </tr>
+                            <tr>
+                                <th>#</th>
+                                <th>ID Procesamiento</th>
+                                <th>Documento Cargado</th>
+                                <th>Fecha de Carga</th>
+                                <th>Deudores registrados</th>
+                                <th>Acciones de Cobranza</th>
+                                <th>Deudores por acción</th>
+                                <!-- <th>Precio</th>
+                                <th>Valor Multiplicado</th>  -->
+                                <th>Operaciones</th>
+                            </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <th></th>
-                            <td style="border: 1px solid black;">Documento 1</td>
-                            <td style="border: 1px solid black;">01/07/2024</td>
-                            <td style="text-align: center;">300</td>
-                            <td style="border: 1px solid black;">Correo electrónico</td>
-                            <td style="text-align: center;">100</td>
-                            <td style="border: 1px solid black;"><a type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Descargar</a></td>
-                          </tr>
-                          <tr>
-                            <th scope="row">A001</th>
-                            <td style="border: 1px solid black;">Documento 2</td>
-                            <td style="border: 1px solid black;">01/07/2024</td>
-                            <td style="text-align: center; border: 1px solid black;">300</td>
-                            <td style="border: 1px solid black;">Whatsapp</td>
-                            <td style="text-align: center; border: 1px solid black;">50</td>
-                            <td style="border: 1px solid black;"><a type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Descargar</a></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"></th>
-                            <td style="border: 1px solid black;">Documento 3</td>
-                            <td style="border: 1px solid black;">01/07/2024</td>
-                            <td style="text-align: center; border: 1px solid black;">300</td>
-                            <td style="border: 1px solid black;">Llamada por bot</td>
-                            <td style="text-align: center; border: 1px solid black;">150</td>
-                            <td style="border: 1px solid black;"><a type="download" class="btn btn-primary" style="box-shadow: 2px 2px 2px black;"><img src="#" alt="" width="20px">Descargar</a></td>
-                          </tr>
+                            <tr v-for="(resultado, index) in paginatedResultados" :key="resultado.id_procesamiento">
+                                <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+                                <td>{{ resultado.id_procesamiento }}</td>
+                                <td>{{ resultado.documento_cargado }}</td>
+                                <td>{{ resultado.fecha_carga }}</td>
+                                <td>{{ resultado.registro_deudores }}</td>
+                                <td>{{ resultado.accion_predicha}}</td> <!-- Campo corregido si es necesario -->
+                                <td>{{ resultado.deudores_contactar }}</td>
+                                <!-- <td>{{ resultado.precio }}</td>  -->
+                                <!-- <td>{{ resultado.valor_multiplicado }}</td>   -->
+                                
+                                <td>
+                                    <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
+                                    <i class="bi bi-trash" @click="eliminarResultado(resultado.id_procesamiento)"></i>
+                                </td>
+                            </tr>
                         </tbody>
-                      </table>
+                    </table>
                 </div>
                 
-            </div>
-    
-
-            
+            </div> 
         </div>
-
-
-        
-
-        
-
+    </main>   
 </div>
 
-<div class="modal" tabindex="-1" id="modal_procesar">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Iniciar procesamiento</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="padding: 10%;">
-
-                <div class="btn_ahora" style="margin: auto; display: flex; justify-content: center;">
-                    <a class="btn btn-secondary" href="#" style="width: 40%;">Iniciar ahora</a>
-                </div>
-                <br>
-
-                <div class="btn_despues" style="margin: auto; display: flex; justify-content: center;">
-                    <a class="btn btn-primary" href="#" type="submit" style="width: 40%;">Iniciar después</a>
-                </div>
-                <!-- <br>
-                <br> -->
-                
-            </div>
-            <!-- <div class="modal-footer">
-                <a class="btn btn-secondary" href="#">SI</a>
-                <a class="btn btn-primary" href="#" type="submit">NO</a>
-            </div> -->
-        </div>
-    </div>
-</div>
 </template>
 <script>
 import Menu_P from './Menu-.vue';
+import axios from 'axios';
 
 export default {
-  name: 'Inicio-',// Definición del componente
+  name: 'res_periodo_anterior', // Definición del componente
+  mounted() {
+    this.fetchResultados();
+    this.cargarAcciones();
+  },
   components: {
     Menu_P,
-
-    
+  },
+  data() {
+    return {
+      busqueda: "",
+      tipoSeleccionado: "",
+      resultados: [],
+      acciones: [], // Lista de acciones de cobranza
+      currentPage: 1,
+      itemsPerPage: 7,
+      isCollapsed: true,
+    };
+  },
+  computed: {
+    // Filtrar resultados por búsqueda y tipo de acción seleccionada
+    resultadosFiltrados() {
+        return this.resultados.filter((resultado) => {
+            const coincideBusqueda = resultado.documento_cargado.toLowerCase().includes(this.busqueda.toLowerCase());
+            const coincideTipo = !this.tipoSeleccionado || resultado.id_procesamiento === this.tipoSeleccionado;
+            return coincideBusqueda && coincideTipo;
+        });
+    },
+    paginatedResultados() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.resultadosFiltrados.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.resultadosFiltrados.length / this.itemsPerPage);
+    }
+  },
+  methods: {
+    async fetchResultados() {
+      try {
+        const response = await axios.get('http://localhost:8000/resultados');
+        this.resultados = response.data;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    },
+    changePage(page) {
+      this.currentPage = page;
+    },
+    editarResultado(resultado) {
+      console.log("Editar resultado", resultado);
+    },
+    async eliminarResultado(id) {
+      try {
+        await axios.delete(`http://localhost:8000/resultados/${id}`);
+        this.fetchResultados();
+      } catch (error) {
+        console.error('Error deleting result:', error);
+      }
+    },
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
+    },
+    async cargarAcciones() {
+      try {
+        const response = await axios.get('http://localhost:8000/api/acciones');
+        this.acciones = response.data; // Asignar los datos a la propiedad acciones
+      } catch (error) {
+        console.error('Error al cargar acciones de cobranza:', error);
+      }
+    },
+    accionPorId(idAccion) {
+      return this.acciones.find(accion => accion.Id_accion === idAccion);
+    },
+    calcularValorMultiplicado(deudoresContactar, valor) {
+      return deudoresContactar * valor; // Multiplicación del valor por los deudores a contactar
+    }
   }
-}
+};
 </script>
+
 <style>
 
 </style>

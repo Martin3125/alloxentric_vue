@@ -27,16 +27,9 @@
 </body>
     <div class="main">
       <Menu_P v-if="!isCollapsed"/>
+      <main id="cards">
             <div class="general">
-                <!-- <div id="arriba">
-                    <div class="card-body"  id="Titulo1" >
-                        <h5 class="card-title1">Cargar resultados</h5>
-                    </div>
-                    <div class="card-body" id="usuario">
-                        <h5 class="card-title2">Usuario</h5>
-                    </div>
-                </div> -->
-                <div class="resultados">
+                <div class="container">
                     <div class="main-resultados">
                         <div class="mb-3" id="select_resultados">
                             <!-- <input   id="formFile" style="width: 100%;"> -->
@@ -49,14 +42,6 @@
                         </div>
                     </div>
                     <div class="main-directorios">    
-                        <div class="lugar">
-                            <div class="home">
-                                <h3 style="color: white; text-align: center;">Home</h3>
-                            </div>
-                            <div class="dir">
-                                <h3 style="color: white; text-align: center;">Directorios</h3>
-                            </div>     
-                        </div>
                             <div class="main-content">
                                 <!-- Sidebar para directorios -->
                                 <aside class="sidebar" style="max-height: 300px; overflow-y: auto;">
@@ -89,10 +74,20 @@
                             </div>
                         </div>
                         <div class="b_confirmar">
-                            <a id="guardar" type="submit" class="btn btn-primary" >Confirmar</a>
+                            <a id="guardar" type="submit" class="btn btn-primary" href="/res_periodo_anterior">Confirmar</a>
                         </div>  
+                        <!-- Sección de resultados -->
+                        <div v-if="resultados.length > 0" class="resultados-section">
+                          <h2>Resultados del procesamiento: {{ selectedFile }}</h2>
+                          <ul>
+                            <li v-for="(resultado, index) in resultados" :key="index">
+                              {{ resultado }}
+                            </li>
+                          </ul>
+                        </div>
                     </div>
             </div>  
+          </main>
         </div>
 </template>
 
@@ -107,6 +102,8 @@ export default {
   },
   data() {
     return {
+      usuarioLogueado: '', // Ejemplo de usuario logueado
+      resultados: [],
       directories: [],
       selectedDirectory: null,
       currentFiles: [],
@@ -114,9 +111,11 @@ export default {
       contenidoArchivo: '',
       archivo: null,  // Archivo seleccionado para subir
       isCollapsed: true,
+      busqueda: '', // Campo para la búsqueda
     };
   },
   methods: {
+    // Obtener lista de directorios
     async fetchDirectories() {
       try {
         const response = await axios.get('http://localhost:8000/directorios');
@@ -125,6 +124,7 @@ export default {
         console.error("Error al obtener directorios:", error);
       }
     },
+    // Seleccionar un directorio y obtener sus archivos
     async selectDirectory(directory) {
       this.selectedDirectory = directory;
       try {
@@ -134,33 +134,29 @@ export default {
         console.error("Error al obtener archivos del directorio:", error);
       }
     },
+    // Crear un nuevo directorio
     async crearDirectorio() {
       if (!this.nuevoDirectorio) {
         alert("Por favor ingrese el nombre del directorio.");
         return;
       }
-      
       try {
         const response = await axios.post('http://localhost:8000/directorios', {
           nombre_directorio: this.nuevoDirectorio
         });
-        if (response.status === 200) {
-        // Suponiendo que el servidor devuelve el nombre del directorio creado
         alert("Directorio creado exitosamente: " + response.data.nombre_directorio);
-    }
-        alert("Directorio creado exitosamente: " + this.nuevoDirectorio);
         this.fetchDirectories();
         this.nuevoDirectorio = '';
       } catch (error) {
         console.error("Error al crear directorio:", error);
-        alert("Error al crear el directorio: " + error.response.data.detail);
+        alert("Error al crear el directorio.");
       }
     },
+    // Eliminar un directorio
     async eliminarDirectorio(directory) {
       if (!confirm(`¿Seguro que deseas eliminar el directorio: ${directory}?`)) {
         return;
       }
-      
       try {
         await axios.delete(`http://localhost:8000/directorios/${directory}`);
         alert("Directorio eliminado exitosamente.");
@@ -170,23 +166,21 @@ export default {
         alert("Error al eliminar el directorio.");
       }
     },
+    // Manejar la selección de archivos para subir
     onFileChange(event) {
-      this.archivo = event.target.files[0];  // Guardar el archivo seleccionado
+      this.archivo = event.target.files[0];
     },
+    // Subir archivo al directorio seleccionado
     async subirArchivo() {
       if (!this.archivo || !this.selectedDirectory) {
         alert("Seleccione un archivo y un directorio antes de subir.");
         return;
       }
-      
       const formData = new FormData();
       formData.append("file", this.archivo);
-
       try {
         await axios.post(`http://localhost:8000/directorios/${this.selectedDirectory}/subir_archivo`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
         alert("Archivo subido exitosamente.");
         this.selectDirectory(this.selectedDirectory);  // Recargar archivos del directorio
@@ -196,6 +190,7 @@ export default {
         alert("Error al subir archivo.");
       }
     },
+    // Ver contenido de un archivo
     async verArchivo(file) {
       try {
         const response = await axios.get(`http://localhost:8000/directorios/${this.selectedDirectory}/archivos/${file}`);
@@ -212,15 +207,15 @@ export default {
       alert("Resultados confirmados.");
     },
     toggleSidebar() {
-        this.isCollapsed = !this.isCollapsed;
-      },
+      this.isCollapsed = !this.isCollapsed;
+    },
   },
   mounted() {
     this.fetchDirectories();
   }
 };
-
 </script>
+
 <style>
 /* Estilos generales */
 .app-container {
