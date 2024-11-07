@@ -23,181 +23,63 @@
     
 <div id="general">
   <Menu_P v-if="!isCollapsed"/>
-    <main id="cards">
-        <!-- <div id="arriba">
-            <div class="card-body"  id="Titulo" >
-                <h5 class="card-title1">Informes</h5>
-            </div>
-            <div class="card-body" id="usuario">
-                <h5 class="card-title2">Usuario</h5>
-            </div>
-        </div> -->
-        <div  id="card"  class="card">
-          <div class="container">
-            <!-- Header de la tabla -->
-            <div class="table_header">
-              <h2>Reportes desempeño</h2>
-              <!-- <button @click="crearProducto">Crear nuevo</button> -->
-              <select v-model="tipoSeleccionado">
-                <option value="" selected>Tipo de acción</option>
-                <option value="Sin acciones">Sin acciones</option>
-                <option value="Correo electrónico">Correo electrónico</option>
-                <option value="SMS">SMS</option>
-                <option value="Whatsapp">Whatsapp</option>
-                <option value="Llamada por bot">Llamada por bot</option>
-                <option value="Llamada directa">Llamada directa</option>
-                <option value="Acciones judiciales">Acciones judiciales</option> 
-              </select>
-            </div>
-
-            <!-- Tabla de productos -->
-            <table>
-              <thead>
-                <tr>
-                  <th>ID del Deudor</th>
-                  <th>Nombre del Deudor</th>
-                  <th>Cobranza</th>
-                  <th>Fecha de envio</th>
-                  <th>Intervalo</th>
-                  <th>Fecha de  pago estimada</th>
-                  <th>Demora</th>
-                  <th>Fecha real del pago</th>
-                  <th>Lo que debe pagar</th>
-                  <th>Valor real a pagar</th>
-               </tr>
-              </thead>
-              <tbody>
-                <tr v-for="reporte in reportes" :key="reporte.ID_deudor">
-                  <td>{{ reporte.ID_deudor }}</td>
-                  <td>{{ reporte.nombre_deudor }}</td>
-                  <td>{{ reporte.accion }}</td>
-                  <td>{{ reporte.fecha_envio }}</td>
-                  <td>{{ reporte.intervalo }}</td>
-                  <td>{{ reporte.fecha_estimada }}</td>
-                  <td>{{ reporte.demora }}</td>
-                  <td>{{ reporte.fecha_real }}</td>
-                  <td>{{ reporte.debe_pagar }}</td>
-                  <td>{{ reporte.valor_pagar }}</td>
-                </tr>
-              </tbody>
+      <main id="cards">
+          <!-- <div id="card" class="card"> -->
+            <div class="container">
+              <div class="table_header">
+                  <h2>Reportes de Desempeño</h2>
+                  <select v-model="tipoSeleccionado">
+                      <option value="" selected>Todos</option>
+                      <option value="Acciones judiciales">Acciones judiciales</option>
+                      <option value="Correo electronico">Correo electrónico</option>
+                      <option value="Llamada directa">Llamada directa</option>
+                      <option value="Llamada por bot">Llamada por bot</option>
+                      <option value="SMS">SMS</option>
+                      <option value="Sin acciones">Sin acciones</option>
+                  </select>
+              </div>
               
-            </table>
-          </div>
-         
-        </div>
-    </main>
+              <table class="table-wrapper">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>ID Procesamiento</th>
+                      <th>Acción de Cobranza</th>
+                      <th>accion_predicha</th>
+                      <th>Fecha de Cobranza</th>
+                      <th>Intervalo</th>
+                      <th>Deudores Registrados</th>
+                      <th>Deudores por Acción</th>
+                      <th>Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, index) in tablaCombinada" :key="`combinado-${index}`" >
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ item.id_procesamiento}}</td>
+                      <td>{{ item.accion_cobranza}}</td>
+                      <td>{{ item.accion_predicha  }}</td>
+                      <td>{{ item.fecha_cobranza }}</td>
+                      <td>{{ item.intervalo }}</td>
+                      <td>{{ item.registro_deudores }}</td>
+                      <td>{{ item.deudores_contactar }}</td>
+                      <td>{{ item.valor }}</td> 
+                    </tr>
+                  </tbody>
+                  
+              </table>
+              <div class="pagination">
+                        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">Anterior</button>
+                        <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Siguiente</button>
+                    </div>
+            </div>
+          <!-- </div> -->
+      </main>
 </div>
-          
-        
-            <!-- <div class="card-body" >
-                <h5 class="card-title3">Reportes desempeño</h5>
-                <div  class="card-body2">
-                  <div id="buscar-filtro">
-                    <input type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" placeholder="Buscar">
-                    <div class="filter-toggle-container">
-                      <button id="toggleFilterButton">Mostrar Filtro</button>
-                    </div>
-                  </div>
-                   <div id="buscar-filtro">
-                    <input type="text" v-model="deudor_ids" class="form-control" placeholder="Buscar IDs de deudores separados por coma">
-                    <div class="filter-toggle-container">
-                      <button @click="getReporteDesempeno">Buscar</button>
-                    </div>
-                  </div>
-
-                  <div class="filter-container" id="filterContainer">
-                      <h2>Filtrar por tipo de acción</h2>
-                      <form id="filterForm">
-                          <label>
-                              Fecha de envío: <input type="text" class="fecha_envio" name="fecha_envio" placeholder="DD/MM/YYYY">
-                          </label><br>
-                          <label>
-                              Fecha de pago estimada: <input type="text" class="fecha_pago_estimado" name="fecha_pago_estimado" placeholder="DD/MM/YYYY">
-                          </label><br>
-                          <label>
-                              Fecha real del pago: <input type="text" class="fecha_pago_real" name="fecha_pago_real" placeholder="DD/MM/YYYY">
-                          </label><br>
-                          <button type="submit">Filtrar</button>
-                      </form>
-                  </div>
-                  <table id="documentTable">
-                    <thead>
-                        <tr>
-                            <th>ID del Deudor</th>
-                            <th>Nombre del Deudor</th>
-                            <th>Cobranza</th>
-                            <th>Fecha de envio</th>
-                            <th>Intervalo</th>
-                            <th>Fecha de  pago estimada</th>
-                            <th>Demora</th>
-                            <th>Fecha real del pago</th>
-                            <th>Lo que debe pagar</th>
-                            <th>Valor real a pagar</th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody>
-                      <tr v-for="reporte in reportes" :key="reporte.ID_deudor">
-                        <td>{{ reporte.ID_deudor }}</td>
-                        <td>{{ reporte.nombre_deudor }}</td>
-                        <td>{{ reporte.accion }}</td>
-                        <td>{{ reporte.fecha_envio }}</td>
-                        <td>{{ reporte.intervalo }}</td>
-                        <td>{{ reporte.fecha_estimada }}</td>
-                        <td>{{ reporte.demora }}</td>
-                        <td>{{ reporte.fecha_real }}</td>
-                        <td>{{ reporte.debe_pagar }}</td>
-                        <td>{{ reporte.valor_pagar }}</td>
-                      </tr>
-                    </tbody>
-                </table>
-
-                </div>
-             </div> --> 
      
 </template>
 
-
-<!-- <script>
-import { initializeFilter } from './js/filtro.js';
-import Menu_P from './Menu-.vue';
-import axios from 'axios';
-
-export default {
-  name: 'Reporte_de_d',
-  components: {
-    Menu_P,
-  },
-  data() {
-    return {
-      reportes: [],  // Inicializa la lista de reportes como un array vacío
-    };
-  },
-  mounted() {
-    initializeFilter();
-    this.getReporteDesempeno();  // Ejemplo con ID deudor 254, puedes modificarlo para ser dinámico
-  },
-  methods: {
-    async getReporteDesempeno(deudor_id) {
-      try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/reportes/${deudor_id}`);
-        console.log(response.data);  // Verifica el formato de los datos en la consola
-        // Agrega el reporte a la lista, en caso de que sea un solo objeto
-        if (Array.isArray(response.data)) {
-          this.reportes = response.data;
-        } else {
-          this.reportes = [response.data];  // Convierte el objeto en un array
-        }
-      } catch (error) {
-        console.error("Error al obtener el reporte de desempeño:", error);
-      }
-    }
-  },
-  
-}
-
-
-</script> -->
 <script>
 import { initializeFilter } from './js/filtro.js';
 import Menu_P from './Menu-.vue';
@@ -210,22 +92,26 @@ export default {
   },
   data() {
     return {
-      reportes: [],  // Inicializa la lista de reportes como un array vacío
-      deudor_ids: [],  // Aquí se almacenarán los IDs de los deudores
+      accionesCobranza: [],
+      tablaCombinada: [],
+      resultados: [],
       busqueda: "",
       tipoSeleccionado: "",
       isCollapsed: true,
+      currentPage: 1,
+      itemsPerPage: 7,
     };
   },
   mounted() {
     initializeFilter();
-    this.getAllDeudores();  // Cargar todos los IDs de los deudores al montar el componente
+    this.fetchAccionesCobranza();
+    this.fetchResultados();
   },
   computed: {
     resultadosFiltrados() {
       return this.resultados.filter((resultado) => {
-        const coincideBusqueda = resultado.nombre.toLowerCase().includes(this.busqueda.toLowerCase());
-        const coincideTipo = !this.tipoSeleccionado || resultado.tipo === this.tipoSeleccionado;
+        const coincideBusqueda = resultado.documento_cargado.toLowerCase().includes(this.busqueda.toLowerCase());
+        const coincideTipo = !this.tipoSeleccionado || resultado.accion_predicha === this.tipoSeleccionado;
         return coincideBusqueda && coincideTipo;
       });
     },
@@ -236,144 +122,155 @@ export default {
     },
     totalPages() {
       return Math.ceil(this.resultadosFiltrados.length / this.itemsPerPage);
-    }
+    },
   },
   methods: {
-    async getAllDeudores() {
+    async fetchAccionesCobranza() {
       try {
-        // Solicitar todos los IDs de los deudores
-        const response = await axios.get('http://localhost:8000/api/deudores_ids');
-        this.deudor_ids = response.data;
-        // Ahora obtener los reportes para cada deudor
-        this.getReportesParaTodosLosDeudores();
+        const response = await axios.get("http://localhost:8000/acciones_cobranza");
+        this.accionesCobranza = response.data;
+        this.combineData(); // Llama a combineData después de obtener accionesCobranza
       } catch (error) {
-        console.error("Error al obtener los IDs de los deudores:", error);
+        console.error("Error al obtener las acciones de cobranza:", error);
       }
     },
-    
-    async getReportesParaTodosLosDeudores() {
-      for (const deudor_id of this.deudor_ids) {
-        await this.getReporteDesempeno(deudor_id);  // Llama a la función para cada deudor
+    async fetchResultados() {
+      try {
+        const response = await axios.get('http://localhost:8000/resultados');
+        this.resultados = response.data;
+        this.combineData(); // Llama a combineData después de obtener resultados
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     },
-
-    async getReporteDesempeno(deudor_id) {
-      try {
-        const response = await axios.get(`http://localhost:8000/api/reportes/${deudor_id}`);
-        console.log(response.data);  // Verifica el formato de los datos en la consola
-        // Si la respuesta es un array, agrega los reportes
-        if (Array.isArray(response.data)) {
-          this.reportes.push(...response.data);  // Agrega todos los reportes al array
-        } else {
-          this.reportes.push(response.data);  // Si es un objeto, agrégalo directamente
-        }
-      } catch (error) {
-        console.error("Error al obtener el reporte de desempeño para el deudor:", deudor_id, error);
+    combineData() {
+      if (this.resultados.length && this.accionesCobranza.length) {
+        // Combina los datos de `resultados` y `accionesCobranza` en `tablaCombinada`
+        this.tablaCombinada = this.resultados.map((resultado, index) => {
+          const accion = this.accionesCobranza[index] || {};
+          return {
+            id_procesamiento: resultado.id_procesamiento,
+            accion_predicha: resultado.accion_predicha,
+            registro_deudores: resultado.registro_deudores,
+            deudores_contactar: resultado.deudores_contactar,
+            fecha_cobranza: accion.fecha_cobranza || "",
+            intervalo: accion.intervalo || "",
+            valor: accion.valor || ""
+          };
+        });
       }
+    },
+    changePage(page) {
+      this.currentPage = page;
     },
     toggleSidebar() {
-        this.isCollapsed = !this.isCollapsed;
-      },
+      this.isCollapsed = !this.isCollapsed;
+    },
   },
-}
+};
 </script>
 
 
-<style>
-
-.container {
-	display: flex;
-	flex-direction: column;
-	box-shadow: 8px 8px 8px 8px #bdbdbdbf;
-	width: 90%;
-	background-color: #ffffff;
-	border-radius: 30px;
-  justify-content: center;
-  margin: auto;
-}
-
-.table_header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 20px 30px 0;
-}
-
-
-select {
-	border: none;
-	border-bottom: 1px solid #c9c9c9;
-	width: 200px;
-	padding: 10px 0;
-	font-size: 16px;
-}
-
-.input_search {
-	position: relative;
-}
-
-.input_search input {
-	border-radius: 30px;
-	width: 400px;
-	outline: none;
-	padding: 10px 20px;
-	border: 1px solid #c9c9c9;
-	box-sizing: border-box;
-	padding-right: 50px;
-}
-
-.input_search #search {
-	position: absolute;
-	top: 50%;
-	right: 0;
-	margin-right: 1rem;
-	transform: translate(-50%, -50%);
-}
-
-table {
-	border-spacing: 0;
-	margin-top: 1rem;
-}
-
-thead {
-	background-color: #fff7b3;
-}
-
-th {
-	padding: 10px;
-}
-
-tbody tr {
-	border-bottom: 1px solid #dfdfdf;
-}
-
-tbody td {
-	padding: 10px;
-	border-bottom: 1px solid #dfdfdf;
-	text-align: center;
-}
-
-tbody td #icons {
-	font-size: 20px;
-	cursor: pointer;
-	margin-left: 10px;
-	color: #797979;
-}
-
-tbody tr:hover {
-	background-color: #f5f5f5;
-}
-
-.table_fotter {
-	margin-top: 1rem;
-	padding: 0 30px 20px;
-}
-
-.card-title2{
-    display: flex;
-    justify-content:center;
-    margin: auto;
-    font-weight: 600;
-
-}
-</style>
+<style scoped>
+  .container {
+      display: flex;
+      flex-direction: column;
+      box-shadow: 8px 8px 8px 8px #bdbdbdbf;
+      width: 90%;
+      background-color: #ffffff;
+      border-radius: 30px;
+      justify-content: center;
+      margin: auto;
+      height: 300vh;
+  }
+  
+  .table-wrapper {
+      margin-top: 1rem;
+  }
+  
+  select {
+      border: none;
+      border-bottom: 1px solid #c9c9c9;
+      width: 200px;
+      padding: 10px 0;
+      font-size: 16px;
+  }
+  
+  .input_search {
+      position: relative;
+  }
+  
+  .input_search input {
+      border-radius: 30px;
+      width: 400px;
+      outline: none;
+      padding: 10px 20px;
+      border: 1px solid #c9c9c9;
+      box-sizing: border-box;
+      padding-right: 50px;
+  }
+  
+  .input_search #search {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      margin-right: 1rem;
+      transform: translate(-50%, -50%);
+  }
+  
+  table {
+      width: 100%;
+      border-spacing: 0;
+  }
+  
+  thead {
+      background-color: #fff7b3;
+  }
+  
+  th {
+      padding: 10px;
+      text-align: left;
+  }
+  
+  tbody tr {
+      border-bottom: 1px solid #dfdfdf;
+  }
+  
+  tbody td {
+      padding: 10px;
+      text-align: center;
+  }
+  
+  tbody tr:hover {
+      background-color: #f5f5f5;
+  }
+  
+  .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+  }
+  
+  .pagination button {
+      padding: 5px 10px;
+      margin: 0 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+  }
+  
+  .pagination span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      margin: 0 5px;
+  }
+  </style>

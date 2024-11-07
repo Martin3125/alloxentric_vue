@@ -268,6 +268,31 @@ async def get_acciones_cobranza():
     # Convertir los documentos recuperados a la estructura de la clase AccionCobranza
     return [AccionCobranza(**accion) for accion in acciones]
 
+
+
+# Endpoint para obtener todas las acciones de cobranza
+@app.get("/acciones_cobranza", response_model=List[AccionCobranza])
+async def obtener_acciones_cobranza():
+    acciones = []
+    
+    # Consultar todos los documentos en la colección `acciones_collection`
+    for accion in acciones_collection.find():
+        # Crear un diccionario con los campos necesarios para el modelo `AccionCobranza`
+        accion_dict = {
+            "Id_accion": accion.get("Id_accion", ""),
+            "accion_cobranza": accion.get("accion_cobranza", ""),
+            "fecha_cobranza": accion.get("fecha_cobranza", ""),
+            "intervalo": accion.get("intervalo", 0),
+            "valor": accion.get("valor", 0.0),
+        }
+
+        # Crear una instancia de AccionCobranza y agregarla a la lista
+        acciones.append(AccionCobranza(**accion_dict))
+    
+    # Retornar la lista de acciones de cobranza
+    return acciones
+
+
 @app.get("/api/acciones")
 def get_acciones():
     return [{"accion": "test"}]
@@ -570,17 +595,6 @@ async def upload_file(file: UploadFile = File(...)):
     })
 
 predicciones_resultados = [] 
-
-@app.get("/api/cobranza_result")
-async def get_resultados():
-    resultados = list(resultados_collection.find())
-    for resultado in resultados:
-        accion_cobranza = acciones_collection.find_one({
-            "accion_cobranza": resultado["accion_predicha"]
-        })
-        resultado["valor"] = accion_cobranza["valor"] if accion_cobranza else 0.0  # Asignar valor de cobranza
-    
-    return resultados
 
 
 if __name__ == '__main__':
