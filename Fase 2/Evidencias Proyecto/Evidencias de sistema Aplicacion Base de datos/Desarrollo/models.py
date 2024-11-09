@@ -64,8 +64,6 @@ class Resultados(BaseModel):
     registro_deudores: int
     accion_predicha: str
     deudores: str
-    # acciones_cobranza: List[AccionCobranza]  # Conectar acciones de cobranza
-    # archivos: List[Archivos]  # Conectar archivos
     deudores_contactar: int
     precio: float
 

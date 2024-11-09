@@ -1,87 +1,75 @@
 <template>
-    <link rel="stylesheet" href="src/assets/Reporte_de_desempeño.css">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
-    <header>
-        <div id="logo_header">
-          <button class="toggle-btn" @click="toggleSidebar">
-              <span class="icon" v-if="isCollapsed">☰</span>
-              <span class="icon" v-else>✖</span>
-          </button>
-          <img src="@/assets/2.png" alt="logo">
-          <h2>Alloxentric</h2>
+  <link rel="stylesheet" href="src/assets/Reporte_de_desempeno.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
+  
+  <header>
+    <div id="logo_header">
+      <button class="toggle-btn" @click="toggleSidebar">
+        <span class="icon" v-if="isCollapsed">☰</span>
+        <span class="icon" v-else>✖</span>
+      </button>
+      <img src="@/assets/2.png" alt="logo">
+      <h2>Alloxentric</h2>
+    </div>
+    <div class="input_search">
+      <input v-model="busqueda" type="search" placeholder="Buscar" />
+      <i class="bi bi-search" id="search"></i>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title2">Usuario: {{ usuarioLogueado }}</h5>
+    </div>
+  </header>
+
+  <div id="general">
+    <Menu_P v-if="!isCollapsed"/>
+    <main id="cards">
+      <div class="container">
+        <div class="table_header">
+          <h2>Reporte de Desempeño</h2>
         </div>
-        <div class="input_search" >
-          <input v-model="busqueda" type="search" placeholder="Buscar" />
-          <i class="bi bi-search" id="search"></i>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ID Procesamiento</th>
+              <th>Acción Cobranza</th>
+              <th>Registro Deudores</th>
+              <th>Deudores a Contactar</th>
+              <th>Fecha Cobranza</th>
+              <th>Intervalo (Días)</th>
+              <th>Costo total ($)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(resultado, index) in paginatedResultadosCombinados" :key="resultado.id_procesamiento">
+              <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
+              <td>{{ resultado.id_procesamiento }}</td>
+              <td>{{ resultado.accion_predicha }}</td>
+              <td>{{ resultado.registro_deudores }}</td>
+              <td>{{ resultado.deudores_contactar }}</td>
+              <td>{{ resultado.fecha_cobranza || 'N/A' }}</td>
+              <td>{{ resultado.intervalo || 0 }}</td>
+              <td>{{ resultado.valor || 0 }}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="table_footer">
+          <div class="pagination">
+            <button @click="changePage(1)" :disabled="currentPage === 1">Primera</button>
+            <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Anterior</button>
+            <span>Página {{ currentPage }} de {{ totalPages }}</span>
+            <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Siguiente</button>
+            <button @click="changePage(totalPages)" :disabled="currentPage === totalPages">Última</button>
+          </div>
         </div>
-        <div class="card-body">
-          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
-        </div>
-        <div id="menu">
-        </div>
-    </header>
-    
-<div id="general">
-  <Menu_P v-if="!isCollapsed"/>
-      <main id="cards">
-          <!-- <div id="card" class="card"> -->
-            <div class="container">
-              <div class="table_header">
-                  <h2>Reportes de Desempeño</h2>
-                  <select v-model="tipoSeleccionado">
-                      <option value="" selected>Todos</option>
-                      <option value="Acciones judiciales">Acciones judiciales</option>
-                      <option value="Correo electronico">Correo electrónico</option>
-                      <option value="Llamada directa">Llamada directa</option>
-                      <option value="Llamada por bot">Llamada por bot</option>
-                      <option value="SMS">SMS</option>
-                      <option value="Sin acciones">Sin acciones</option>
-                  </select>
-              </div>
-              
-              <table class="table-wrapper">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>ID Procesamiento</th>
-                      <th>Acción de Cobranza</th>
-                      <th>accion_predicha</th>
-                      <th>Fecha de Cobranza</th>
-                      <th>Intervalo</th>
-                      <th>Deudores Registrados</th>
-                      <th>Deudores por Acción</th>
-                      <th>Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(item, index) in tablaCombinada" :key="`combinado-${index}`" >
-                      <td>{{ index + 1 }}</td>
-                      <td>{{ item.id_procesamiento}}</td>
-                      <td>{{ item.accion_cobranza}}</td>
-                      <td>{{ item.accion_predicha  }}</td>
-                      <td>{{ item.fecha_cobranza }}</td>
-                      <td>{{ item.intervalo }}</td>
-                      <td>{{ item.registro_deudores }}</td>
-                      <td>{{ item.deudores_contactar }}</td>
-                      <td>{{ item.valor }}</td> 
-                    </tr>
-                  </tbody>
-                  
-              </table>
-              <div class="pagination">
-                        <button @click="changePage(currentPage - 1)" :disabled="currentPage <= 1">Anterior</button>
-                        <span>Página {{ currentPage }} de {{ totalPages }}</span>
-                        <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages">Siguiente</button>
-                    </div>
-            </div>
-          <!-- </div> -->
-      </main>
-</div>
-     
+      </div>
+    </main>
+  </div>
 </template>
 
 <script>
-import { initializeFilter } from './js/filtro.js';
 import Menu_P from './Menu-.vue';
 import axios from 'axios';
 
@@ -92,81 +80,73 @@ export default {
   },
   data() {
     return {
-      accionesCobranza: [],
-      tablaCombinada: [],
-      resultados: [],
       busqueda: "",
-      tipoSeleccionado: "",
-      isCollapsed: true,
+      resultadosCombinados: [],
       currentPage: 1,
       itemsPerPage: 7,
+      isCollapsed: true,
+      usuarioLogueado: 'NombreUsuario'  // Ajusta según tu lógica para obtener el usuario logueado
     };
-  },
-  mounted() {
-    initializeFilter();
-    this.fetchAccionesCobranza();
-    this.fetchResultados();
   },
   computed: {
     resultadosFiltrados() {
-      return this.resultados.filter((resultado) => {
-        const coincideBusqueda = resultado.documento_cargado.toLowerCase().includes(this.busqueda.toLowerCase());
-        const coincideTipo = !this.tipoSeleccionado || resultado.accion_predicha === this.tipoSeleccionado;
-        return coincideBusqueda && coincideTipo;
+      return this.resultadosCombinados.filter((resultado) => {
+        return resultado.accion_predicha.toLowerCase().includes(this.busqueda.toLowerCase());
       });
     },
-    paginatedResultados() {
+    paginatedResultadosCombinados() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
       return this.resultadosFiltrados.slice(start, end);
     },
     totalPages() {
       return Math.ceil(this.resultadosFiltrados.length / this.itemsPerPage);
-    },
+    }
   },
   methods: {
-    async fetchAccionesCobranza() {
-      try {
-        const response = await axios.get("http://localhost:8000/acciones_cobranza");
-        this.accionesCobranza = response.data;
-        this.combineData(); // Llama a combineData después de obtener accionesCobranza
-      } catch (error) {
-        console.error("Error al obtener las acciones de cobranza:", error);
-      }
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
     },
-    async fetchResultados() {
+    async fetchData() {
       try {
-        const response = await axios.get('http://localhost:8000/resultados');
-        this.resultados = response.data;
-        this.combineData(); // Llama a combineData después de obtener resultados
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    },
-    combineData() {
-      if (this.resultados.length && this.accionesCobranza.length) {
-        // Combina los datos de `resultados` y `accionesCobranza` en `tablaCombinada`
-        this.tablaCombinada = this.resultados.map((resultado, index) => {
-          const accion = this.accionesCobranza[index] || {};
+        // Obtener los resultados
+        const responseResultados = await axios.get('http://localhost:8000/resultados');
+        const resultados = responseResultados.data;
+
+        // Obtener las acciones de cobranza
+        const responseAcciones = await axios.get('http://localhost:8000/api/acciones');
+        const accionesCobranza = responseAcciones.data;
+
+        // Crear un diccionario para acceder fácilmente a las acciones de cobranza
+        const accionesDict = {};
+        accionesCobranza.forEach(accion => {
+          accionesDict[accion.accion_cobranza] = accion;
+        });
+
+        // Combinar los datos y calcular el valor
+        this.resultadosCombinados = resultados.map(resultado => {
+          const accion = accionesDict[resultado.accion_predicha];
+          
+          // Si encontramos la acción correspondiente, calculamos el valor
+          const valor = accion ? accion.valor * resultado.deudores_contactar : 0;
+
           return {
-            id_procesamiento: resultado.id_procesamiento,
-            accion_predicha: resultado.accion_predicha,
-            registro_deudores: resultado.registro_deudores,
-            deudores_contactar: resultado.deudores_contactar,
-            fecha_cobranza: accion.fecha_cobranza || "",
-            intervalo: accion.intervalo || "",
-            valor: accion.valor || ""
+            ...resultado,
+            ...accion,
+            valor // Agregar el valor calculado
           };
         });
+      } catch (error) {
+        console.error("Error al obtener los datos:", error);
       }
     },
     changePage(page) {
       this.currentPage = page;
-    },
-    toggleSidebar() {
-      this.isCollapsed = !this.isCollapsed;
-    },
+    }
   },
+  mounted() {
+    this.fetchData();
+  }
 };
 </script>
 
@@ -181,7 +161,6 @@ export default {
       border-radius: 30px;
       justify-content: center;
       margin: auto;
-      height: 300vh;
   }
   
   .table-wrapper {

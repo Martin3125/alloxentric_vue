@@ -1,101 +1,82 @@
 <template>
-  <link rel="stylesheet" href="src\assets\Cobranza.css">
+  <link rel="stylesheet" href="src/assets/Cobranza.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet">
-    <body>
+  <body>
     <header>
-        <div id="logo_header">
-          <button class="toggle-btn" @click="toggleSidebar">
-              <span class="icon" v-if="isCollapsed">☰</span>
-              <span class="icon" v-else>✖</span>
-          </button>
-            <img src="@/assets/2.png" alt="logo">
-            <h2>Alloxentric</h2>
-        </div>
-        <div class="input_search" >
-          <input v-model="busqueda" type="search" placeholder="Buscar" />
-          <i class="bi bi-search" id="search"></i>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
-        </div>
-        <div id="menu">
-        </div>
+      <div id="logo_header">
+        <button class="toggle-btn" @click="toggleSidebar">
+          <span class="icon" v-if="isCollapsed">☰</span>
+          <span class="icon" v-else>✖</span>
+        </button>
+        <img src="@/assets/2.png" alt="logo">
+        <h2>Alloxentric</h2>
+      </div>
+      <div class="input_search">
+        <input v-model="busqueda" type="search" placeholder="Buscar" />
+        <i class="bi bi-search" id="search"></i>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title2">Usuario{{ usuarioLogueado }}</h5>
+      </div>
     </header>
-<div id="general">
-  <Menu_P v-if="!isCollapsed"/>
-    <main id="cards">
-        
-          <div class="container">
-            
-            <!-- <div class="card-body" >
-                <h5 class="card-title3">Acciones de Cobranza</h5>
-                <form @submit.prevent="registrarCobranza">
-                  <div class="card-body2">
-                    <ul v-for="(action, index) in actions" :key="index" class="list-group list-group-horizontal-sm">
-                      <li class="list-group-item">{{ action.accion_cobranza }}</li>
-                      <li class="list-group-item">Fecha: <input v-model="action.fecha_cobranza" type="date" class="form-control"></li>
-                      <li class="list-group-item">Intervalo de Tiempo de éxito: (Días) <input v-model="action.intervalo" type="number" class="form-control" min="0"></li>
-                      <li class="list-group-item">Valor: $ <input v-model="action.valor" type="number" class="form-control" step="0.01" min="0" placeholder="0.00"></li>
-                    </ul>
-                  </div>
-                  <button id="guardar" type="submit" class="btn btn-primary">Guardar</button>
-                </form>
-                <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
-            </div> -->
 
-            <div class="card-body">
-              <h5 class="card-title3">Acciones de Cobranza</h5>
-              <form @submit.prevent="registrarCobranza">
-                  <div class="card-body2">
-                      <table class="table">
-                          <thead>
-                              <tr>
-                                  <th>Acción</th>
-                                  <th>Fecha</th>
-                                  <th>Intervalo de Tiempo (Días)</th>
-                                  <th>Valor ($)</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              <tr v-for="(action, index) in actions" :key="index">
-                                  <td>{{ action.accion_cobranza }}</td>
-                                  <td>
-                                      <input v-model="action.fecha_cobranza" type="date" class="form-control">
-                                  </td>
-                                  <td>
-                                      <input v-model="action.intervalo" type="number" class="form-control" min="0">
-                                  </td>
-                                  <td>
-                                      <input v-model="action.valor" type="number" class="form-control" step="0.01" min="0" placeholder="0.00">
-                                  </td>
-                              </tr>
-                          </tbody>
-                      </table>
-                  </div>
-                  <button id="guardar" type="submit" class="btn btn-primary">Guardar</button>
-              </form>
-              <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+    <div id="general">
+      <Menu_P v-if="!isCollapsed"/>
+      <main id="cards">
+        <div class="container">
+          <div class="card-body">
+            <h5 class="card-title3">Acciones de Cobranza</h5>
+            <form @submit.prevent="registrarCobranza">
+              <div class="card-body2">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Acción</th>
+                      <th>Fecha</th>
+                      <th>Intervalo de Tiempo (Días)</th>
+                      <th>Valor ($)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(action, index) in actions" :key="index">
+                      <td>{{ action.accion_cobranza }}</td>
+                      <td>
+                        <input v-model="action.fecha_cobranza" type="date" class="form-control">
+                      </td>
+                      <td>
+                        <input v-model="action.intervalo" type="number" class="form-control" min="0">
+                      </td>
+                      <td>
+                        <input v-model="action.valor" type="number" class="form-control" step="0.01" min="0" placeholder="0.00">
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <button id="guardar" type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+            <div v-if="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+            <div v-if="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
           </div>
-
-          </div>
-        
-    </main>
-</div>
-
-</body>
+        </div>
+      </main>
+    </div>
+  </body>
 </template>
+
 <script>
 import Menu_P from './Menu-.vue';
+
 export default {
-  name: 'Cobranza-', // Definición del componente
+  name: 'Cobranza-',
   components: {
     Menu_P,
   },
   data() {
     return {
-      actions: [
+      actions: JSON.parse(localStorage.getItem('accionesCobranza')) || [
         { Id_accion: null, accion_cobranza: 'Sin acciones', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
-        { Id_accion: null, accion_cobranza: 'Correo electrónico', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
+        { Id_accion: null, accion_cobranza: 'Correo electronico', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
         { Id_accion: null, accion_cobranza: 'SMS', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
         { Id_accion: null, accion_cobranza: 'Whatsapp', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
         { Id_accion: null, accion_cobranza: 'Llamada por bot', fecha_cobranza: '', intervalo: 0, valor: 0.00 },
@@ -103,57 +84,85 @@ export default {
         { Id_accion: null, accion_cobranza: 'Acciones judiciales', fecha_cobranza: '', intervalo: 0, valor: 0.00 }
       ],
       isCollapsed: true,
-      successMessage: '',  // Mensaje de éxito
-      showToast: false,    // Controlar la visibilidad del toast
+      successMessage: '',
+      errorMessage: '',
     };
   },
-  mounted() {
-    this.cargarDatos();
-  },
   methods: {
-    guardarDatos() {
-      localStorage.setItem('actions', JSON.stringify(this.actions));
-    },
-    cargarDatos() {
-      const storedActions = localStorage.getItem('actions');
-      if (storedActions) {
-        this.actions = JSON.parse(storedActions);
-      }
-    },
+    // Función para registrar las acciones de cobranza
     async registrarCobranza() {
-      this.showToast = true; // Mostrar el mensaje 
-      try {
-        const respuesta = await fetch('http://127.0.0.1:8000/api/acciones', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(this.actions)
-        });
+      this.successMessage = ''; // Limpiar mensaje al iniciar la función
+      this.errorMessage = ''; // Limpiar mensaje de error
 
-        if (!respuesta.ok) {
-          const errorData = await respuesta.json();
-          console.error('Error en la respuesta:', errorData);
-          this.errorMessage = errorData.detail || 'Error en el registro';
-        } else {
-          const data = await respuesta.json();
-          console.log(data);
-          this.successMessage = 'Acciones de cobranza guardadas correctamente!'; // Mensaje de éxito
-          // this.$router.push('/cobranza'); // Aquí puedes redirigir al usuario o limpiar el formulario
+      // Verificar si ha habido algún cambio en los campos del formulario
+      const hasChanges = this.actions.some((action, index) => {
+        const storedAction = JSON.parse(localStorage.getItem('accionesCobranza')) || [];
+        return !storedAction[index] || 
+               storedAction[index].fecha_cobranza !== action.fecha_cobranza ||
+               storedAction[index].intervalo !== action.intervalo ||
+               storedAction[index].valor !== action.valor;
+      });
+
+      // Si hay cambios, actualizar localStorage y hacer la solicitud
+      if (hasChanges) {
+        localStorage.setItem('accionesCobranza', JSON.stringify(this.actions)); // Sincronizar con localStorage
+
+        // Sanear los datos antes de enviarlos
+        const sanitizedActions = this.actions.map(action => ({
+          ...action,
+          intervalo: action.intervalo ? Number(action.intervalo) : 0,  // Asegurarse de que intervalo sea un número
+          valor: action.valor ? Number(action.valor) : 0.00,  // Asegurarse de que valor sea un número
+          fecha_cobranza: action.fecha_cobranza || null  // Si la fecha está vacía, enviarla como null
+        }));
+
+        console.log(sanitizedActions); // Verificar la estructura de los datos
+
+        try {
+          // Enviar las acciones al servidor
+          const respuesta = await fetch('http://127.0.0.1:8000/api/acciones', {
+            method: 'POST', // Usar PUT si necesitas actualizar
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sanitizedActions)  // Enviar el arreglo directamente en el cuerpo
+          });
+
+          if (!respuesta.ok) {
+            const errorData = await respuesta.json();
+            console.error('Error en la respuesta:', errorData);
+            this.errorMessage = errorData.detail || 'Error en el registro';
+          } else {
+            this.successMessage = 'Acciones de cobranza guardadas correctamente!';
+          }
+        } catch (error) {
+          console.error('Error en la solicitud:', error);
+          this.errorMessage = 'Error al guardar las acciones de cobranza.';
         }
-      } catch (error) {
-        console.error('Error en la solicitud:', error);
-        this.successMessage = 'Error al guardar las acciones de cobranza.';
-       } finally {
-        this.showToast = false; // Ocultar el mensaje de procesamiento después de completar la solicitud
+      } else {
+        this.successMessage = ''; // Si no hay cambios, no mostrar el mensaje de éxito
       }
     },
+
+    // Función para manejar la modificación de campos
+    handleFieldChange(index, field, value) {
+      // Modificar el campo específico dentro del arreglo de acciones
+      this.actions[index][field] = value;
+
+      // Mostrar el mensaje de éxito de inmediato
+      this.successMessage = 'Cambios registrados correctamente';
+    },
+
+    // Función para alternar la visibilidad del menú
     toggleSidebar() {
-        this.isCollapsed = !this.isCollapsed;
-      },
-  }
+      this.isCollapsed = !this.isCollapsed;
+    },
+  },
 };
 </script>
+
+
+
+
 
 <style>
 /* Estilos generales */

@@ -66,12 +66,8 @@
                                 <td>{{ resultado.registro_deudores }}</td>
                                 <td>{{ resultado.accion_predicha}}</td> <!-- Campo corregido si es necesario -->
                                 <td>{{ resultado.deudores_contactar }}</td>
-                                <!-- <td>{{ resultado.precio }}</td>  -->
-                                <!-- <td>{{ resultado.valor_multiplicado }}</td>   -->
                                 
                                 <td>
-                                    <!-- <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
-                                    <i class="bi bi-trash" @click="eliminarResultado(resultado.id_procesamiento)"></i> -->
                                     <button @click="descargarPDF(resultado)">Descargar</button>
                                 </td>
                             </tr>
@@ -181,9 +177,6 @@
         accionPorId(idAccion) {
             return this.acciones.find(accion => accion.Id_accion === idAccion);
         },
-        calcularValorMultiplicado(deudoresContactar, valor) {
-            return deudoresContactar * valor; // Multiplicación del valor por los deudores a contactar
-        },
         descargarPDF(resultado) {
             const doc = new jsPDF();
 
@@ -284,10 +277,6 @@
             // Guardar el archivo PDF con un nombre personalizado
             doc.save(`${resultado.id_procesamiento}_${resultado.accion_predicha}.pdf`);
         }
-
-
-
-
     },
   };
   </script>

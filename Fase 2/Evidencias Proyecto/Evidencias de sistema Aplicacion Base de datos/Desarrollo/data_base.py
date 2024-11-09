@@ -266,7 +266,8 @@ async def get_acciones_cobranza():
         raise HTTPException(status_code=404, detail="No se encontraron acciones de cobranza")
     
     # Convertir los documentos recuperados a la estructura de la clase AccionCobranza
-    return [AccionCobranza(**accion) for accion in acciones]
+    # Mapea _id a Id_accion
+    return [AccionCobranza(**{**accion, "Id_accion": str(accion["_id"])}) for accion in acciones]
 
 
 
