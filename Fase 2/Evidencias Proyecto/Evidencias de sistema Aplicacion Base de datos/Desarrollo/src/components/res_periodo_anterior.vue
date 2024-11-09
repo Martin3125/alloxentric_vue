@@ -40,11 +40,16 @@
                 </div>
                 <!-- Filtro de Procesamiento -->
                 <div class="filtro-procesamiento">
-                    <label for="filtroAccion">Filtrar por Acción de Cobranza: </label>
+                    <label for="filtroAccion">Filtrar por ID Procesamiento: </label>
                     <select v-model="tipoSeleccionado" id="filtroAccion">
                         <option value="">Todos</option>
-                        <option value="O876">O876</option>
-                        <option v-for="accion in acciones" :key="accion.Id_accion" :value="accion.nombre">{{ accion.nombre }}</option>
+                        <!-- <option value="O876">O876</option> -->
+                        <!-- <option v-for="resultado in resultados" :key="resultado.id_procesamiento" :value="resultado.id_procesamiento">
+                          {{ resultado.id_procesamiento }}
+                      </option> -->
+                      <option v-for="id in idsProcesamientoUnicos" :key="id" :value="id">
+                          {{ id }}
+                      </option>
                     </select>
                 </div>
                 
@@ -117,6 +122,20 @@ export default {
     };
   },
   computed: {
+    idsProcesamientoUnicos() {
+      const seen = new Set(); // Usamos un Set para garantizar que solo obtenemos valores únicos
+      const uniqueIds = [];
+
+      // Recorremos los resultados y seleccionamos solo el primer ID único
+      for (const resultado of this.resultados) {
+        if (!seen.has(resultado.id_procesamiento)) {
+          seen.add(resultado.id_procesamiento);
+          uniqueIds.push(resultado.id_procesamiento); // Solo agregamos el primer ID único
+        }
+      }
+
+      return uniqueIds;
+    },
     // Filtrar resultados por búsqueda y tipo de acción seleccionada
     resultadosFiltrados() {
         return this.resultados.filter((resultado) => {

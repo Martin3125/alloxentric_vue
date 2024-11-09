@@ -55,7 +55,6 @@
                                         </li>
                                     </ul>
                                 </aside>
-
                                 <!-- Contenido principal: archivos del directorio -->
                                 <section class="file-section" style="max-height: 300px; overflow-y: auto;">
                                     <h2>Archivos en {{ selectedDirectory || '...' }}</h2>
@@ -74,6 +73,7 @@
                             </div>
                         </div>
                         <div class="b_confirmar">
+                          <!-- Botón para cargar resultados -->
                             <a id="guardar" type="submit" class="btn btn-primary" href="/res_periodo_anterior">Confirmar</a>
                         </div>  
                         <!-- Sección de resultados -->
@@ -86,9 +86,10 @@
                           </ul>
                         </div>
                     </div>
-            </div>  
+            </div>
           </main>
-        </div>
+    </div>
+
 </template>
 
 <script>
@@ -112,9 +113,77 @@ export default {
       archivo: null,  // Archivo seleccionado para subir
       isCollapsed: true,
       busqueda: '', // Campo para la búsqueda
+      selectedDirectoryToLoad: null, // Directorio seleccionado para cargar resultados
+      resultadosCargados: [], // Resultados cargados del periodo anterior
+      directorios: [], // Directorios disponibles
+      procesamientos: [], // Lista de procesamientos
+      directorioSeleccionado: "", // Directorio seleccionado
+      procesamientoSeleccionado: "", // Procesamiento seleccionado
     };
   },
   methods: {
+    //Obtener los directorios disponibles
+    async obtenerDirectorios() {
+      try {
+        const response = await fetch('/api/directorios');
+        const data = await response.json();
+        this.directorios = data.directorios;
+      } catch (error) {
+        console.error('Error al obtener directorios:', error);
+      }
+    },
+
+    // Obtener los procesamientos disponibles para un directorio seleccionado
+    async obtenerProcesamientos() {
+      if (this.directorioSeleccionado) {
+        try {
+          const response = await fetch(`/api/procesamientos/${this.directorioSeleccionado}`);
+          const data = await response.json();
+          this.procesamientos = data.procesamientos;
+        } catch (error) {
+          console.error('Error al obtener procesamientos:', error);
+        }
+      }
+    },
+
+    // Cargar los resultados del procesamiento seleccionado
+    async cargarResultados() {
+      if (this.directorioSeleccionado && this.procesamientoSeleccionado) {
+        try {
+          const response = await fetch(`/api/resultados/${this.directorioSeleccionado}/${this.procesamientoSeleccionado}`);
+          const data = await response.json();
+          this.resultados = data.resultados;
+        } catch (error) {
+          console.error('Error al cargar resultados:', error);
+        }
+      }
+    },
+    // Función para cargar los directorios disponibles
+    async cargarDirectorios() {
+      try {
+        const response = await axios.get("http://localhost:8000/directorios");
+        this.directorios = response.data; // Almacenar los directorios en el arreglo
+      } catch (error) {
+        console.error("Error al cargar los directorios:", error);
+        alert("Error al cargar los directorios.");
+      }
+    },
+
+    // Función para cargar los resultados del periodo anterior
+    async cargarResultadosPeriodoAnterior() {
+      if (!this.selectedDirectoryToLoad) {
+        alert("Por favor seleccione un directorio para cargar los resultados del periodo anterior.");
+        return;
+      }
+      try {
+        const response = await axios.get(`http://localhost:8000/resultados_periodo_anterior/${this.selectedDirectoryToLoad}`);
+        this.resultadosCargados = response.data; // Almacenar los resultados en el arreglo
+        alert("Resultados del periodo anterior cargados exitosamente.");
+      } catch (error) {
+        console.error("Error al cargar resultados del periodo anterior:", error);
+        alert("Error al cargar resultados del periodo anterior.");
+      }
+    },
     // Obtener lista de directorios
     async fetchDirectories() {
       try {
@@ -212,6 +281,8 @@ export default {
   },
   mounted() {
     this.fetchDirectories();
+    this.cargarDirectorios(); 
+    this.obtenerDirectorios();
   }
 };
 </script>
