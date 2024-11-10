@@ -23,7 +23,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
 from fastapi import FastAPI, Request
-
+import json
 
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
@@ -844,6 +844,24 @@ def eliminar_resultado(id_resultado: int):
 #     import uvicorn
 #     uvicorn.run(app, host="127.0.0.1", port=8000)
     
-#--------------------------------------------------------------------------------------------------------------
+#-------------------------------------------Metricas de Settings-------------------------------------------------------------------
 
+#Test Metrics Report    
+@app.get("/api/metrics")
+async def get_metrics():
+    try:
+        with open("metrics_report.json", "r") as file:
+            metrics_data = json.load(file)
+        return JSONResponse(content=metrics_data)
+    except FileNotFoundError:
+        return JSONResponse(content={"error": "metrics_report.json not found"}, status_code=404)
 
+#Train Metrics Report
+@app.get("/api/train_metrics_report")
+async def get_metrics():
+    try:
+        with open("train_metrics_report.json", "r") as file:
+            metrics_data = json.load(file)
+        return JSONResponse(content=metrics_data)
+    except FileNotFoundError:
+        return JSONResponse(content={"error": "train_metrics_report.json not found"}, status_code=404)

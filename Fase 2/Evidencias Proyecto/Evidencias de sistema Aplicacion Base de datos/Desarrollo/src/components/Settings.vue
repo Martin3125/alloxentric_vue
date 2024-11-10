@@ -29,11 +29,10 @@
 
         <div class="settings-content">
 
-            <div class="settings-body">
-                <h2>Modelos</h2>
+            <div class="container">
                 <br>
-                <form @submit.prevent="submitForm">
-                    <!-- Ajuste de ponderaciones en porcentajes -->
+                <!-- <form @submit.prevent="submitForm">
+                     Ajuste de ponderaciones en porcentajes 
                     <h4>Pesos de las acciones (en porcentaje)</h4>
                     
                     <label for="sin_acciones">Sin acciones:</label>
@@ -75,10 +74,158 @@
                     <button class="btn btn-primary" type="submit">Guardar cambios</button>
                 </form>
 
-                <div v-if="message" class="message">{{ message }}</div>
+                <div v-if="message" class="message">{{ message }}</div> -->
+                
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <div >
+                    <h3>Clases de acciones</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Acción</th>
+                                <th>Clase (Número)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sin acciones</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Correo electrónico</td>
+                                <td>1</td>
+                            </tr>
+                            <tr>
+                                <td>SMS</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>Whatsapp</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>Llamada por bot</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Llamada directa</td>
+                                <td>5</td>
+                            </tr>
+                            <tr>
+                                <td>Acciones judiciales</td>
+                                <td>6</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <!-- Tabla de métricas Test Metrics Report-->
+                 <div v-if="metrics">
+                    <h2>Test Metrics Report</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(value, key) in metrics" :key="key">
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ key }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['precision'].toFixed(2) }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['recall'].toFixed(2) }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['f1-score'].toFixed(2) }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['support'] }}</td>
+                            </tr>
+                            <!-- Fila para la precisión general -->
+                            <tr v-if="metrics.accuracy">
+                                <td colspan="3">Accuracy</td>
+                                <td>{{ metrics.accuracy.toFixed(2) }}</td>
+                                <td>{{ metrics['weighted avg'] ? metrics['weighted avg']['support'] : metrics['macro avg']['support'] }}</td>
+                            </tr>
+                            <!-- Filas para promedios -->
+                            <tr v-if="metrics['macro avg']">
+                                <td>Macro Avg</td>
+                                <td>{{ metrics['macro avg']['precision'].toFixed(2) }}</td>
+                                <td>{{ metrics['macro avg']['recall'].toFixed(2) }}</td>
+                                <td>{{ metrics['macro avg']['f1-score'].toFixed(2) }}</td>
+                                <td>{{ metrics['macro avg']['support'] }}</td>
+                            </tr>
+                            <tr v-if="metrics['weighted avg']">
+                                <td>Weighted Avg</td>
+                                <td>{{ metrics['weighted avg']['precision'].toFixed(2) }}</td>
+                                <td>{{ metrics['weighted avg']['recall'].toFixed(2) }}</td>
+                                <td>{{ metrics['weighted avg']['f1-score'].toFixed(2) }}</td>
+                                <td>{{ metrics['weighted avg']['support'] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else>
+                    <p>Cargando métricas...</p>
+                </div>
+
+
+
+                 <!-- Tabla de métricas Train Metrics Report-->
+                 <div v-if="metrics2">
+                    <h2>Train Metrics Report</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(value, key) in metrics2" :key="key">
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ key }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['precision'].toFixed(2) }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['recall'].toFixed(2) }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['f1-score'].toFixed(2) }}</td>
+                                <td v-if="key !== 'accuracy' && key !== 'macro avg' && key !== 'weighted avg'">{{ value['support'] }}</td>
+                            </tr>
+                            <!-- Fila para la precisión general -->
+                            <tr v-if="metrics2.accuracy">
+                                <td colspan="3">Accuracy</td>
+                                <td>{{ metrics2.accuracy.toFixed(2) }}</td>
+                                <td>{{ metrics2['weighted avg'] ? metrics2['weighted avg']['support'] : metrics2['macro avg']['support'] }}</td>
+                            </tr>
+                            <!-- Filas para promedios -->
+                            <tr v-if="metrics2['macro avg']">
+                                <td>Macro Avg</td>
+                                <td>{{ metrics2['macro avg']['precision'].toFixed(2) }}</td>
+                                <td>{{ metrics2['macro avg']['recall'].toFixed(2) }}</td>
+                                <td>{{ metrics2['macro avg']['f1-score'].toFixed(2) }}</td>
+                                <td>{{ metrics2['macro avg']['support'] }}</td>
+                            </tr>
+                            <tr v-if="metrics2['weighted avg']">
+                                <td>Weighted Avg</td>
+                                <td>{{ metrics2['weighted avg']['precision'].toFixed(2) }}</td>
+                                <td>{{ metrics2['weighted avg']['recall'].toFixed(2) }}</td>
+                                <td>{{ metrics2['weighted avg']['f1-score'].toFixed(2) }}</td>
+                                <td>{{ metrics2['weighted avg']['support'] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div v-else>
+                    <p>Cargando métricas...</p>
+                </div>
             </div>
+                
+            </div>
+            </div>
+            <div>
+                
+            </div>
+            
         </div>
-    </div>
 </template>
 
 <script>
@@ -99,10 +246,28 @@ export default {
             message: '',
             loadedData: null,
             busqueda: "",
-            isCollapsed: true
+            isCollapsed: true,
+            metrics: null, // Almacenará los datos de las métricas
+            metrics2: null, // Almacenará los datos de las métricas
         };
     },
     methods: {
+        async loadMetrics() {
+            try {
+                const response = await axios.get('http://localhost:8000/api/metrics');
+                this.metrics = response.data;
+            } catch (error) {
+                console.error("Error al cargar las métricas:", error);
+            }
+        },
+        async loadtrain_metrics_report() {
+            try {
+                const response = await axios.get('http://localhost:8000/api/train_metrics_report');
+                this.metrics2 = response.data;
+            } catch (error) {
+                console.error("Error al cargar las métricas:", error);
+            }
+        },
         adjustPercentages(changedIndex) {
             let total = this.percentages.reduce((sum, val) => sum + val, 0);
             
@@ -221,6 +386,8 @@ export default {
     mounted() {
         this.loadWeightsFromLocal();
         this.loadWeights();
+        this.loadMetrics();//test
+        this.loadtrain_metrics_report();//train
     }
 }
 </script>
@@ -228,6 +395,39 @@ export default {
 <style scoped>
 body {
     font-family: 'Nunito', sans-serif;
+}
+.actions-info-box {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 500px;
+        margin: auto;
+    }
+    
+.actions-info-box h3 {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+/* Estilos del contenedor de tarjetas */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
 }
 
 .settings-body {
@@ -292,4 +492,42 @@ input[type="number"] {
     }
 }
 
+.container {
+    display: flex;
+    flex-direction: column;
+    box-shadow: 8px 8px 8px 8px #bdbdbdbf;
+    width: 150%;
+    max-width: 1200px; /* Limitar el ancho máximo */
+    height: auto; /* Asegurarse de que la altura sea automática */
+    min-height: 600px; /* Establece una altura mínima para evitar que el contenedor se vea pequeño */
+    background-color: #ffffff;
+    border-radius: 20px;
+    margin: auto; /* Centrar horizontalmente */
+    margin-top: 2%;
+    padding: 20px; /* Espaciado interno */
+    overflow: hidden; /* Evitar que se desborde el contenido */
+    transition: all 0.3s ease; /* Transición suave */
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+  .list-group-item {
+    flex: 1 1 100%; /* Ocupa el 100% en pantallas pequeñas */
+  }
+
+  #logo_header img {
+    height: 40px; /* Reducción del tamaño del logo */
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    flex-direction: column; /* Cambia a disposición vertical en pantallas muy pequeñas */
+    align-items: flex-start; /* Alinear al inicio */
+  }
+
+  .input_search {
+    margin: 10px 0; /* Espaciado vertical */
+  }
+}
 </style>

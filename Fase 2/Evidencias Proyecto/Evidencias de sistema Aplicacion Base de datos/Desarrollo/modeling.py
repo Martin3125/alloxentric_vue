@@ -194,12 +194,23 @@ def run_lstm(df_final):
     # Evaluar el modelo
     y_pred = np.argmax(model.predict(X_test_reshaped), axis=1)
     report = classification_report(y_test, y_pred, output_dict=True)
+    print("Test Metrics Report")
     print(classification_report(y_test, y_pred))
 
     with open('metrics_report.json', 'w') as f:
         json.dump(report, f)
 
-    # Predecir usando el conjunto original
+    # Evaluar en datos de entrenamiento
+    y_train_pred = np.argmax(model.predict(X_train_reshaped), axis=1)
+    train_report = classification_report(y_train, y_train_pred, output_dict=True)
+    print("Train Metrics Report")
+    print(classification_report(y_train, y_train_pred))
+
+    # Guardar el informe de entrenamiento en un archivo JSON
+    with open('train_metrics_report.json', 'w') as f:
+        json.dump(train_report, f)
+
+        # Predecir usando el conjunto original
     # Asegúrate de que df_deudores contiene solo las columnas necesarias para la predicción
     df_deudores = df_final.copy()  # Crear una copia del DataFrame original
     X_deudores = df_deudores.drop(columns=['etiqueta_accion', 'fecha', 'Descripcion', 'fecha_pago', 'id_cliente'])
