@@ -60,7 +60,7 @@ def run_kmeans(df_final):
         'TipoGestion_Sistema',
         'TipoGestion_Terreno',
         'Sin acciones',
-        'Correo electrÃ³nico',
+        'Correo electronico',
         'SMS',
         'Whatsapp',
         'Llamada por bot',
@@ -109,7 +109,7 @@ def run_lstm(df_final):
     # Suponiendo que df_final ya contiene las columnas de acciones
     acciones_columnas = [
         'Sin acciones',
-        'Correo electr贸nico',
+        'Correo electronico',
         'SMS',
         'Whatsapp',
         'Llamada por bot',
@@ -120,7 +120,7 @@ def run_lstm(df_final):
     # Crear un diccionario de acciones
     acciones_dict = {
         'Sin acciones': 0,
-        'Correo electr贸nico': 1,
+        'Correo electronico': 1,
         'SMS': 2,
         'Whatsapp': 3,
         'Llamada por bot': 4,

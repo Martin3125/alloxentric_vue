@@ -41,13 +41,13 @@
                     <tr v-for="(action, index) in actions" :key="index">
                       <td>{{ action.accion_cobranza }}</td>
                       <td>
-                        <input v-model="action.fecha_cobranza" type="date" class="form-control">
+                        <input v-model="action.fecha_cobranza" type="date" class="form-control" @input="updateAction(index, 'fecha_cobranza', action.fecha_cobranza)">
                       </td>
                       <td>
-                        <input v-model="action.intervalo" type="number" class="form-control" min="0">
+                        <input v-model="action.intervalo" type="number" class="form-control" min="0" @input="updateAction(index, 'intervalo', action.intervalo)">
                       </td>
                       <td>
-                        <input v-model="action.valor" type="number" class="form-control" step="0.01" min="0" placeholder="0.00">
+                        <input v-model="action.valor" type="number" class="form-control" step="0.01" min="0" placeholder="0.00" @input="updateAction(index, 'valor', action.valor)">
                       </td>
                     </tr>
                   </tbody>
@@ -91,77 +91,50 @@ export default {
   methods: {
     // Función para registrar las acciones de cobranza
     async registrarCobranza() {
-      this.successMessage = ''; // Limpiar mensaje al iniciar la función
-      this.errorMessage = ''; // Limpiar mensaje de error
+      this.successMessage = '';
+      this.errorMessage = '';
 
-      // Verificar si ha habido algún cambio en los campos del formulario
-      const hasChanges = this.actions.some((action, index) => {
-        const storedAction = JSON.parse(localStorage.getItem('accionesCobranza')) || [];
-        return !storedAction[index] || 
-               storedAction[index].fecha_cobranza !== action.fecha_cobranza ||
-               storedAction[index].intervalo !== action.intervalo ||
-               storedAction[index].valor !== action.valor;
-      });
+      const sanitizedActions = this.actions.map(action => ({
+        ...action,
+        intervalo: action.intervalo ? Number(action.intervalo) : 0,
+        valor: action.valor ? Number(action.valor) : 0.00,
+        fecha_cobranza: action.fecha_cobranza || null
+      }));
 
-      // Si hay cambios, actualizar localStorage y hacer la solicitud
-      if (hasChanges) {
-        localStorage.setItem('accionesCobranza', JSON.stringify(this.actions)); // Sincronizar con localStorage
+      try {
+        const respuesta = await fetch('http://127.0.0.1:8000/api/acciones', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(sanitizedActions)
+        });
 
-        // Sanear los datos antes de enviarlos
-        const sanitizedActions = this.actions.map(action => ({
-          ...action,
-          intervalo: action.intervalo ? Number(action.intervalo) : 0,  // Asegurarse de que intervalo sea un número
-          valor: action.valor ? Number(action.valor) : 0.00,  // Asegurarse de que valor sea un número
-          fecha_cobranza: action.fecha_cobranza || null  // Si la fecha está vacía, enviarla como null
-        }));
-
-        console.log(sanitizedActions); // Verificar la estructura de los datos
-
-        try {
-          // Enviar las acciones al servidor
-          const respuesta = await fetch('http://127.0.0.1:8000/api/acciones', {
-            method: 'POST', // Usar PUT si necesitas actualizar
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(sanitizedActions)  // Enviar el arreglo directamente en el cuerpo
-          });
-
-          if (!respuesta.ok) {
-            const errorData = await respuesta.json();
-            console.error('Error en la respuesta:', errorData);
-            this.errorMessage = errorData.detail || 'Error en el registro';
-          } else {
-            this.successMessage = 'Acciones de cobranza guardadas correctamente!';
-          }
-        } catch (error) {
-          console.error('Error en la solicitud:', error);
-          this.errorMessage = 'Error al guardar las acciones de cobranza.';
+        if (!respuesta.ok) {
+          const errorData = await respuesta.json();
+          this.errorMessage = errorData.detail || 'Error en el registro';
+        } else {
+          localStorage.setItem('accionesCobranza', JSON.stringify(this.actions));
+          this.successMessage = 'Acciones de cobranza guardadas correctamente!';
         }
-      } else {
-        this.successMessage = ''; // Si no hay cambios, no mostrar el mensaje de éxito
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+        this.errorMessage = 'Error al guardar las acciones de cobranza.';
       }
     },
 
-    // Función para manejar la modificación de campos
-    handleFieldChange(index, field, value) {
-      // Modificar el campo específico dentro del arreglo de acciones
-      this.actions[index][field] = value;
-
-      // Mostrar el mensaje de éxito de inmediato
-      this.successMessage = 'Cambios registrados correctamente';
+    // Método para actualizar una acción en el array 'actions'
+    updateAction(index, field, value) {
+      this.actions[index][field] = value; // Actualizamos el campo específico de la fila
+      localStorage.setItem('accionesCobranza', JSON.stringify(this.actions)); // Guardamos el array actualizado en el localStorage
     },
 
-    // Función para alternar la visibilidad del menú
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
     },
   },
 };
 </script>
-
-
-
 
 
 <style>
