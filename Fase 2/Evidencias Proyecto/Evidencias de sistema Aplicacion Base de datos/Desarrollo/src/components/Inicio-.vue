@@ -75,7 +75,7 @@
                   <th>Nombre del procesamiento</th>
                   <th>Fechas</th>
                   <th>Hora</th>
-                  <th>Cancelar</th>
+                  <!-- <th>Cancelar</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -83,20 +83,20 @@
                   <td>{{ procesamiento.nombre }}</td>
                   <td>{{ procesamiento.fecha }}</td>
                   <td>{{ procesamiento.hora }}</td>
-                  <td>
+                  <!-- <td>
                     <i class="bi bi-pencil-square" @click="editarResultado(procesamiento)"></i>
                     <i class="bi bi-trash" @click="deleteProcesamiento(procesamiento.Id_procesamiento)">
                       <img src="@/assets/clear.png" alt="Eliminar" />
                     </i>
-                  </td>
+                  </td> -->
                 </tr>
               </tbody>
             </table>
 
             <div class="pagination">
               <button @click="prevPage2" :disabled="currentPage2 === 1">Anterior</button>
-              <span>Página {{ currentPage2 }} de {{ totalPages }}</span>
-              <button @click="nextPage2" :disabled="currentPage2 === totalPages">Siguiente</button>
+              <span>Página {{ currentPage2 }} de {{ totalPages2 }}</span>
+              <button @click="nextPage2" :disabled="currentPage2 === totalPages2">Siguiente</button>
             </div>
           </div>
         </div>
@@ -118,7 +118,9 @@ export default {
       archivos: [],
       procesamientos: [],
       itemsPerPage: 5,
+      itemsPerPage2: 5,
       currentPage: 1,
+      currentPage2: 1,
       maxVisiblePages: 5,
       isCollapsed: true,
       usuarioLogueado: "",  // Aquí se almacenará el nombre del usuario
@@ -136,11 +138,14 @@ export default {
       return this.filteredArchivos.slice(start, start + this.itemsPerPage);
     },
     paginatedProcesamientos() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      return this.filteredProcesamientos.slice(start, start + this.itemsPerPage);
+      const start = (this.currentPage2 - 1) * this.itemsPerPage2;
+      return this.filteredProcesamientos.slice(start, start + this.itemsPerPage2);
     },
     totalPages() {
       return Math.ceil(this.filteredArchivos.length / this.itemsPerPage);
+    },
+    totalPages2() {
+      return Math.ceil(this.filteredArchivos.length / this.itemsPerPage2);
     },
     visiblePages() {
       const start = Math.max(1, this.currentPage - Math.floor(this.maxVisiblePages / 2));
@@ -182,6 +187,7 @@ export default {
     },
     updatePagination() {
       this.currentPage = 1;
+      this.currentPage2 = 1;
     },
     prevPage() {
       if (this.currentPage > 1) this.currentPage--;
@@ -257,9 +263,6 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #06B7B2;
-}
 
 select {
   border: none;

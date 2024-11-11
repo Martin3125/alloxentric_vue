@@ -4,45 +4,45 @@
 
     <header>
         <div id="logo_header">
-            <img src="@/assets/2.png" alt="logo">
+            <button class="toggle-btn" @click="toggleSidebar">
+                <span class="icon" v-if="isCollapsed">☰</span>
+                <span class="icon" v-else>✖</span>
+            </button>
+            <img src="@/assets/2.png" alt="logo" />
             <h2>Alloxentric</h2>
         </div>
-        <div id="menu">
-            <!-- Menu content can be added here -->
+        <div class="input_search">
+            <input v-model="busqueda" type="search" placeholder="Buscar" />
+            <i class="bi bi-search" id="search"></i>
         </div>
-    </header>
+        <div class="card-body">
+            <h5 class="card-title2">Usuario: {{ usuarioLogueado }}</h5>
+        </div>
+        <div id="menu"></div>
+  </header>
 
     <div class="main">
-        <Menu_P />
-        <div class="general">
-            <div class="general-resultados">
-                <div class="pag-resultados">
-                    <h5 style="margin-top: 3%;">Resultados del procesamiento</h5>
-                </div>
-                <div class="user">
-                    <h5 style="margin-top: 3%;">Usuario</h5>
-                </div>
-            </div>
+        <Menu_P v-if="!isCollapsed"/>
+            <div class="general">
+                <div class="tbl_resultados">
+                    <table class="table table-borderless" id="table">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid black;">Acción Predicha</th>
+                                <th scope="col" style="border: 1px solid black;">Total Deudores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(resultado, index) in predictions" :key="index">
+                                <td style="border: 1px solid black;">{{ resultado.accion_predicha }}</td>
+                                <td style="border: 1px solid black;">{{ resultado.total_deudores }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- <p v-if="predicciones.length === 0">No hay resultados disponibles.</p> -->
 
-            <div class="tbl_resultados">
-                <table class="table table-borderless" id="table">
-                    <thead>
-                        <tr>
-                            <th style="border: 1px solid black;">Acción Predicha</th>
-                            <th scope="col" style="border: 1px solid black;">Total Deudores</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(resultado, index) in predictions" :key="index">
-                            <td style="border: 1px solid black;">{{ resultado.accion_predicha }}</td>
-                            <td style="border: 1px solid black;">{{ resultado.total_deudores }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- <p v-if="predicciones.length === 0">No hay resultados disponibles.</p> -->
-
-             
-            </div>
+                
+                </div>
         </div>
     </div>
 </template>
@@ -60,10 +60,11 @@ export default {
     return {
       predicciones: [], // Almacena las predicciones desde el backend
       predictions: JSON.parse(localStorage.getItem('predicciones')) || [], // Recupera las predicciones del local storage
+      isCollapsed: true
     };
   },
   mounted() {
-        this.fetchPredictions(); // Llamar a la función para obtener las predicciones cuando el componente se monte
+        this.fetchPredicciones(); // Llamar a la función para obtener las predicciones cuando el componente se monte
     },
     methods: {
         async fetchPredicciones() {
@@ -76,6 +77,9 @@ export default {
                 console.error('Error al obtener las predicciones:', error);
             }
         },
+        toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
+    },
     },
 }
 </script>
@@ -112,7 +116,7 @@ body {
 button {
 	outline: none;
 	border: none;
-	background-color: #27bb13;
+	background-color: #06B7B2;
 	color: #ffffff;
 	padding: 10px 30px;
 	border-radius: 20px;
@@ -122,7 +126,7 @@ button {
 }
 
 button:hover {
-	background-color: #27bb13;
+	background-color: #06B7B2;
 }
 
 select {

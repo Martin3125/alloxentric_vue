@@ -301,136 +301,44 @@ def get_acciones():
 #----------------------------------------------------------------------------------------------------------------------
 
 
-# base de los demas endpoints 
-# Simulación de base de datos en memoria
-documentos_db = {}
-procesamientos_db = {}
-resultados_db = {}
-
-# -------------------------Procesamiento - POST: Iniciar procesamiento de documentos subidos----------------------------
-# def iniciar_procesamiento(documentos_ids: List[str]):
-#     if not documentos_ids:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="IDs de documentos faltantes.")
+# #-----------------------------------------Endpoint Reporte de desempeño-----------------------------------------------
+# @app.get("/api/reportes/{deudor_id}", response_model=List[Reporte])
+# async def get_reporte_deudor(deudor_id: str):
+#     # Buscar todos los reportes para el deudor específico
+#     reportes = list(reporte_collection.find({"ID_deudor": deudor_id}))
     
-#     # Verificar si todos los documentos existen
-#     for doc_id in documentos_ids:
-#         if doc_id not in documentos_db:
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documentos no encontrados.")
+#     if not reportes:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reportes no encontrados para el deudor especificado.")
+
+#     # Convertir ObjectId a string y ajustar los datos para la respuesta
+#     reportes_modificados = []
+#     for reporte in reportes:
+#         reporte_modificado = {
+#             "ID_deudor": reporte["ID_deudor"],
+#             "nombre_deudor": reporte["nombre_deudor"],
+#             "accion": reporte["accion"],
+#             "fecha_envio": reporte["fecha_envio"],
+#             "intervalo": reporte["intervalo"],
+#             "fecha_estimada": reporte["fecha_estimada"],
+#             "demora": reporte["demora"],
+#             "fecha_real": reporte["fecha_real"],
+#             "debe_pagar": reporte["debe_pagar"],
+#             "valor_pagar": reporte["valor_pagar"]
+#         }
+#         reportes_modificados.append(reporte_modificado)
     
-#     # Simulación de procesamiento
-#     proceso_id = "proc_" + "_".join(documentos_ids)
-#     procesamientos_db[proceso_id] = {"documentos": documentos_ids}
+#     return reportes_modificados
+
+# @app.get("/api/deudores_ids", response_model=List[str])
+# async def get_all_deudores_ids():
+#     # Obtener todos los IDs de los deudores de la base de datos
+#     deudores = list(reporte_collection.find({}, {"ID_deudor": 1, "_id": 0}))  # Solo obtener los IDs
+#     deudor_ids = [deudor["ID_deudor"] for deudor in deudores]
     
-#     return f"ID del proceso iniciado: {proceso_id}"
-
-# # Procesamiento (Resultados) - GET: Resultados del procesamiento ejecutado
-# @app.get("/procesamiento/{proceso_id}", response_model=dict)
-# def obtener_resultados_procesamiento(proceso_id: str):
-#     if proceso_id not in procesamientos_db:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Procesamiento no encontrado.")
+#     if not deudor_ids:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
     
-#     try:
-#         resultados = procesamientos_db[proceso_id]
-#         return resultados
-#     except Exception as e:
-#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error - Error del servidor.")
-
-#----------------------------------------------------------------------------------------------------------------------
-
-
-
-#----------------------------------------------------------------------------------------------------------------------
-# # Cargar resultados del período anterior en los Directorios - GET
-# @app.get("/resultados/periodo-anterior/directorios/{resultado_id}", response_model=str)
-# def cargar_resultados_directorios(resultado_id: str):
-#     if resultado_id not in resultados_db:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-#     # Simulación de carga de resultados en directorios
-#     return f"Carga de los resultados realizados en el periodo anterior según el directorio: {resultado_id}"
-
-# # Cargar resultados del período anterior para los Archivos - GET
-# @app.get("/resultados/periodo-anterior/archivos/{resultado_id}", response_model=str)
-# def cargar_resultados_archivos(resultado_id: str):
-#     if resultado_id not in resultados_db:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-#     # Simulación de carga de resultados en archivos
-#     return f"Carga de los resultados realizados en el periodo anterior según el archivo: {resultado_id}"
-
-# # Generar resultados del período - GET
-# @app.get("/resultados/generar/{resultado_id}", response_model=List[dict])
-# def generar_resultados(resultado_id: str):
-#     if resultado_id not in resultados_db:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-#     try:
-#         # Simulación de generación de resultados
-#         resultados = [{"id": resultado_id, "resultado": "Datos del procesamiento generado"}]
-#         return resultados
-#     except Exception as e:
-#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error - Error del servidor.")
-
-# # Informes (Reportes de la última carga) - GET
-# @app.get("/informes/ultima-carga/{reporte_id}", response_model=str)
-# def visualizar_reporte_ultima_carga(reporte_id: str):
-#     if reporte_id not in resultados_db:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resultados no encontrados.")
-    
-#     # Simulación de visualización de reportes de la última carga
-#     return f"Visualización de los reportes de la última carga: {reporte_id}"
-
-# Informes (Reportes de desempeño) - GET
-# @app.get("/informes/desempeno/{deudor_id}", response_model=str)
-# def visualizar_reporte_desempeno(deudor_id: str):
-#     if deudor_id not in resultados_db:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Deudor no encontrado.")
-    
-#     # Simulación de visualización de reporte de desempeño
-#     return f"Visualización del desempeño del deudor con ID: {deudor_id}"
-#----------------------------------------------------------------------------------------------------------------------
-
-
-
-
-#-----------------------------------------Endpoint Reporte de desempeño-----------------------------------------------
-@app.get("/api/reportes/{deudor_id}", response_model=List[Reporte])
-async def get_reporte_deudor(deudor_id: str):
-    # Buscar todos los reportes para el deudor específico
-    reportes = list(reporte_collection.find({"ID_deudor": deudor_id}))
-    
-    if not reportes:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reportes no encontrados para el deudor especificado.")
-
-    # Convertir ObjectId a string y ajustar los datos para la respuesta
-    reportes_modificados = []
-    for reporte in reportes:
-        reporte_modificado = {
-            "ID_deudor": reporte["ID_deudor"],
-            "nombre_deudor": reporte["nombre_deudor"],
-            "accion": reporte["accion"],
-            "fecha_envio": reporte["fecha_envio"],
-            "intervalo": reporte["intervalo"],
-            "fecha_estimada": reporte["fecha_estimada"],
-            "demora": reporte["demora"],
-            "fecha_real": reporte["fecha_real"],
-            "debe_pagar": reporte["debe_pagar"],
-            "valor_pagar": reporte["valor_pagar"]
-        }
-        reportes_modificados.append(reporte_modificado)
-    
-    return reportes_modificados
-
-@app.get("/api/deudores_ids", response_model=List[str])
-async def get_all_deudores_ids():
-    # Obtener todos los IDs de los deudores de la base de datos
-    deudores = list(reporte_collection.find({}, {"ID_deudor": 1, "_id": 0}))  # Solo obtener los IDs
-    deudor_ids = [deudor["ID_deudor"] for deudor in deudores]
-    
-    if not deudor_ids:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
-    
-    return deudor_ids
+#     return deudor_ids
 
 #----------------------------------------------------------------------------------------------------------------------
 
@@ -476,21 +384,9 @@ async def update_weights(weights: List[float] = Form(...), n_samples: int = Form
     return JSONResponse(content={'message': 'Pesos actualizados correctamente'}, status_code=200)
 
 
-@app.get("/api/modelo")
-async def get_modelo():
-    existing_modelo = modelo_collection.find_one({})
-    if existing_modelo:
-        return JSONResponse(content=existing_modelo, status_code=200)
-    else:
-        raise HTTPException(status_code=404, detail="No se encontró ningún registro")
 
 #----------------------------------------------------------------------------------------------------------------------
 
-
-    
-
-
-#--------------------------------Models---------------------------------------------------------------
 
 
 

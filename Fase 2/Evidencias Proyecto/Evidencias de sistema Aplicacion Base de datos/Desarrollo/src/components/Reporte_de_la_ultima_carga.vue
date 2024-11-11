@@ -300,8 +300,8 @@
   display: flex;
     flex-direction: column;
     box-shadow: 8px 8px 8px 8px #bdbdbdbf;
-    width: 90%;
-    max-width: 1200px; /* Limitar el ancho máximo */
+    width: 120%;
+    max-width: 1400px; /* Limitar el ancho máximo */
     height: 90%;
     background-color: #ffffff;
     border-radius: 20px;
@@ -374,6 +374,7 @@
   table {
       border-spacing: 0;
       width: 100%; /* Asegurar que la tabla ocupe todo el ancho */
+      height: 40%;
   }
   
   thead {

@@ -67,7 +67,7 @@
                                 <th>Deudores por acción</th>
                                 <!-- <th>Precio</th>
                                 <th>Valor Multiplicado</th>  -->
-                                <th>Operaciones</th>
+                                <!-- <th>Operaciones</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -82,10 +82,10 @@
                                 <!-- <td>{{ resultado.precio }}</td>  -->
                                 <!-- <td>{{ resultado.valor_multiplicado }}</td>   -->
                                 
-                                <td>
+                                <!-- <td>
                                     <i class="bi bi-pencil-square" @click="editarResultado(resultado)"></i>
                                     <i class="bi bi-trash" @click="eliminarResultado(resultado.id_procesamiento)"></i>
-                                </td>
+                                </td> -->
                             </tr>
                         </tbody>
                     </table>

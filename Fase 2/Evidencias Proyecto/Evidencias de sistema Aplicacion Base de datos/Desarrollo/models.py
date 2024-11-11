@@ -47,15 +47,6 @@ class Prediccion(BaseModel):
     accion_predicha: str
     total_deudores: int
 
-# class Resultados(BaseModel):
-    # Id_resultados: int
-    # nombre: str
-    # fecha: str
-    # registro: int
-    # tipo: str
-    # cantidad: str
-    # precio: float
-    # predicciones: List[Prediccion]
 
 class Resultados(BaseModel):
     id_procesamiento: str

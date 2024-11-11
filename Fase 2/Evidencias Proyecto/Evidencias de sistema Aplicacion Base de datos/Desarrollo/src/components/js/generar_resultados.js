@@ -23,6 +23,10 @@ export function iniciarDespues(){
     var iniciar = new bootstrap.Modal(document.getElementById('modal_programar'))
     iniciar.show()
 }
+export function g_resultados(){
+    var iniciar = new bootstrap.Modal(document.getElementById('modal_programar'))
+    iniciar.show()
+}
 
 export function cerrarModalProgramar() {
         const modal = document.getElementById('modal_programar');

@@ -51,7 +51,10 @@
               <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
             </div>  -->
             <div class="b_procesar">
-                  <button class="btn btn-primary" style="width: 100%;" @click="openModal()" >Iniciar Procesamiento</button>
+                  <button class="btn btn-primary" style="width: 100%;" @click="iniciarDespues()" >Iniciar Procesamiento</button>
+                  <!-- Mensajes de Éxito y Error -->
+                    <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+                    <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
               </div>
             <!-- <div class="b_procesar">
               <button class="btn btn-primary" style="width: 100%;" @click="iniciarDespues()">Iniciar Después</button>
@@ -101,7 +104,7 @@
                 </div>
                 <br>
                 <div class="btn_despues" style="margin: auto; display: flex; justify-content: center;">
-                  <button type="submit" class="btn btn-success" style="width: 40%;" @click="cerrarModalProgramar">Confirmar</button>
+                  <button type="submit" class="btn btn-success" style="width: 40%;" @click="uploadFile">Confirmar</button>
                 </div>
               </form>
             </div>
@@ -148,6 +151,7 @@
 import { openModal, openModal2, cerrarModal, cerrarModal2, cerrarModalProgramar, iniciarDespues } from './js/generar_resultados.js';
 import Menu_P from './Menu-.vue';
 import bootstrap from'bootstrap/dist/js/bootstrap.bundle.min.js';
+import axios from 'axios';
 
 
 
@@ -165,10 +169,18 @@ export default {
       uploadedDocuments: [],
       predictions: [],  // Cambia a un array para manejar múltiples predicciones
       isCollapsed: true,
+      successMessage: '',
+      errorMessage: ''
     };
   },
   methods: {
     openModal,
+    closeModal() {
+      this.isModalOpen = false;
+      this.nombre = '';
+      this.fecha = '';
+      this.hora = '';
+    },
     cerrarModal,
     openModal2,
     cerrarModal2,
@@ -183,9 +195,53 @@ export default {
     removeDocument(index) {
       this.uploadedDocuments.splice(index, 1);
     },
+    async g_resultados() {
+      try {
+        // Enviar datos al backend para crear un nuevo procesamiento
+        await axios.post('http://localhost:8000/api/procesamiento_P', {
+          nombre: this.nombre,
+          fecha: this.fecha,
+          hora: this.hora
+        });
+        this.successMessage = 'Procesamiento registrado exitosamente';
+        this.clearMessages();
+        this.closeModal();
+        this.fetchProcesamientos(); // Refrescar la lista de procesamientos
+      } catch (error) {
+        console.error("Error al programar el procesamiento:", error);
+        this.errorMessage = 'Error al programar el procesamiento:';
+        this.clearMessages();
+      }
+    },
+    async fetchProcesamientos() {
+      try {
+        // Obtener la lista de procesamientos programados desde el backend
+        const response = await axios.get('http://localhost:8000/api/procesamiento_P');
+        this.procesamientos = response.data;
+      } catch (error) {
+        console.error("Error al obtener procesamientos:", error);
+        this.errorMessage = 'Error al obtener procesamientos:';
+        this.clearMessages();
+      }
+    },
+    async deleteProcesamiento(procesamientoId) {
+      try {
+        // Eliminar un procesamiento programado por ID
+        await axios.delete(`http://localhost:8000/api/procesamiento_P/${procesamientoId}`);
+        this.successMessage = 'Procesamiento eliminado exitosamente';
+        this.fetchProcesamientos(); // Refrescar la lista después de eliminar
+        this.clearMessages();
+      } catch (error) {
+        console.error("Error al eliminar procesamiento:", error);
+        this.errorMessage = 'Error al eliminar procesamiento';
+        this.clearMessages();
+      }
+    },
     async uploadFile() {
       if (!this.file) {
-        alert('Por favor, selecciona un archivo para subir.');
+        // alert('Por favor, selecciona un archivo para subir.');
+        this.successMessage ='Por favor, selecciona un archivo para subir.';
+        this.clearMessages();
         return;
       }
       const formData = new FormData();
@@ -224,6 +280,16 @@ export default {
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
     },
+    clearMessages() {
+      setTimeout(() => {
+        this.successMessage = '';
+        this.errorMessage = '';
+      }, 5000);
+    },
+    mounted() {
+    // Cargar los procesamientos cuando el componente se monta
+    this.fetchProcesamientos();
+  }
   }
 };
 </script>
