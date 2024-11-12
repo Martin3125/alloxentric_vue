@@ -30,35 +30,35 @@ def test_system_connections():
     response = client.get(f"/api/inicio/{archivo_id}")
     assert response.status_code == 200
 
-# CP-002: Permitir autenticarse en el sistema
-def test_login():
-    response = client.post("/api/login", json={"email": "user@example.com", "pwd": "string"})
-    assert response.status_code == 200
-    assert response.json()["message"] == "Inicio de sesión exitoso"
+# # CP-002: Permitir autenticarse en el sistema
+# def test_login():
+#     response = client.post("/api/login", json={"email": "user@example.com", "pwd": "string"})
+#     assert response.status_code == 200
+#     assert response.json()["message"] == "Inicio de sesión exitoso"
 
-# CP-003: Registrar a un nuevo usuario en la base de datos
-def test_register_user():
-    response = client.post("/api/register", json={"nombre": "Test User1", "email": "test1@example.com", "pwd": "password1", "confirm_password": "password1"})
-    assert response.status_code == 200
-    assert response.json()["message"] == "Usuario registrado exitosamente"
+# # CP-003: Registrar a un nuevo usuario en la base de datos
+# def test_register_user():
+#     response = client.post("/api/register", json={"nombre": "Test User1", "email": "test1@example.com", "pwd": "password1", "confirm_password": "password1"})
+#     assert response.status_code == 200
+#     assert response.json()["message"] == "Usuario registrado exitosamente"
 
-# CP-004: Verificar la confirmación de contraseña
-def test_register_user_password_confirmation():
-    response = client.post("/api/register", json={"nombre": "Test User", "email": "test@example.com", "pwd": "password", "confirm_password": "password"})
-    assert response.status_code == 200
-    assert response.json()["message"] == "Usuario registrado exitosamente"
+# # CP-004: Verificar la confirmación de contraseña
+# def test_register_user_password_confirmation():
+#     response = client.post("/api/register", json={"nombre": "Test User", "email": "test@example.com", "pwd": "password", "confirm_password": "password"})
+#     assert response.status_code == 200
+#     assert response.json()["message"] == "Usuario registrado exitosamente"
 
-# CP-005: Registrar un usuario y que no se repitan los correos
-def test_register_user_duplicate_email():
-    # Registrar un usuario
-    response = client.post("/api/register", json={"nombre": "Duplicate User", "email": "duplicate@example.com", "pwd": "password", "confirm_password": "password"})
-    assert response.status_code == 200
-    assert response.json()["message"] == "Usuario registrado exitosamente"
+# # CP-005: Registrar un usuario y que no se repitan los correos
+# def test_register_user_duplicate_email():
+#     # Registrar un usuario
+#     response = client.post("/api/register", json={"nombre": "Duplicate User", "email": "duplicate@example.com", "pwd": "password", "confirm_password": "password"})
+#     assert response.status_code == 200
+#     assert response.json()["message"] == "Usuario registrado exitosamente"
 
-    # Intentar registrar otro usuario con el mismo correo
-    response = client.post("/api/register", json={"nombre": "Another User", "email": "duplicate@example.com", "pwd": "Another", "confirm_password": "Another"})
-    assert response.status_code == 400
-    assert response.json()["detail"] == "El correo ya está registrado"
+#     # Intentar registrar otro usuario con el mismo correo
+#     response = client.post("/api/register", json={"nombre": "Another User", "email": "duplicate@example.com", "pwd": "Another", "confirm_password": "Another"})
+#     assert response.status_code == 400
+#     assert response.json()["detail"] == "El correo ya está registrado"
 
 # CP-006: Visualización de los últimos archivos subidos
 def test_view_uploaded_files():

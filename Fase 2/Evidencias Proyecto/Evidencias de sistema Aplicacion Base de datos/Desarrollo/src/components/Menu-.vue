@@ -26,7 +26,7 @@
                                 <div class="accordion-body" >
                                 <ul class="list-group">
                                     <li class="nav-item">
-                                    <a color="#06B7B2" class="nav-link d-flex align-items-center gap-2" href="/cargar_resultados" style="color: #ffffff;">
+                                    <a color="#06B7B2" class="nav-link d-flex align-items-center gap-2" href="/res_periodo_anterior" style="color: #ffffff;">
                                         <svg class="bi"><use xlink:href="#cart"></use></svg>
                                         Cargar resultados del periodo anterior
                                     </a>

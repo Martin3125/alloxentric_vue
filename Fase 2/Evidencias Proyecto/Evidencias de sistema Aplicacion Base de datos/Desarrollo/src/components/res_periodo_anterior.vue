@@ -29,9 +29,9 @@
 
             <div class="container">
                 <div class="titulos">
-                    <div class="btn_volver">
+                    <!-- <div class="btn_volver">
                         <a class="btn btn-primary" href="/cargar_resultados" style="width: 100%;">VOLVER</a>
-                    </div>
+                    </div> -->
 
                     <div class="text_resultados">
                         <h1 style="text-align: left;">Resultados del período anterior </h1>

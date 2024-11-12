@@ -51,7 +51,7 @@
               <button class="btn btn-primary" style="width: 100%;" @click="openModal2()">Iniciar Después</button>
             </div>  -->
             <div class="b_procesar">
-                  <button class="btn btn-primary" style="width: 100%;" @click="iniciarDespues()" >Iniciar Procesamiento</button>
+                  <button class="btn btn-primary" style="width: 100%;" @click="openModal2()" >Iniciar Procesamiento</button>
                   <!-- Mensajes de Éxito y Error -->
                     <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
                     <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
@@ -76,7 +76,7 @@
             </div>
             <div class="modal-footer">
               <a class="btn btn-secondary" href="/cobranza">SI</a>
-              <a class="btn btn-primary" type="submit" @click="iniciarDespues()">NO</a>
+              <a class="btn btn-primary" data-bs-dismiss="modal" type="submit" @click="iniciarDespues()">NO</a>
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@
                 </div>
                 <br>
                 <div class="btn_despues" style="margin: auto; display: flex; justify-content: center;">
-                  <button type="submit" class="btn btn-success" style="width: 40%;" @click="uploadFile">Confirmar</button>
+                  <button type="submit"  data-bs-dismiss="modal" style="width: 40%;" @click="uploadFile">Confirmar</button>
                 </div>
               </form>
             </div>
@@ -242,8 +242,11 @@ export default {
         // alert('Por favor, selecciona un archivo para subir.');
         this.successMessage ='Por favor, selecciona un archivo para subir.';
         this.clearMessages();
+        // Cerrar el modal si la carga fue exitosa
+        this.closeModal2();
         return;
       }
+      
       const formData = new FormData();
       formData.append('file', this.file);
       const toastLiveExample = document.getElementById('liveToast');
@@ -269,6 +272,7 @@ export default {
             this.predictions = data.predicciones; // Almacena las predicciones
             localStorage.setItem('predicciones', JSON.stringify(this.predictions)); // Guarda en local storage
             this.$router.push('/resultados'); // Redirige a resultados.vue
+            
           } else {
             console.log('No se encontraron predicciones.');
           }

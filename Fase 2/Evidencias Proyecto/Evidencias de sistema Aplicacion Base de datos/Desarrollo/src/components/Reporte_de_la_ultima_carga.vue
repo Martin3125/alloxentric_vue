@@ -244,6 +244,7 @@
             const lineHeight = 6; // Ajustamos la altura de la línea
             let lineCount = 0;
 
+            // Modificar  los  deudor en caso de tener informacíon como nombre, correo, teléfono, etc.
             // Convertir la lista de deudores a un arreglo de strings (si es necesario)
             let deudores = resultado.deudores.toString().split(',');
 
@@ -251,7 +252,8 @@
             const maxDeudoresPorFila = 40;  // Ajustamos el máximo por fila
             const maxColumnas = 7;  // Ajustamos el número de columnas
             let columnCount = 0;
-
+             
+            
             deudores.forEach((deudor, index) => {
                 // Imprimir cada deudor
                 doc.text(deudor.trim(), currentX, startLineY + lineCount * lineHeight);
