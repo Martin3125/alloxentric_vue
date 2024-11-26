@@ -8,3 +8,5 @@ _id,nombre,email,pwd,tipo_usuario
 66e112060e03dad4df9ac0d4,Test User,test@example.com,$2b$12$OKGNhoOi5TpnLFGmm7L71uTnIGosPd2RNpPqNibzp3RTn06U6uqz2,false
 66e112060e03dad4df9ac0d5,Duplicate User,duplicate@example.com,$2b$12$OTOrPo1pjNyORiCxSsjNnel6ysrYBdl6KJlTMxXlDFRHYnBflUS4G,false
 671466e77ce5e28fc02843ed,Lorenzo,lor.riq4350@gmail.com,$2b$12$IFNQZiNiWAivZdQdWYHiwenZ5q2hE9xT7kAd6oXAjva1oT/b81g5W,false
+6716f0cc4ef8dd64cd6aa49d,hola2,hola2@gmail.com,$2b$12$LceGtvjFiZjYoh9hiwl1tedLGfarzeqioBRibIhjXPkROz9zbcqXq,false
+671daaeaba16d662b0a7bedd,Hola3,Hola3@gmail.com,$2b$12$tIsWLzEyY6HAH4NbCOA0f.uIhWyDydTevszm88c./IB7cATwds8R.,false
