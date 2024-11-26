@@ -10,18 +10,6 @@ from unittest.mock import MagicMock
 
 client = TestClient(app)
 
-# def test_file_upload():
-#     with open("testfile.txt", "wb") as f:
-#         f.write(b"Sample content")
-#     with open("testfile.txt", "rb") as f:
-#         response = client.post("/api/upload", files={"file": ("testfile.txt", f)})
-#     assert response.status_code == 200
-#     assert response.json() == {"filename": "testfile.txt"}
-
-# def test_download_file():
-#     response = client.get("/api/cobranza/download/1")
-#     assert response.status_code == 200
-#     assert "attachment" in response.headers["Content-Disposition"]
 
 # CP-001: Probar las conexiones del sistema (Puertos)
 def test_health_check():
@@ -33,7 +21,6 @@ def test_health_check():
 #     archivo_id = 1  # o algún ID válido
 #     response = client.get(f"/api/inicio/{archivo_id}")
 #     assert response.status_code == 200
-
 
 # # CP-002: Permitir autenticarse en el sistema
 # def test_login():
@@ -66,12 +53,6 @@ def test_health_check():
 #     assert response.json()["detail"] == "El correo ya está registrado"
 
 # CP-006: Visualización de los últimos archivos subidos
-# def test_view_uploaded_files():
-#     archivo_id = 22
-#     response = client.get(f"/api/inicio/{archivo_id}")
-#     assert response.status_code == 200
-#     assert len(response.json()) > 0
-
 # Test para la ruta "/api/inicio"
 @pytest.fixture
 def mock_archivos_collection(monkeypatch):
@@ -102,21 +83,6 @@ def test_get_all_archivos_not_found(mock_archivos_collection):
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "No se encontraron archivos."}
 
-
-
-# CP-007: Visualización de los procesamientos programados
-# def test_view_scheduled_processes():
-#     procesamiento_id = "66e10e2b5c227a0ec290128a"
-#     response = client.get(f"/api/procesamiento_P/{procesamiento_id}")
-#     assert response.status_code == 200
-#     assert len(response.json()) > 0
-
-# CP-008: Poder cancelar los procesamientos programados
-# def test_cancel_scheduled_process():
-#     procesamiento_id = "66e10f706bdc71277ff4cfc7"
-#     response = client.delete(f"/api/procesamiento_P/{procesamiento_id}")
-#     assert response.status_code == 200
-#     assert response.json()["message"] == "Procesamiento eliminado exitosamente"
 
 # CP-009: Registrar una fecha y hora de procesamiento
 def test_register_process():
@@ -194,27 +160,7 @@ def test_get_all_procesamientos():
             assert "fecha" in procesamientos[0]
             assert "hora" in procesamientos[0]
 
-# # CP-015# Prueba para eliminar un procesamiento por ID
-# def test_delete_procesamiento():
-#     # Primero, crea un procesamiento para eliminarlo después
-#     new_id = str(ObjectId())
-#     procesamiento_data = {
-#         "Id_procesamiento": new_id,
-#         "nombre": "Procesamiento de prueba",
-#         "fecha": datetime.now().date().isoformat(),
-#         "hora": datetime.now().time().isoformat(),
-#     }
-#     client.post("/api/procesamiento_P", json=procesamiento_data)
 
-#     # Intenta eliminar el procesamiento recién creado
-#     response = client.delete(f"/api/procesamiento_P/{new_id}")
-#     assert response.status_code == 200
-#     assert response.json()["message"] == "Procesamiento eliminado exitosamente"
-
-#     # Verifica que el procesamiento ya no exista
-#     response = client.delete(f"/api/procesamiento_P/{new_id}")
-#     assert response.status_code == 404
-#     assert response.json()["detail"] == "Procesamiento no encontrado."
 
 # CP-016:# Prueba para crear un nuevo procesamiento
 def test_register_procesamiento():
@@ -316,46 +262,6 @@ def test_obtener_resultados():
             assert "precio" in resultados[0]
             assert "accion_predicha" in resultados[0]
 
-# CP-021# Prueba para crear un nuevo resultado
-# def test_crear_resultado():
-#     # Datos de prueba para crear un resultado
-#     resultado_data = {
-#         "id_procesamiento": "proc123",
-#         "documento_cargado": "documento_test.csv",
-#         "fecha_carga": datetime.now().strftime("%Y-%m-%d"),  # Fecha de hoy
-#         "accion_predicha": "Cobranza",
-#         "total_deudores": 2,  # Ejemplo de deudores totales
-#         "registro_deudores": 2,  # Suma de total_deudores para todas las acciones
-#         "deudores": "deudor1, deudor2",
-#         "deudores_contactar": 2,
-#         "precio": 0.0
-#     }
-    
-#     # Realizar la solicitud POST para crear el resultado
-#     response = client.post("/resultados", json=resultado_data)
-    
-#     # Comprobar que se creó correctamente el resultado
-#     assert response.status_code == 201
-#     json_response = response.json()
-    
-#     # Validaciones del contenido de la respuesta
-#     assert json_response["id_procesamiento"] == "proc123"
-#     assert json_response["documento_cargado"] == "documento_test.csv"
-#     assert json_response["fecha_carga"] == resultado_data["fecha_carga"]
-#     assert json_response["accion_predicha"] == "Cobranza"
-#     assert json_response["total_deudores"] == 2
-#     assert json_response["registro_deudores"] == 2
-#     assert json_response["deudores"] == "deudor1, deudor2"
-#     assert json_response["deudores_contactar"] == 2
-#     assert json_response["precio"] == 0.0
-
-#     # Verificar que el campo "_id" esté presente en la respuesta
-#     assert "_id" in json_response  # MongoDB genera el "_id" automáticamente
-
-#     # Intentar crear un resultado con el mismo id_procesamiento (debería fallar)
-#     response = client.post("/resultados", json=resultado_data)
-#     assert response.status_code == 400  # Código de error por duplicación
-#     assert response.json()["detail"] == "El resultado ya existe."
 
 # CP-022# Prueba para obtener el reporte de métricas
 def test_get_metrics():
