@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
     "test:unit": "jest",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "python data_base.py",
     "serve": "vue-cli-service serve"
   },
   "dependencies": {
