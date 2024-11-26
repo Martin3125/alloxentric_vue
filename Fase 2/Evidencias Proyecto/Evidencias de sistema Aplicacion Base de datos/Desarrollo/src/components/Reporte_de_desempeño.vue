@@ -85,7 +85,7 @@ export default {
       currentPage: 1,
       itemsPerPage: 7,
       isCollapsed: true,
-      usuarioLogueado: 'NombreUsuario'  // Ajusta según tu lógica para obtener el usuario logueado
+      usuarioLogueado: ''  // Ajusta según tu lógica para obtener el usuario logueado
     };
   },
   computed: {
@@ -233,7 +233,7 @@ export default {
   .pagination button {
       padding: 5px 10px;
       margin: 0 5px;
-      background-color: #4CAF50;
+      background-color: #06B7B2;
       color: white;
       border: none;
       border-radius: 3px;
