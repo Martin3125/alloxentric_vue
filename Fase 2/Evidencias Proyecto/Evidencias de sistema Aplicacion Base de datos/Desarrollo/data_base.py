@@ -1,52 +1,27 @@
 from fastapi import FastAPI, HTTPException, status, Form
-from pydantic import BaseModel, EmailStr, constr
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from fastapi.middleware.cors import CORSMiddleware
 from passlib.context import CryptContext
 from typing import List
-from pydantic import BaseModel, Field
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
-from datetime import date, time, datetime
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Query
-from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
 import joblib
 import pandas as pd
 from werkzeug.utils import secure_filename
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 import os
-from fastapi import FastAPI, Request
 import json
-
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-import pandas as pd
-import os
 from data_preparation import prepare_data
 from modeling import run_kmeans, run_lstm
-
-from models import User, LoginUser, AccionCobranza, Deudor, Archivos, Procesamiento, Prediccion, Resultados, Reporte, Modelo, KMeansModel, Pago, Directorio
-
-import uuid
-
+from models import User, LoginUser, AccionCobranza,  Archivos, Procesamiento,  Resultados,  Modelo,  Directorio
 import random
 import string
-
-
-
 from fastapi import FastAPI, HTTPException, status
 from pymongo import MongoClient
-from pydantic import BaseModel
-from typing import List
-
 
 
 # Inicializar la aplicación FastAPI
@@ -82,7 +57,6 @@ directorios_collection = db["directorios"]
 resultados_collection  = db["Resultados"]
 predicciones_collection = db["predicciones"]
 modelo_collection = db["modelo"]
-
 
 
 #----------------------------------------Endpoint de prueba de conexiones--------------------------------------------
@@ -301,48 +275,6 @@ def get_acciones():
 #----------------------------------------------------------------------------------------------------------------------
 
 
-# #-----------------------------------------Endpoint Reporte de desempeño-----------------------------------------------
-# @app.get("/api/reportes/{deudor_id}", response_model=List[Reporte])
-# async def get_reporte_deudor(deudor_id: str):
-#     # Buscar todos los reportes para el deudor específico
-#     reportes = list(reporte_collection.find({"ID_deudor": deudor_id}))
-    
-#     if not reportes:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reportes no encontrados para el deudor especificado.")
-
-#     # Convertir ObjectId a string y ajustar los datos para la respuesta
-#     reportes_modificados = []
-#     for reporte in reportes:
-#         reporte_modificado = {
-#             "ID_deudor": reporte["ID_deudor"],
-#             "nombre_deudor": reporte["nombre_deudor"],
-#             "accion": reporte["accion"],
-#             "fecha_envio": reporte["fecha_envio"],
-#             "intervalo": reporte["intervalo"],
-#             "fecha_estimada": reporte["fecha_estimada"],
-#             "demora": reporte["demora"],
-#             "fecha_real": reporte["fecha_real"],
-#             "debe_pagar": reporte["debe_pagar"],
-#             "valor_pagar": reporte["valor_pagar"]
-#         }
-#         reportes_modificados.append(reporte_modificado)
-    
-#     return reportes_modificados
-
-# @app.get("/api/deudores_ids", response_model=List[str])
-# async def get_all_deudores_ids():
-#     # Obtener todos los IDs de los deudores de la base de datos
-#     deudores = list(reporte_collection.find({}, {"ID_deudor": 1, "_id": 0}))  # Solo obtener los IDs
-#     deudor_ids = [deudor["ID_deudor"] for deudor in deudores]
-    
-#     if not deudor_ids:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron deudores.")
-    
-#     return deudor_ids
-
-#----------------------------------------------------------------------------------------------------------------------
-
-
 
 
 #------------------------------------Endpont de settings (manipulación del modelo)-------------------------------------
@@ -494,13 +426,6 @@ async def upload_file(file: UploadFile = File(...)):
 predicciones_resultados = [] 
 
 
-if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host='0.0.0.0', port=8000, log_level="info")
-
-
-
-
 #--------------------------------Endpoint de Directorios---------------------------------------------------------------
 
 # Obtener todos los directorios - GET
@@ -597,48 +522,6 @@ async def subir_archivo(directorio: str, file: UploadFile = File(...)):
     return {"mensaje": f"Archivo {file.filename} subido correctamente al directorio {directorio}."}
 
 
-# from typing import List, Dict
-# # Obtener tipos de procesamiento disponibles en un directorio - GET
-# @app.get("/directorios/{directorio}/procesamientos", response_model=List[str])
-# def obtener_procesamientos_de_directorio(directorio: str):
-#     directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
-#     if not directorio_obj:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
-    
-#     # Obtener los tipos de procesamiento disponibles en el directorio
-#     procesamientos = directorio_obj.get("procesamientos", [])
-#     return procesamientos
-
-# # Añadir un tipo de procesamiento a un directorio - POST
-# @app.post("/directorios/{directorio}/agregar_procesamiento")
-# def agregar_procesamiento(directorio: str, procesamiento: str):
-#     directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
-#     if not directorio_obj:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
-
-#     directorios_collection.update_one(
-#         {"nombre_directorio": directorio},
-#         {"$addToSet": {"procesamientos": procesamiento}}
-#     )
-#     return {"mensaje": f"Procesamiento {procesamiento} agregado al directorio {directorio}."}
-
-# # Obtener resultados de un procesamiento específico en un directorio - GET
-# @app.get("/directorios/{directorio}/procesamientos/{procesamiento}/resultados", response_model=List[Dict[str, str]])
-# def obtener_resultados_procesamiento(directorio: str, procesamiento: str):
-#     directorio_obj = directorios_collection.find_one({"nombre_directorio": directorio})
-#     if not directorio_obj:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Directorio no encontrado.")
-    
-#     # Verificar si el procesamiento está registrado en el directorio
-#     if procesamiento not in directorio_obj.get("procesamientos", []):
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Procesamiento no encontrado en el directorio.")
-    
-#     # Obtener los resultados específicos de ese procesamiento
-#     resultados = directorio_obj.get("resultados", {}).get(procesamiento, [])
-#     if not resultados:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No se encontraron resultados para el procesamiento solicitado.")
-    
-#     return resultados
 
 #---------------------------------------------------------------------------------------------------------
 
@@ -647,10 +530,6 @@ async def subir_archivo(directorio: str, file: UploadFile = File(...)):
 
 #--------------------------------Endpoint de Resultados---------------------------------------------------------------
 # main.py
-from fastapi import FastAPI, HTTPException, status
-from pymongo import MongoClient
-from typing import List
-
 
 @app.get("/resultados", response_model=List[Resultados])
 async def obtener_resultados():
@@ -761,3 +640,8 @@ async def get_metrics():
         return JSONResponse(content=metrics_data)
     except FileNotFoundError:
         return JSONResponse(content={"error": "train_metrics_report.json not found"}, status_code=404)
+    
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, host='0.0.0.0', port=8000, log_level="info")
