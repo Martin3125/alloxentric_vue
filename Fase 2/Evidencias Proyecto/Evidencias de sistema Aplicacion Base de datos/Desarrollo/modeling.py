@@ -12,6 +12,11 @@ from sklearn.datasets import make_classification
 from pymongo import MongoClient
 import json
 
+# Conexión a MongoDB
+client = MongoClient("mongodb://localhost:27017/")
+db = client["alloxentric"]
+modelo_collection = db["modelo"]
+
 # Implementa el modelo K-means aquí
 def run_kmeans(df_final):
     # Asegúrate de que df_final es tu DataFrame principal
@@ -72,10 +77,6 @@ def run_kmeans(df_final):
 
     return df_final
 
-# Conexión a MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client["alloxentric"]
-modelo_collection = db["modelo"]
 
 def obtener_ponderaciones():
     # Obtener el documento de ponderaciones desde MongoDB
@@ -237,11 +238,11 @@ def run_lstm(df_final):
         total_deudores=('deudor', 'count')  # Contar el total de deudores por acción
     ).reset_index()
 
-    # Crear el DataFrame df_group
-    df_group2 = pd.DataFrame(df_group)
+    # # Crear el DataFrame df_group
+    # df_group2 = pd.DataFrame(df_group)
 
-    # Guardar df_group en un archivo CSV
-    df_group2.to_csv('uploads/df_group.csv', index=False)
+    # # Guardar df_group en un archivo CSV
+    # df_group2.to_csv('uploads/df_group.csv', index=False)
 
     return df_group
 
