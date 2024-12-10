@@ -1,0 +1,262 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    box-sizing: border-box;
+}
+
+
+header {
+    background-color: #06B7B2;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    align-items: center;
+}
+
+#logo_header {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+
+#logo_header>img {
+    width: 55px;
+    height: 55px;
+}
+
+#logo_header>h2 {
+    font-weight: 600;
+    padding-left: 20px;
+}
+
+#menu {
+    /* width: 45%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center; */
+    display: flex;
+    gap: 15px;
+}
+
+#menu>a {
+    /* text-decoration: none;
+    color: white;
+    width: 10%;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px; */
+
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 200;
+}
+
+#menu>a:hover {
+    background-color: white;
+    color: black;
+    transition-duration: 0.45s;
+}
+#MenuPrincipal {
+    width: 30vh;
+    height: 100vh;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column; 
+    background-color: #06B7B2;
+
+}
+
+
+#procesamiento.accordion-header{
+    background-color: #06B7B2;
+}
+
+
+#hist_masterbikes {
+    display: flex;
+    width: 80%;
+    padding: 20px;
+    margin: 20px 0 20px 9%;
+    background-color: black;
+    color: white;
+}
+
+body {
+    background-color: #ffffff;
+    background-color: #ffffff;
+    background-image: url("");}
+
+#hist_masterbikes>img {
+    width: 700px;
+    margin-right: 15px;
+}
+
+#parrafo_hist>h1 {
+    color: rgb(212, 175, 55);
+}
+
+footer {
+    font-family: 'Chakra Petch', sans-serif;
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+}
+
+#redes_sociales {
+    display: flex;
+    align-items: center;
+}
+
+#redes_sociales>a>img {
+    width: 60px;
+    height: 60px;
+}
+
+.main{
+    display: flex;
+}
+
+
+.general{
+    width: 100%;
+    display: inline-block;
+    justify-content: center;
+}
+
+    .general-resultados{
+        width: 80%;
+        margin: auto;
+        margin-top: 2%;
+        display: flex;
+        justify-content: space-between;
+    }
+        .pag-resultados{
+            background-color:black;
+            color: white;
+            width: 20%;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .user{
+            background-color:black;
+            color: white;
+            width: 30%;
+            margin-left: 2%;
+            text-align: center;
+            font-weight: 600;
+        }
+
+
+.titulos{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+    .btn_volver {
+        width: 20%;
+        margin: auto;
+       
+    }
+
+    .text_resultados{
+        width: 60%;
+        margin-left: auto;
+    }
+
+.ver-resultados{
+    background-color: rgb(248, 247, 247);
+    border: 30px;
+    width: 80%;
+    height: 80vh;
+    margin: auto;
+    margin-top: 2%;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+    .tbl_resultados{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+    }
+
+        #table{
+            background-color: rgb(255, 255, 255);
+            margin: auto;
+            margin-top: 5%;
+            width: 80%;
+            height: 20vh;
+            padding-top: 5%;
+            border: 1px solid black;
+        }
+
+
+
+#logo_footer {
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+}
+
+#logo_footer>img {
+    width: 200px;
+    height: 200px;
+}
+
+
+/* dashboard */
+.bi {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  /*
+   * Sidebar
+   */
+  
+  @media (min-width: 768px) {
+    .sidebar .offcanvas-lg {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 48px;
+    }
+    .navbar-search {
+      display: block;
+    }
+  }
+  
+  .sidebar .nav-link {
+    font-size: .875rem;
+    font-weight: 500;
+  }
+  
+  .sidebar .nav-link.active {
+    color: #2470dc;
+  }
+  
+  .sidebar-heading {
+    font-size: .75rem;
+  }
+  
+  /*
+   * Navbar
+   */
+  
+  .navbar-brand {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: rgba(0, 0, 0, .25);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+  }
+  
+  .navbar .form-control {
+    padding: .75rem 1rem;
+  }

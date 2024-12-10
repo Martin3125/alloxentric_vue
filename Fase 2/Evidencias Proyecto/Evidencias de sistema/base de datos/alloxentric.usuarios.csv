@@ -1,0 +1,12 @@
+_id,nombre,email,pwd,tipo_usuario
+66bc19abbe2a22c13d8e0059,Juan,juan@example.com,password123,false
+66bc1d31be2a22c13d8e005a,jhon,jhon@example.com,password123,false
+66bc1dd5be2a22c13d8e005c,victor,victor@gmail.com,123456,false
+66e10b622ef93004ef2c84b2,string,user@example.com,$2b$12$uZfe655NModMHb0AWlXrF.JYApNEy.FriIVU7XJOILnvVLAWZvDoK,false
+66e10b8e2ef93004ef2c84b3,hola,hola@gmail.com,$2b$12$.VTkdILZxdFEOWPOpdxhv.Lfldd27uZigxmPJP91pjp9vDVqC2Qc6,false
+66e112060e03dad4df9ac0d3,Test User1,test1@example.com,$2b$12$MMHauG.RQAH3CYCLvnc1feUVEhrHC1kU.roTCXHt2Z8Nn7.ThexV6,false
+66e112060e03dad4df9ac0d4,Test User,test@example.com,$2b$12$OKGNhoOi5TpnLFGmm7L71uTnIGosPd2RNpPqNibzp3RTn06U6uqz2,false
+66e112060e03dad4df9ac0d5,Duplicate User,duplicate@example.com,$2b$12$OTOrPo1pjNyORiCxSsjNnel6ysrYBdl6KJlTMxXlDFRHYnBflUS4G,false
+671466e77ce5e28fc02843ed,Lorenzo,lor.riq4350@gmail.com,$2b$12$IFNQZiNiWAivZdQdWYHiwenZ5q2hE9xT7kAd6oXAjva1oT/b81g5W,false
+6716f0cc4ef8dd64cd6aa49d,hola2,hola2@gmail.com,$2b$12$LceGtvjFiZjYoh9hiwl1tedLGfarzeqioBRibIhjXPkROz9zbcqXq,false
+671daaeaba16d662b0a7bedd,Hola3,Hola3@gmail.com,$2b$12$tIsWLzEyY6HAH4NbCOA0f.uIhWyDydTevszm88c./IB7cATwds8R.,false

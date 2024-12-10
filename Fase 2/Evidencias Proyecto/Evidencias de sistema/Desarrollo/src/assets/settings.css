@@ -1,0 +1,39 @@
+.main-settings{
+    display: flex;
+}
+
+    .settings-content{
+        width: 100%
+    }
+
+        .settings-header{
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2%;
+        }
+
+            .pag-settings{
+                background-color: black;
+                color: white;
+                width: 10%;
+                height: 5vh;
+                text-align: center;
+                margin-top: 2%;
+            }
+
+            .user{
+                background-color: black;
+                color: white;
+                width: 10%;
+                height: 5vh;
+                text-align: center;
+                margin-top: 2%;
+            }
+
+        .settings-body{
+            background-color: whitesmoke;
+            width: 60%;
+            margin: auto;
+        }
+        
